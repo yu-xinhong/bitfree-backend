@@ -32,14 +32,14 @@ public class RequestLogAspect {
             String methodName = proceedingJoinPoint.getTarget().getClass().getName() + "." + methodSignature.getName();
 
             StringBuffer requestLog = new StringBuffer();
-            requestLog.append(String.format("remote %s request to %s", httpServletRequest.getRemoteAddr(), methodName));
+            requestLog.append(String.format("\n %s request to %s", httpServletRequest.getRemoteAddr(), methodName));
 
             if (args.length > 0) {
                 StringBuffer paramsBuffer = new StringBuffer();
                 for (Object param : args) {
                     paramsBuffer.append(JSON.toJSONString(param)).append(",");
                 }
-                requestLog.append(", params -> " + paramsBuffer.substring(0, paramsBuffer.length() - 1));
+                requestLog.append("\n params -> " + paramsBuffer.substring(0, paramsBuffer.length() - 1));
             }
 
 
@@ -47,7 +47,7 @@ public class RequestLogAspect {
             Object returnObj = proceedingJoinPoint.proceed();
 
             if (returnObj != null) {
-                requestLog.append(", result -> " + JSON.toJSONString(returnObj));
+                requestLog.append("\n result -> " + JSON.toJSONString(returnObj));
             }
             log.info(requestLog.toString());
             return returnObj;

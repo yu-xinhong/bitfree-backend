@@ -10,6 +10,7 @@ import com.jihai.bitfree.dto.resp.UserDTO;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,12 @@ public class UserService {
             throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
         }
 
+        // 校验
+        if (userDao.queryByEmail(email) != null) {
+            log.error("email {} is duplicated", email);
+            throw new RuntimeException("邮箱重复创建");
+        }
+
         UserDO userDO = new UserDO();
         userDO.setEmail(email);
 
@@ -73,6 +80,6 @@ public class UserService {
     }
 
     public UserDTO getByToken(String token) {
-        return userDao.getByToken(token);
+        return DO2DTOConvert.convertUser(userDao.getByToken(token));
     }
 }

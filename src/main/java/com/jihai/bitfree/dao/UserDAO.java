@@ -20,5 +20,7 @@ public interface UserDAO {
 
     void insert(UserDO userDO);
 
-    UserDTO getByToken(@Param("token") String token);
+    UserDO getByToken(@Param("token") String token);
+
+    UserDO queryByEmail(String email);
 }

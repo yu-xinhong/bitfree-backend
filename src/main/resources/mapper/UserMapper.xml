@@ -49,9 +49,13 @@
         </foreach>
     </select>
 
-    <select id="getByToken" resultType="com.jihai.bitfree.dto.resp.UserDTO">
+    <select id="getByToken" resultMap="userResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM user WHERE token = #{token} AND deleted = 0
+    </select>
+    <select id="queryByEmail" resultType="com.jihai.bitfree.entity.UserDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM user WHERE email = #{email} AND deleted = 0
     </select>
 
 </mapper>
