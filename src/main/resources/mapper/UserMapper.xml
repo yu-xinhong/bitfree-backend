@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.UserDAO">
+
+    <resultMap id="userResultMap" type="com.jihai.bitfree.entity.UserDO">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="position" property="position" />
+        <result column="city" property="city" />
+        <result column="seniority" property="seniority" />
+        <result column="token" property="token" />
+        <result column="status" property="status" />
+        <result column="email" property="email" />
+        <result column="password" property="password" />
+        <result column="contact" property="contact" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, name, position, city, seniority, token, status, email, password, contact, deleted, create_time, update_time</sql>
+
+    <select id="queryByEmailAndPassword" resultMap="userResultMap">
+        SELECT * FROM user WHERE email = #{email} AND password = #{password} AND deleted = 0
+    </select>
+
+    <select id="getById" resultType="com.jihai.bitfree.entity.UserDO">
+        SELECT * FROM user WHERE id = #{id} AND deleted = 0
+    </select>
+
+    <update id="saveToken">
+        UPDATE user SET token = #{token} WHERE email = #{email} AND password = #{password} AND deleted = 0
+    </update>
+
+    <update id="clearToken">
+        UPDATE user SET token = '' WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <select id="batchQueryByIdList" resultMap="userResultMap">
+        SELECT <include refid="BASE_COLUMN"/> FROM id IN
+        <foreach collection="idList" item="id" open="(" separator="," close=",">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

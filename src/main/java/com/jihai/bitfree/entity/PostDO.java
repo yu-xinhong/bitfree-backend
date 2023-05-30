@@ -10,7 +10,7 @@ public class PostDO extends BaseDO {
 
     private String content;
 
-    private String creatorId;
+    private Long creatorId;
 
     private String topicId;
 
@@ -32,11 +32,11 @@ public class PostDO extends BaseDO {
         this.content = content;
     }
 
-    public String getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(String creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 

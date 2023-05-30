@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.ReplyDAO">
+    <select id="countByPostIdList" resultType="com.jihai.bitfree.entity.ReplyDO">
+        SELECT COUNT(*) FROM reply WHERE deleted = 0 AND
+        post_id IN
+        <foreach collection="postIdList" item="postId" open="(" close=")" separator=",">
+            #{postId}
+        </foreach>
+    </select>
+</mapper>

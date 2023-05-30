@@ -8,7 +8,7 @@ public class Result<T> implements Serializable {
 
     private T data;
 
-    private Boolean code;
+    private Integer code;
 
     private String message;
 
@@ -20,11 +20,11 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
-    public Boolean getCode() {
+    public Integer getCode() {
         return code;
     }
 
-    public void setCode(Boolean code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 
