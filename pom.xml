@@ -100,4 +100,18 @@
         </dependency>
 
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>pom_repositories</id>
+            <name>local</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

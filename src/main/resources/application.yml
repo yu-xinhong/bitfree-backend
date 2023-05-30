@@ -15,7 +15,8 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/bitfree?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
     username: root
     password: engineer
-
+  profiles:
+    active: dev
 mybatis:
   # Set the xml configuration file address for mybatis.
   # config-location: "classpath:mybatis/mybatis-config.xml"

@@ -71,7 +71,7 @@ public class PostService {
             postItemDTO.setTitle(postDO.getTitle());
             postItemDTO.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
             postItemDTO.setUpdateTime(postDO.getUpdateTime());
-            Long count = replyCountMap.get(postDO.getId());
+            Long count = replyCountMap.getOrDefault(postDO.getId(), 0L);
             if (count != null) postItemDTO.setReplyCount(count.intValue());
             return postItemDTO;
         }).collect(Collectors.toList());
@@ -81,7 +81,8 @@ public class PostService {
 
     public Integer count() {
         Integer count = postDAO.count();
-        return count - queryTopIdList().size();
+        count = count - queryTopIdList().size();
+        return count < 0 ? 0 : count;
     }
 
     private List<Long> queryTopIdList() {

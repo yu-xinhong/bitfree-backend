@@ -13,9 +13,7 @@ import com.jihai.bitfree.dto.resp.PostItemDTO;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.servlet.http.Cookie;
 import java.util.Random;
 
 public class MockDataUtils extends AppTest {
@@ -44,10 +42,6 @@ public class MockDataUtils extends AppTest {
     public void addPost() {
         Random random = new Random();
 
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-        httpServletRequest.setCookies(new Cookie("token", "thisIsMyToken"));
-        postController.httpServletRequest = httpServletRequest;
-
         for (int i = 0; i < 100; i++) {
             AddPostReq addPostReq = new AddPostReq();
             addPostReq.setContent("<p>这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章</p>");
@@ -55,7 +49,6 @@ public class MockDataUtils extends AppTest {
             addPostReq.setTopicId(random.nextInt(4));
             postController.add(addPostReq);
         }
-
 
         PageQueryReq pageQueryReq = new PageQueryReq();
         Result<PageResult<PostItemDTO>> pageResultResult = postController.pageQuery(pageQueryReq);

@@ -2,7 +2,6 @@ package com.jihai.bitfree.base;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.dto.resp.UserDTO;
-import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,8 @@ import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Transactional
+@ActiveProfiles("test")
+//@Transactional
 public class AppTest {
 
     @Autowired
@@ -30,7 +32,7 @@ public class AppTest {
     public void mockHttpRequest() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         httpServletRequest.setCookies(new Cookie("token", "thisIsMyToken"));
-        topicController.httpServletRequest = httpServletRequest;
+//        topicController.httpServletRequest = httpServletRequest;
     }
 
     @Test

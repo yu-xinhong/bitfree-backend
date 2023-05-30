@@ -53,7 +53,7 @@ public class UserService {
         if (! configDO.getValue().equals(secret)) {
             log.error("warn ! addUser is only allow administrator jihai!");
             // send alert
-            return "false";
+            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
         }
 
         UserDO userDO = new UserDO();
