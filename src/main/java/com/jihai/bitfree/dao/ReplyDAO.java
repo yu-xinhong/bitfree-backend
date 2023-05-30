@@ -8,4 +8,5 @@ public interface ReplyDAO {
 
     List<ReplyDO> countByPostIdList(List<Long> postIdList);
 
+    List<ReplyDO> getByPostId(Long id);
 }

@@ -31,4 +31,8 @@
             #{id}
         </foreach>
     </select>
+    <select id="getById" resultType="com.jihai.bitfree.entity.PostDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM user WHERE id = #{id} AND deleted = 0
+    </select>
 </mapper>

@@ -8,6 +8,7 @@ import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.ReplyDAO;
 import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dto.resp.PostDetailDTO;
 import com.jihai.bitfree.dto.resp.PostItemDTO;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.PostDO;
@@ -15,6 +16,7 @@ import com.jihai.bitfree.entity.ReplyDO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.utils.DataConvert;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -86,5 +88,20 @@ public class PostService {
         ConfigDO configDO = configDAO.getByKey(Constants.TOP_POST_ID);
         if (configDO == null) return Lists.newArrayList();
         return DataConvert.convertValue2List(configDO.getValue());
+    }
+
+    public PostDetailDTO getDetail(Long id) {
+        PostDO postDO = postDAO.getById(id);
+        if (postDO == null) {
+            log.error("risk id {} not exists in db", id);
+            return null;
+        }
+
+        PostDetailDTO postDetailDTO = new PostDetailDTO();
+        BeanUtils.copyProperties(postDO, postDetailDTO);
+
+        UserDO userDO = userDAO.getById(postDO.getCreatorId());
+        postDetailDTO.setCreatorName(userDO.getName());
+        return postDetailDTO;
     }
 }

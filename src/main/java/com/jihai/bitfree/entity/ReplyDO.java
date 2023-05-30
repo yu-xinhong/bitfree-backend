@@ -12,7 +12,8 @@ public class ReplyDO extends BaseDO {
 
     private Long postId;
 
-    private Long subReplyId;
+    // 如果是回复别人，这个是目标回复id
+    private Long targetReplyId;
 
     private String replyContent;
 
@@ -40,12 +41,12 @@ public class ReplyDO extends BaseDO {
         this.postId = postId;
     }
 
-    public Long getSubReplyId() {
-        return subReplyId;
+    public Long getTargetReplyId() {
+        return targetReplyId;
     }
 
-    public void setSubReplyId(Long subReplyId) {
-        this.subReplyId = subReplyId;
+    public void setTargetReplyId(Long targetReplyId) {
+        this.targetReplyId = targetReplyId;
     }
 
     public String getReplyContent() {

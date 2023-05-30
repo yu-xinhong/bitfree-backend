@@ -11,4 +11,6 @@ public interface PostDAO {
     List<PostDO> pageQuery(Integer page, Integer size);
 
     List<PostDO> queryByIdList(List<Long> topPostIdList);
+
+    PostDO getById(Long id);
 }
