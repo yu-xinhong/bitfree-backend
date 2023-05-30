@@ -12,7 +12,7 @@ public class PostDO extends BaseDO {
 
     private Long creatorId;
 
-    private String topicId;
+    private Integer topicId;
 
     private Long lastUpdaterId;
 
@@ -40,11 +40,11 @@ public class PostDO extends BaseDO {
         this.creatorId = creatorId;
     }
 
-    public String getTopicId() {
+    public Integer getTopicId() {
         return topicId;
     }
 
-    public void setTopicId(String topicId) {
+    public void setTopicId(Integer topicId) {
         this.topicId = topicId;
     }
 

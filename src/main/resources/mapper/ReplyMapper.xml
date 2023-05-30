@@ -3,11 +3,50 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jihai.bitfree.dao.ReplyDAO">
+    <resultMap id="replyResultMap" type="com.jihai.bitfree.entity.ReplyDO">
+        <result column="id" property="id" />
+        <result column="send_user_id" property="sendUserId" />
+        <result column="receiver_id" property="receiverId" />
+        <result column="post_id" property="postId" />
+        <result column="target_reply_id" property="targetReplyId" />
+        <result column="reply_content" property="replyContent" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, send_user_id, receiver_id, post_id, target_reply_id, create_time, update_time, deleted</sql>
+    <insert id="insert" useGeneratedKeys="true">
+        INSERT INTO reply(`send_user_id`,`receiver_id`,`post_id`,`target_reply_id`)
+        VALUE(#{sendUserId}, #{receiverId}, #{postId}, #{targetReplyId})
+    </insert>
+
+
     <select id="countByPostIdList" resultType="com.jihai.bitfree.entity.ReplyDO">
         SELECT COUNT(*) FROM reply WHERE deleted = 0 AND
         post_id IN
         <foreach collection="postIdList" item="postId" open="(" close=")" separator=",">
             #{postId}
         </foreach>
+    </select>
+
+
+    <select id="getByPostId" resultType="com.jihai.bitfree.entity.ReplyDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM reply
+        WHERE post_id = #{postId}
+    </select>
+    <select id="getBySendUserId" resultType="com.jihai.bitfree.entity.ReplyDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM reply
+        WHERE send_user_id = #{userId}
+        AND deleted = 0
+        ORDER BY create_time DESC LIMIT page * size, size
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM reply
+        WHERE user_id = #{userId}
+        AND deleted = 0
     </select>
 </mapper>

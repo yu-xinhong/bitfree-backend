@@ -8,7 +8,7 @@ public class ReplyDO extends BaseDO {
 
     private Long sendUserId;
 
-    private Long ReceiverId;
+    private Long receiverId;
 
     private Long postId;
 
@@ -26,11 +26,11 @@ public class ReplyDO extends BaseDO {
     }
 
     public Long getReceiverId() {
-        return ReceiverId;
+        return receiverId;
     }
 
     public void setReceiverId(Long receiverId) {
-        ReceiverId = receiverId;
+        this.receiverId = receiverId;
     }
 
     public Long getPostId() {

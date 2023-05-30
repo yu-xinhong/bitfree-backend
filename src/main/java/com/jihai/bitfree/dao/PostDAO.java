@@ -13,4 +13,8 @@ public interface PostDAO {
     List<PostDO> queryByIdList(List<Long> topPostIdList);
 
     PostDO getById(Long id);
+
+    List<PostDO> getByIdList(List<Long> idList);
+
+    void insert(PostDO postDO);
 }

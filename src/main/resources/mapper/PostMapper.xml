@@ -13,9 +13,14 @@
         <result column="last_updater_id" property="lastUpdaterId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
+        <result column="deleted" property="deleted" />
     </resultMap>
 
     <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, last_updater_id, create_time, update_time</sql>
+    <insert id="insert">
+        INSERT INTO post(`title`, `content`, `creator_id`, `topic_id`, `last_updater_id`)
+        VALUE(#{title}, #{content}, #{creatorId}, #{topicId}, #{lastUpdaterId})
+    </insert>
 
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM post WHERE deleted = 0
@@ -33,6 +38,15 @@
     </select>
     <select id="getById" resultType="com.jihai.bitfree.entity.PostDO">
         SELECT <include refid="BASE_COLUMN"/>
-        FROM user WHERE id = #{id} AND deleted = 0
+        FROM post WHERE id = #{id} AND deleted = 0
+    </select>
+    <select id="getByIdList" resultType="com.jihai.bitfree.entity.PostDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM post
+        WHERE id IN
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND deleted = 0
     </select>
 </mapper>

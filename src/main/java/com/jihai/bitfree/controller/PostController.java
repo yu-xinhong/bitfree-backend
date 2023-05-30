@@ -5,18 +5,15 @@ import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.Result;
-import com.jihai.bitfree.dto.req.PageQueryReq;
-import com.jihai.bitfree.dto.req.PostDetailReq;
-import com.jihai.bitfree.dto.req.ReplyListReq;
+import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.PostDetailDTO;
 import com.jihai.bitfree.dto.resp.PostItemDTO;
 import com.jihai.bitfree.dto.resp.ReplyListDTO;
+import com.jihai.bitfree.dto.resp.UserReplyDTO;
 import com.jihai.bitfree.service.PostService;
 import com.jihai.bitfree.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,5 +49,47 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<List<ReplyListDTO>> getReplyList(ReplyListReq replyListReq) {
         return convertSuccessResult(replyService.getReplyList(replyListReq.getId()));
+    }
+
+    @PostMapping("/reply")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Boolean> reply(@RequestBody ReplyReq replyReq) {
+        return convertSuccessResult(replyService.reply(replyReq.getPostId(), replyReq.getReplyId(), getCurrentUser().getId(), replyReq.getReplyContent()));
+    }
+
+
+    @GetMapping("/replyCount")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Integer> replyCount() {
+        return convertSuccessResult(replyService.replyCount(getCurrentUser().getId()));
+    }
+
+
+    @PostMapping("/read")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Boolean> read() {
+        return convertSuccessResult(replyService.read(getCurrentUser().getId()));
+    }
+
+
+    @GetMapping("/pageQueryUserReply")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<PageResult<UserReplyDTO>> pageQueryUserReply(UserReplyReq userReplyReq) {
+        // 如果传递了说明是查看别人，否则是查看自己
+        Long userId = userReplyReq.getId() == null ? getCurrentUser().getId() : userReplyReq.getId();
+
+        return convertSuccessResult(replyService.pageQueryUserReply(userReplyReq.getPage(), userReplyReq.getSize(), userId));
+    }
+
+    @PostMapping("/add")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Boolean> add(@RequestBody AddPostReq addPostReq) {
+        postService.add(addPostReq.getTitle(), addPostReq.getContent(), addPostReq.getTopicId(), getCurrentUser().getId());
+        return convertSuccessResult(true);
     }
 }

@@ -104,4 +104,15 @@ public class PostService {
         postDetailDTO.setCreatorName(userDO.getName());
         return postDetailDTO;
     }
+
+    public void add(String title, String content, Integer topicId, Long userId) {
+        PostDO postDO = new PostDO();
+
+        postDO.setCreatorId(userId);
+        postDO.setTitle(title);
+        postDO.setContent(content);
+        postDO.setTopicId(topicId);
+        postDO.setLastUpdaterId(userId);
+        postDAO.insert(postDO);
+    }
 }

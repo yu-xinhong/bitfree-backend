@@ -3,4 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jihai.bitfree.dao.TopicDAO">
+
+    <resultMap id="userResultMap" type="com.jihai.bitfree.entity.TopicDO">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, name, deleted, create_time, update_time</sql>
+    <select id="getAllTopic" resultType="com.jihai.bitfree.entity.TopicDO">
+        SELECT <include refid="BASE_COLUMN"/> FROM topic WHERE deleted = 0
+    </select>
 </mapper>
