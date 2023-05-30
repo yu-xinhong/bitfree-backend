@@ -21,6 +21,7 @@ public class ExceptionHandlerAspect {
         try {
             return proceedingJoinPoint.proceed();
         } catch (Throwable e) {
+            log.error("Request ERROR", e);
             Result<Boolean> result = new Result<>();
             result.setCode(ReturnCodeEnum.SYSTEM_ERROR.getCode());
             result.setMessage(e.getMessage());
