@@ -1,12 +1,16 @@
 package com.jihai.bitfree.unit;
 
 
+import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.controller.PostController;
 import com.jihai.bitfree.controller.TopicController;
 import com.jihai.bitfree.controller.UserController;
 import com.jihai.bitfree.dto.req.AddPostReq;
 import com.jihai.bitfree.dto.req.AddUserReq;
 import com.jihai.bitfree.dto.req.PageQueryReq;
+import com.jihai.bitfree.dto.resp.PostItemDTO;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -54,7 +58,11 @@ public class MockDataUtils extends AppTest {
 
 
         PageQueryReq pageQueryReq = new PageQueryReq();
-        postController.pageQuery(pageQueryReq);
+        Result<PageResult<PostItemDTO>> pageResultResult = postController.pageQuery(pageQueryReq);
+        Assert.assertTrue(pageResultResult.getData().getList().size() == 20);
+        pageQueryReq.setSize(100);
+        pageResultResult = postController.pageQuery(pageQueryReq);
+        Assert.assertTrue(pageResultResult.getData().getList().size() == 100);
     }
 
 }

@@ -44,12 +44,11 @@ public class PostService {
 
     public List<PostItemDTO> pageQuery(Integer page, Integer size) {
         List<Long> topPostIdList = queryTopIdList();
-        size -= topPostIdList.size();
-
         // 置顶的先查出来
         List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
-        List<PostDO> postDOS = postDAO.pageQuery(page * size, size);
+        size -= topPostList.size();
+        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size);
         postDOS.addAll(topPostList);
 
         ArrayList<PostItemDTO> postItemDTOS = Lists.newArrayList();
