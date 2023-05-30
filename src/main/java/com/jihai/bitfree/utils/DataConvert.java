@@ -7,6 +7,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DataConvert {
@@ -23,6 +24,6 @@ public class DataConvert {
         } catch (NumberFormatException e) {
             log.error("convert to list error, config value is {}", value, e);
         }
-        return resultList;
+        return resultList.stream().distinct().collect(Collectors.toList());
     }
 }

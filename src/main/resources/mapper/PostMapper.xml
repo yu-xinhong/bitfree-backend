@@ -24,4 +24,11 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM post WHERE deleted = 0 ORDER BY update_time LIMIT page * size, size
     </select>
+    <select id="queryByIdList" resultType="com.jihai.bitfree.entity.PostDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM post WHERE deleted = 0 AND id IN
+        <foreach collection="topPostIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

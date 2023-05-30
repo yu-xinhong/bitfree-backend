@@ -44,7 +44,11 @@ public class PostService {
         List<Long> topPostIdList = queryTopIdList();
         size -= topPostIdList.size();
 
+        // 置顶的先查出来
+        List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
+
         List<PostDO> postDOS = postDAO.pageQuery(page, size);
+        postDOS.addAll(topPostList);
 
         ArrayList<PostItemDTO> postItemDTOS = Lists.newArrayList();
         if (CollectionUtils.isEmpty(postDOS)) {
@@ -60,7 +64,7 @@ public class PostService {
         List<UserDO> userDOS = userDAO.batchQueryByIdList(postDOS.stream().map(PostDO::getCreatorId).collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
-        return postDOS.stream().map(postDO -> {
+        List<PostItemDTO> pageList = postDOS.stream().map(postDO -> {
             PostItemDTO postItemDTO = new PostItemDTO();
             postItemDTO.setId(postDO.getId());
             postItemDTO.setTitle(postDO.getTitle());
@@ -69,11 +73,13 @@ public class PostService {
             postItemDTO.setReplyCount(replyCountMap.get(postDO.getId()).intValue());
             return postItemDTO;
         }).collect(Collectors.toList());
+
+        return pageList;
     }
 
-    public Integer count(Integer topCount) {
+    public Integer count() {
         Integer count = postDAO.count();
-        return count - topCount;
+        return count - queryTopIdList().size();
     }
 
     private List<Long> queryTopIdList() {

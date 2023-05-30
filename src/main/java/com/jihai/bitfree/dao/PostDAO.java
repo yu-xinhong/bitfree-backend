@@ -9,4 +9,6 @@ public interface PostDAO {
     Integer count();
 
     List<PostDO> pageQuery(Integer page, Integer size);
+
+    List<PostDO> queryByIdList(List<Long> topPostIdList);
 }
