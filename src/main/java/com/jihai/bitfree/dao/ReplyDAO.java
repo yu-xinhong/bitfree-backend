@@ -1,20 +1,21 @@
 package com.jihai.bitfree.dao;
 
 import com.jihai.bitfree.entity.ReplyDO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface ReplyDAO {
 
-    List<ReplyDO> countByPostIdList(List<Long> postIdList);
+    List<ReplyDO> queryByPostIdList(@Param("postIdList") List<Long> postIdList);
 
-    List<ReplyDO> getByPostId(Long postId);
+    List<ReplyDO> getByPostId(@Param("postId") Long postId);
 
     Long insert(ReplyDO replyDO);
 
-    List<ReplyDO> getBySendUserId(Long userId, Integer page, Integer size);
+    List<ReplyDO> getBySendUserId(@Param("userId") Long userId,@Param("start") Integer start, @Param("size") Integer size);
 
-    Integer count(Long userId);
+    Integer count(@Param("userId") Long userId);
 
-    List<ReplyDO> queryByIdList(List<Long> replyIdList);
+    List<ReplyDO> queryByIdList(@Param("replyIdList") List<Long> replyIdList);
 }

@@ -16,7 +16,8 @@
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, last_updater_id, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, last_updater_id, create_time, update_time, deleted</sql>
+
     <insert id="insert">
         INSERT INTO post(`title`, `content`, `creator_id`, `topic_id`, `last_updater_id`)
         VALUE(#{title}, #{content}, #{creatorId}, #{topicId}, #{lastUpdaterId})
@@ -27,7 +28,7 @@
     </select>
     <select id="pageQuery" resultType="com.jihai.bitfree.entity.PostDO">
         SELECT <include refid="BASE_COLUMN"/>
-        FROM post WHERE deleted = 0 ORDER BY update_time LIMIT page * size, size
+        FROM post WHERE deleted = 0 ORDER BY update_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="queryByIdList" resultType="com.jihai.bitfree.entity.PostDO">
         SELECT <include refid="BASE_COLUMN"/>

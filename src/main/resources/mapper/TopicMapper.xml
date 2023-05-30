@@ -13,6 +13,7 @@
     </resultMap>
 
     <sql id="BASE_COLUMN">id, name, deleted, create_time, update_time</sql>
+
     <select id="getAllTopic" resultType="com.jihai.bitfree.entity.TopicDO">
         SELECT <include refid="BASE_COLUMN"/> FROM topic WHERE deleted = 0
     </select>

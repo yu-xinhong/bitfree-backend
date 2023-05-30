@@ -2,11 +2,38 @@ package com.jihai.bitfree.base;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.dto.resp.UserDTO;
+import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+
+@Slf4j
 public class BaseController {
 
+    @Autowired
+    public HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private UserService userService;
+
     protected UserDTO getCurrentUser() {
-        return null;
+        Cookie[] cookies = httpServletRequest.getCookies();
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+        if (! StringUtils.hasText(token)) {
+            throw new RuntimeException("token is empty");
+        }
+        return userService.getByToken(token);
     }
 
     protected <T> Result<T> convertSuccessResult(T data) {

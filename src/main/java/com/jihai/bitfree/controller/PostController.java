@@ -34,7 +34,7 @@ public class PostController extends BaseController {
         // 置顶的要减去size
         List<PostItemDTO> postItemDTOList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize());
         Integer count = postService.count();
-        return convertSuccessResult(new PageResult<PostItemDTO>(postItemDTOList, count));
+        return convertSuccessResult(new PageResult<>(postItemDTOList, count));
     }
 
     @GetMapping("/getDetail")

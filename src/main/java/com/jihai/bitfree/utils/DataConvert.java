@@ -3,7 +3,6 @@ package com.jihai.bitfree.utils;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class DataConvert {
     public static List<Long> convertValue2List(String value) {
         List<Long> resultList = Lists.newArrayList();
         try {
-            if (ObjectUtils.isEmpty(value) || ! StringUtils.hasText(value)) {
+            if (! StringUtils.hasText(value)) {
                 return resultList;
             }
             for (String split : value.split(",")) {

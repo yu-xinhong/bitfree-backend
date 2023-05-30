@@ -49,7 +49,7 @@ public class PostService {
         // 置顶的先查出来
         List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
-        List<PostDO> postDOS = postDAO.pageQuery(page, size);
+        List<PostDO> postDOS = postDAO.pageQuery(page * size, size);
         postDOS.addAll(topPostList);
 
         ArrayList<PostItemDTO> postItemDTOS = Lists.newArrayList();
@@ -59,11 +59,11 @@ public class PostService {
 
         List<Long> postIdList = postDOS.stream().map(PostDO::getId).collect(Collectors.toList());
         // 查询回复数量
-        List<ReplyDO> replyDOList = replyDAO.countByPostIdList(postIdList);
+        List<ReplyDO> replyDOList = replyDAO.queryByPostIdList(postIdList);
         Map<Long, Long> replyCountMap = replyDOList.stream().collect(Collectors.groupingBy(ReplyDO::getPostId, Collectors.counting()));
 
         // 查询用户名称
-        List<UserDO> userDOS = userDAO.batchQueryByIdList(postDOS.stream().map(PostDO::getCreatorId).collect(Collectors.toList()));
+        List<UserDO> userDOS = userDAO.batchQueryByIdList(postDOS.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
         List<PostItemDTO> pageList = postDOS.stream().map(postDO -> {
@@ -72,7 +72,8 @@ public class PostService {
             postItemDTO.setTitle(postDO.getTitle());
             postItemDTO.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
             postItemDTO.setUpdateTime(postDO.getUpdateTime());
-            postItemDTO.setReplyCount(replyCountMap.get(postDO.getId()).intValue());
+            Long count = replyCountMap.get(postDO.getId());
+            if (count != null) postItemDTO.setReplyCount(count.intValue());
             return postItemDTO;
         }).collect(Collectors.toList());
 

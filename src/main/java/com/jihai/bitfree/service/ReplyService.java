@@ -124,7 +124,7 @@ public class ReplyService {
     }
 
     public PageResult<UserReplyDTO> pageQueryUserReply(Integer page, Integer size, Long userId) {
-        List<ReplyDO> replyDOList = replyDAO.getBySendUserId(userId, page, size);
+        List<ReplyDO> replyDOList = replyDAO.getBySendUserId(userId, page * size, size);
         if (CollectionUtils.isEmpty(replyDOList)) return new PageResult<UserReplyDTO>(Collections.EMPTY_LIST, 0);
 
         Integer count = replyDAO.count(userId);

@@ -8,11 +8,11 @@ public class PageQueryReq extends BaseReq {
 
     @Size(min = 1, max = 200, message = "别搞事，小心封号")
     @NotNull(message = "页码不传的吗")
-    private Integer page;
+    private Integer page = 1;
 
     @Size(min = 20, max = 50, message = "别刷了，再搞封号")
     @NotNull(message = "每页size不传的吗")
-    private Integer size;
+    private Integer size = 20;
 
     public Integer getPage() {
         return page;

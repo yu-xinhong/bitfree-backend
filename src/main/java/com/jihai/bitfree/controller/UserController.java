@@ -5,12 +5,10 @@ import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
-import com.jihai.bitfree.dto.req.CheckNameReq;
-import com.jihai.bitfree.dto.req.LoginReq;
-import com.jihai.bitfree.dto.req.UpdateUserReq;
-import com.jihai.bitfree.dto.req.UserDetailReq;
+import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.UserDTO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,8 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotifyService notifyService;
 
     @PostMapping("/login")
     @ParameterCheck
@@ -65,5 +65,14 @@ public class UserController extends BaseController {
     public Result<UserDTO> getDetail(UserDetailReq userDetailReq) {
         if (userDetailReq.getId() == null) return convertSuccessResult(getCurrentUser());
         return convertSuccessResult(DO2DTOConvert.convertUser(userService.getUser(userDetailReq.getId())));
+    }
+
+
+    @PostMapping("/addUser")
+    @ParameterCheck
+    public Result<String> addUser(@RequestBody AddUserReq addUserReq) {
+        String password = userService.addUser(addUserReq.getEmail(), addUserReq.getSecret());
+        notifyService.sendNotice(addUserReq.getEmail(), password);
+        return convertSuccessResult(password);
     }
 }

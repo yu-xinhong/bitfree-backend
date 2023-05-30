@@ -21,6 +21,10 @@
     </resultMap>
 
     <sql id="BASE_COLUMN">id, name, position, city, seniority, token, status, email, password, contact, deleted, create_time, update_time</sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO user(`email`, `password`)
+        VALUE(#{email}, #{password})
+    </insert>
 
     <select id="queryByEmailAndPassword" resultMap="userResultMap">
         SELECT * FROM user WHERE email = #{email} AND password = #{password} AND deleted = 0
@@ -39,10 +43,15 @@
     </update>
 
     <select id="batchQueryByIdList" resultMap="userResultMap">
-        SELECT <include refid="BASE_COLUMN"/> FROM id IN
-        <foreach collection="idList" item="id" open="(" separator="," close=",">
+        SELECT <include refid="BASE_COLUMN"/> FROM user WHERE id IN
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+
+    <select id="getByToken" resultType="com.jihai.bitfree.dto.resp.UserDTO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM user WHERE token = #{token} AND deleted = 0
     </select>
 
 </mapper>

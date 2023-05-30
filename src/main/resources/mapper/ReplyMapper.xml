@@ -22,8 +22,8 @@
     </insert>
 
 
-    <select id="countByPostIdList" resultType="com.jihai.bitfree.entity.ReplyDO">
-        SELECT COUNT(*) FROM reply WHERE deleted = 0 AND
+    <select id="queryByPostIdList" resultType="com.jihai.bitfree.entity.ReplyDO">
+        SELECT <include refid="BASE_COLUMN"/> FROM reply WHERE deleted = 0 AND
         post_id IN
         <foreach collection="postIdList" item="postId" open="(" close=")" separator=",">
             #{postId}
@@ -41,12 +41,20 @@
         FROM reply
         WHERE send_user_id = #{userId}
         AND deleted = 0
-        ORDER BY create_time DESC LIMIT page * size, size
+        ORDER BY create_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="count" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM reply
         WHERE user_id = #{userId}
         AND deleted = 0
+    </select>
+    <select id="queryByIdList" resultType="com.jihai.bitfree.entity.ReplyDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM reply
+        WHERE deleted = 0 AND id IN
+        <foreach collection="replyIdList" item="replyId" open="(" separator="," close=")">
+            #{replyId}
+        </foreach>
     </select>
 </mapper>

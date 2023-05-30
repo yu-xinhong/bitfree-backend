@@ -14,9 +14,9 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, key, value, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, `key`, `value`, deleted, create_time, update_time</sql>
 
     <select id="getByKey" resultMap="configResultMap">
-        SELECT <include refid="BASE_COLUMN"/> FROM config WHERE deleted = 0
+        SELECT <include refid="BASE_COLUMN"/> FROM config WHERE `key` = #{key} AND deleted = 0
     </select>
 </mapper>

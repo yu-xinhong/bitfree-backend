@@ -1,0 +1,27 @@
+server:
+  port: 80
+
+
+logging:
+  # Set the log level of the package where the mapper interface is located to DEBUG, so that you can see more detailed SQL execution logs.
+  level:
+    "io.springcloud.mybatis.mapper": "DEBUG"
+
+spring:
+  # MYSQL data source configuration. No need to explain too much.
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/bitfree?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: engineer
+
+mybatis:
+  # Set the xml configuration file address for mybatis.
+  # config-location: "classpath:mybatis/mybatis-config.xml"
+
+  # Loads all files in the 'mapper' directory (regardless of directory hierarchy) with names ending in '-mapper.xml'.
+  mapper-locations:
+    - "classpath:mapper/**/*Mapper.xml"
+  configuration:
+    mapUnderscoreToCamelCase: true
