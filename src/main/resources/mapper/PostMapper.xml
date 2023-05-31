@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jihai.bitfree.dao.PostDAO">
 
-    <resultMap id="userResultMap" type="com.jihai.bitfree.entity.PostDO">
+    <resultMap id="postResultMap" type="com.jihai.bitfree.entity.PostDO">
         <result column="id" property="id" />
         <result column="title" property="title" />
         <result column="content" property="content" />
@@ -26,22 +26,22 @@
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM post WHERE deleted = 0
     </select>
-    <select id="pageQuery" resultType="com.jihai.bitfree.entity.PostDO">
+    <select id="pageQuery" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM post WHERE deleted = 0 ORDER BY update_time DESC LIMIT #{start}, #{size}
     </select>
-    <select id="queryByIdList" resultType="com.jihai.bitfree.entity.PostDO">
+    <select id="queryByIdList" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM post WHERE deleted = 0 AND id IN
         <foreach collection="topPostIdList" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </select>
-    <select id="getById" resultType="com.jihai.bitfree.entity.PostDO">
+    <select id="getById" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM post WHERE id = #{id} AND deleted = 0
     </select>
-    <select id="getByIdList" resultType="com.jihai.bitfree.entity.PostDO">
+    <select id="getByIdList" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM post
         WHERE id IN

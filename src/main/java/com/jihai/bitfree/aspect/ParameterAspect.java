@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Aspect
 @Order(3)
-@Component
+//@Component
 public class ParameterAspect {
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")

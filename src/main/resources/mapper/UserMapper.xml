@@ -30,7 +30,7 @@
         SELECT * FROM user WHERE email = #{email} AND password = #{password} AND deleted = 0
     </select>
 
-    <select id="getById" resultType="com.jihai.bitfree.entity.UserDO">
+    <select id="getById" resultMap="userResultMap">
         SELECT * FROM user WHERE id = #{id} AND deleted = 0
     </select>
 
@@ -53,7 +53,7 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM user WHERE token = #{token} AND deleted = 0
     </select>
-    <select id="queryByEmail" resultType="com.jihai.bitfree.entity.UserDO">
+    <select id="queryByEmail" resultMap="userResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM user WHERE email = #{email} AND deleted = 0
     </select>
