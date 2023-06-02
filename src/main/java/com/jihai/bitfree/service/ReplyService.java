@@ -104,6 +104,11 @@ public class ReplyService {
         // 这里写入后mybatis id会自动填充
         replyDAO.insert(replyDO);
 
+        if (postDO.getCreatorId().equals(userId)) {
+            // 本人不需要通知
+            return true;
+        }
+
         ReplyNoticeDO replyNoticeDO = new ReplyNoticeDO();
         replyNoticeDO.setPostId(postId);
         replyNoticeDO.setReplyId(replyDO.getId());
