@@ -16,6 +16,10 @@ public class UserReplyDTO extends BaseDTO {
 
     private Date createTime;
 
+    private String sendUserName;
+
+    private Long postId;
+
     public Long getId() {
         return id;
     }
@@ -46,5 +50,21 @@ public class UserReplyDTO extends BaseDTO {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getSendUserName() {
+        return sendUserName;
+    }
+
+    public void setSendUserName(String sendUserName) {
+        this.sendUserName = sendUserName;
+    }
+
+    public Long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 }

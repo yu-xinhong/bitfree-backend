@@ -13,9 +13,11 @@ public interface ReplyDAO {
 
     Long insert(ReplyDO replyDO);
 
-    List<ReplyDO> getBySendUserId(@Param("userId") Long userId,@Param("start") Integer start, @Param("size") Integer size);
+    List<ReplyDO> getBySendUserId(@Param("userId") Long userId, @Param("start") Integer start, @Param("size") Integer size);
 
     Integer count(@Param("userId") Long userId);
 
     List<ReplyDO> queryByIdList(@Param("replyIdList") List<Long> replyIdList);
+
+    ReplyDO getById(Long id);
 }

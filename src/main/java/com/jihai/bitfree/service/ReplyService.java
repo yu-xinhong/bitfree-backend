@@ -52,7 +52,7 @@ public class ReplyService {
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
         // 获取主评论
-        List<ReplyDO> mainReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
+        /*List<ReplyDO> mainReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
 
         // 获取子评论
         List<ReplyDO> subReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() != null).collect(Collectors.toList());
@@ -68,7 +68,9 @@ public class ReplyService {
                 replyListDTO.setSubReplyList(subReplys);
             }
             return replyListDTO;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList());*/
+
+        List<ReplyListDTO> resultList = replyDOList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
         resultList.sort((reply1, reply2) -> (int) (reply1.getCreateTime().getTime() - reply2.getCreateTime().getTime()));
         return resultList;
     }
@@ -104,18 +106,23 @@ public class ReplyService {
         // 这里写入后mybatis id会自动填充
         replyDAO.insert(replyDO);
 
-        if (postDO.getCreatorId().equals(userId)) {
-            // 本人不需要通知
-            return true;
-        }
-
+        // 通知
         ReplyNoticeDO replyNoticeDO = new ReplyNoticeDO();
         replyNoticeDO.setPostId(postId);
         replyNoticeDO.setReplyId(replyDO.getId());
 
         // 此处可以考虑异步化
         // 发送通知, 此处如果回复的子评论，不通知到发帖人，只通知子评论的人
-        replyNoticeDO.setNotifyUserId(replyId == null ? postDO.getCreatorId() : replyId);
+        if (replyId != null) {
+            ReplyDO targetReplyDO = replyDAO.getById(replyId);
+            if (targetReplyDO.getSendUserId().equals(userId)) {
+                // 自己不需要通知
+                return true;
+            }
+            replyNoticeDO.setNotifyUserId(targetReplyDO.getSendUserId());
+        } else {
+            replyNoticeDO.setNotifyUserId(postDO.getCreatorId());
+        }
 
         replyNoticeDAO.insert(replyNoticeDO);
         return true;
@@ -142,8 +149,13 @@ public class ReplyService {
 
         List<UserReplyDTO> userReplyDTOList = Lists.newArrayList();
 
+        // 查询到所有的用户
+        List<Long> sendUserIdList = replyDOList.stream().map(replyDO -> replyDO.getSendUserId()).distinct().collect(Collectors.toList());
+        List<UserDO> userDOS = userDAO.batchQueryByIdList(sendUserIdList);
+        ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOS, UserDO::getId);
+
         if (! CollectionUtils.isEmpty(subReplyList)) {
-            List<Long> replyIdList = subReplyList.stream().map(replyDO -> replyDO.getId()).collect(Collectors.toList());
+            List<Long> replyIdList = subReplyList.stream().map(replyDO -> replyDO.getTargetReplyId()).collect(Collectors.toList());
 
             // 当前用户回复过的子回复列表
             List<ReplyDO> replyDOS = replyDAO.queryByIdList(replyIdList);
@@ -158,6 +170,8 @@ public class ReplyService {
                 userReplyDTO.setReply(subReply.getReplyContent());
                 userReplyDTO.setId(subReply.getId());
                 userReplyDTO.setCreateTime(subReply.getCreateTime());
+                userReplyDTO.setSendUserName(userIdMap.get(subReply.getSendUserId()).getName());
+                userReplyDTO.setPostId(subReply.getPostId());
                 return userReplyDTO;
             }).collect(Collectors.toList());
 
@@ -177,6 +191,8 @@ public class ReplyService {
                 userReplyDTO.setId(replyDO.getId());
                 userReplyDTO.setContent(postDO.getContent());
                 userReplyDTO.setCreateTime(replyDO.getCreateTime());
+                userReplyDTO.setSendUserName(userIdMap.get(replyDO.getSendUserId()).getName());
+                userReplyDTO.setPostId(replyDO.getPostId());
                 return userReplyDTO;
             }).collect(Collectors.toList());
 

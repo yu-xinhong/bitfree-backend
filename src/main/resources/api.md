@@ -191,7 +191,9 @@ list : [
 id : 11,  //哪一个帖子id
 content : xxx,  // 回复的内容
 reply : xxx,  //回复对象
-createTime : xx
+createTime : xx,
+sendUserName : xxx,
+postId : 1
 }
 ]
 }
