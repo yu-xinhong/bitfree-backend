@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Slf4j
-@Component
+//@Component
 @Profile({"dev", "prod"})
 @Order(2)
 public class LoggedCheckAspect {

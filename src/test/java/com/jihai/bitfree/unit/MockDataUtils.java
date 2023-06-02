@@ -55,7 +55,7 @@ public class MockDataUtils extends AppTest {
         servletRequestFiled.setAccessible(true);
         ReflectionUtils.setField(servletRequestFiled, postController, httpServletRequest);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 34; i++) {
             AddPostReq addPostReq = new AddPostReq();
             addPostReq.setContent("<p>这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章这是文章</p>");
             addPostReq.setTitle("这是标题" + i);

@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/post")
+@CrossOrigin("*")
 public class PostController extends BaseController {
 
     @Autowired
@@ -32,8 +33,8 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<PageResult<PostItemDTO>> pageQuery(PageQueryReq pageQueryReq) {
         // 置顶的要减去size
-        List<PostItemDTO> postItemDTOList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize());
-        Integer count = postService.count();
+        List<PostItemDTO> postItemDTOList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize(), pageQueryReq.getTopicId());
+        Integer count = postService.count(pageQueryReq.getTopicId());
         return convertSuccessResult(new PageResult<>(postItemDTOList, count));
     }
 

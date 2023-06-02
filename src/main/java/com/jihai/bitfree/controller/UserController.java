@@ -18,6 +18,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin("*")
 public class UserController extends BaseController {
 
     @Autowired

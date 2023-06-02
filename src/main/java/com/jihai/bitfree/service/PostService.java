@@ -42,30 +42,39 @@ public class PostService {
     @Autowired
     private UserDAO userDAO;
 
-    public List<PostItemDTO> pageQuery(Integer page, Integer size) {
+    public List<PostItemDTO> pageQuery(Integer page, Integer size, Long topicId) {
         List<Long> topPostIdList = queryTopIdList();
         // 置顶的先查出来
         List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
         size -= topPostList.size();
-        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size);
-        postDOS.addAll(topPostList);
+        List<PostDO> resultPostList = Lists.newArrayList();
 
+        // 先填充置顶的帖子
+        if (topPostList.size() > 0) {
+            topPostList.forEach(post -> post.setTitle("【置顶】" + post.getTitle()));
+            resultPostList.addAll(topPostList);
+        }
+
+        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId);
+        postDOS.removeIf(postDO -> topPostIdList.contains(postDO.getId()));
+
+        resultPostList.addAll(postDOS);
         ArrayList<PostItemDTO> postItemDTOS = Lists.newArrayList();
-        if (CollectionUtils.isEmpty(postDOS)) {
+        if (CollectionUtils.isEmpty(resultPostList)) {
             return postItemDTOS;
         }
 
-        List<Long> postIdList = postDOS.stream().map(PostDO::getId).collect(Collectors.toList());
+        List<Long> postIdList = resultPostList.stream().map(PostDO::getId).collect(Collectors.toList());
         // 查询回复数量
         List<ReplyDO> replyDOList = replyDAO.queryByPostIdList(postIdList);
         Map<Long, Long> replyCountMap = replyDOList.stream().collect(Collectors.groupingBy(ReplyDO::getPostId, Collectors.counting()));
 
         // 查询用户名称
-        List<UserDO> userDOS = userDAO.batchQueryByIdList(postDOS.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
+        List<UserDO> userDOS = userDAO.batchQueryByIdList(resultPostList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
-        List<PostItemDTO> pageList = postDOS.stream().map(postDO -> {
+        List<PostItemDTO> pageList = resultPostList.stream().map(postDO -> {
             PostItemDTO postItemDTO = new PostItemDTO();
             postItemDTO.setId(postDO.getId());
             postItemDTO.setTitle(postDO.getTitle());
@@ -79,8 +88,8 @@ public class PostService {
         return pageList;
     }
 
-    public Integer count() {
-        Integer count = postDAO.count();
+    public Integer count(Long topicId) {
+        Integer count = postDAO.count(topicId);
         count = count - queryTopIdList().size();
         return count < 0 ? 0 : count;
     }

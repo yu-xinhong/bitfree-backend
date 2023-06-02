@@ -25,10 +25,17 @@
 
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM post WHERE deleted = 0
+        <if test="topicId != null">
+            AND topic_id = #{topicId}
+        </if>
     </select>
     <select id="pageQuery" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
-        FROM post WHERE deleted = 0 ORDER BY update_time DESC LIMIT #{start}, #{size}
+        FROM post WHERE deleted = 0
+        <if test="topicId != null">
+            AND topic_id = #{topicId}
+        </if>
+        ORDER BY update_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="queryByIdList" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>

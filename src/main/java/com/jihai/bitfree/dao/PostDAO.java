@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface PostDAO {
 
-    Integer count();
+    Integer count(Long topicId);
 
-    List<PostDO> pageQuery(@Param("start") Integer start,@Param("size") Integer size);
+    List<PostDO> pageQuery(@Param("start") Integer start, @Param("size") Integer size,@Param("topicId") Long topicId);
 
     List<PostDO> queryByIdList(@Param("topPostIdList") List<Long> topPostIdList);
 
