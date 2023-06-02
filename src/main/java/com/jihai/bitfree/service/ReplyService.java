@@ -57,18 +57,20 @@ public class ReplyService {
         // 获取子评论
         List<ReplyDO> subReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() != null).collect(Collectors.toList());
 
-        return mainReplyList.stream().map(mainReply -> {
+        List<ReplyListDTO> resultList = mainReplyList.stream().map(mainReply -> {
 
             ReplyListDTO replyListDTO = convertReply2DTO(mainReply, idUserMap);
 
             // 填充子评论
             List<ReplyDO> currentSubReplyList = subReplyList.stream().filter(subReply -> subReply.getTargetReplyId().equals(mainReply.getId())).collect(Collectors.toList());
-            if (! CollectionUtils.isEmpty(currentSubReplyList)) {
+            if (!CollectionUtils.isEmpty(currentSubReplyList)) {
                 List<ReplyListDTO> subReplys = currentSubReplyList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
                 replyListDTO.setSubReplyList(subReplys);
             }
             return replyListDTO;
         }).collect(Collectors.toList());
+        resultList.sort((reply1, reply2) -> (int) (reply1.getCreateTime().getTime() - reply2.getCreateTime().getTime()));
+        return resultList;
     }
 
     private ReplyListDTO convertReply2DTO(ReplyDO mainReply, ImmutableMap<Long, UserDO> idUserMap) {
@@ -119,7 +121,7 @@ public class ReplyService {
     }
 
     public Boolean read(Long userId) {
-        replyNoticeDAO.updateStatus(userId);
+        replyNoticeDAO.updateUserRead(userId);
         return true;
     }
 
