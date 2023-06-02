@@ -121,7 +121,7 @@ public class ReplyService {
     }
 
     public Boolean read(Long userId) {
-        replyNoticeDAO.updateUserRead(userId);
+        replyNoticeDAO.updateStatus(userId);
         return true;
     }
 
