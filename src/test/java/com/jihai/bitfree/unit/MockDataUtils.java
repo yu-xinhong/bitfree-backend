@@ -10,7 +10,7 @@ import com.jihai.bitfree.controller.UserController;
 import com.jihai.bitfree.dto.req.AddPostReq;
 import com.jihai.bitfree.dto.req.AddUserReq;
 import com.jihai.bitfree.dto.req.PageQueryReq;
-import com.jihai.bitfree.dto.resp.PostItemDTO;
+import com.jihai.bitfree.dto.resp.PostItemResp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class MockDataUtils extends AppTest {
             postController.add(addPostReq);
         }
         PageQueryReq pageQueryReq = new PageQueryReq();
-        Result<PageResult<PostItemDTO>> pageResultResult = postController.pageQuery(pageQueryReq);
+        Result<PageResult<PostItemResp>> pageResultResult = postController.pageQuery(pageQueryReq);
         Assert.assertTrue(pageResultResult.getData().getList().size() == 20);
         pageQueryReq.setSize(100);
         pageResultResult = postController.pageQuery(pageQueryReq);

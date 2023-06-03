@@ -1,6 +1,5 @@
 package com.jihai.bitfree.dao;
 
-import com.jihai.bitfree.dto.resp.UserDTO;
 import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 

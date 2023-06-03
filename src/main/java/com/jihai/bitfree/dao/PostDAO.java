@@ -9,7 +9,7 @@ public interface PostDAO {
 
     Integer count(Long topicId);
 
-    List<PostDO> pageQuery(@Param("start") Integer start, @Param("size") Integer size,@Param("topicId") Long topicId);
+    List<PostDO> pageQuery(@Param("start") Integer start, @Param("size") Integer size, @Param("topicId") Long topicId,@Param("userId") Long userId);
 
     List<PostDO> queryByIdList(@Param("topPostIdList") List<Long> topPostIdList);
 
@@ -18,4 +18,6 @@ public interface PostDAO {
     List<PostDO> getByIdList(@Param("idList") List<Long> idList);
 
     void insert(PostDO postDO);
+
+    Integer countByUserId(@Param("userId") Long userId);
 }

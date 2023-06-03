@@ -6,10 +6,7 @@ import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.*;
-import com.jihai.bitfree.dto.resp.PostDetailDTO;
-import com.jihai.bitfree.dto.resp.PostItemDTO;
-import com.jihai.bitfree.dto.resp.ReplyListDTO;
-import com.jihai.bitfree.dto.resp.UserReplyDTO;
+import com.jihai.bitfree.dto.resp.*;
 import com.jihai.bitfree.service.PostService;
 import com.jihai.bitfree.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,24 +28,24 @@ public class PostController extends BaseController {
     @GetMapping("/pageQuery")
     @ParameterCheck
     @LoggedCheck
-    public Result<PageResult<PostItemDTO>> pageQuery(PageQueryReq pageQueryReq) {
+    public Result<PageResult<PostItemResp>> pageQuery(PageQueryReq pageQueryReq) {
         // 置顶的要减去size
-        List<PostItemDTO> postItemDTOList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize(), pageQueryReq.getTopicId());
+        List<PostItemResp> postItemRespList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize(), pageQueryReq.getTopicId(), null, true);
         Integer count = postService.count(pageQueryReq.getTopicId());
-        return convertSuccessResult(new PageResult<>(postItemDTOList, count));
+        return convertSuccessResult(new PageResult<>(postItemRespList, count));
     }
 
     @GetMapping("/getDetail")
     @LoggedCheck
     @ParameterCheck
-    public Result<PostDetailDTO> getDetail(PostDetailReq postDetailReq) {
+    public Result<PostDetailResp> getDetail(PostDetailReq postDetailReq) {
         return convertSuccessResult(postService.getDetail(postDetailReq.getId()));
     }
 
     @GetMapping("/getReplyList")
     @ParameterCheck
     @LoggedCheck
-    public Result<List<ReplyListDTO>> getReplyList(ReplyListReq replyListReq) {
+    public Result<List<ReplyListResp>> getReplyList(ReplyListReq replyListReq) {
         return convertSuccessResult(replyService.getReplyList(replyListReq.getId()));
     }
 
@@ -79,11 +76,11 @@ public class PostController extends BaseController {
     @GetMapping("/pageQueryUserReply")
     @ParameterCheck
     @LoggedCheck
-    public Result<PageResult<UserReplyDTO>> pageQueryUserReply(UserReplyReq userReplyReq) {
+    public Result<PageResult<UserReplyResp>> pageQueryUserReply(UserReplyReq userReplyReq) {
         // 如果传递了说明是查看别人，否则是查看自己
         Long userId = userReplyReq.getId() == null ? getCurrentUser().getId() : userReplyReq.getId();
 
-        return convertSuccessResult(replyService.pageQueryUserReply(userReplyReq.getPage(), userReplyReq.getSize(), userId));
+        return convertSuccessResult(replyService.pageQueryUserReplyBySendUserId(userReplyReq.getPage(), userReplyReq.getSize(), userId));
     }
 
     @PostMapping("/add")
@@ -92,5 +89,24 @@ public class PostController extends BaseController {
     public Result<Boolean> add(@RequestBody AddPostReq addPostReq) {
         postService.add(addPostReq.getTitle(), addPostReq.getContent(), addPostReq.getTopicId(), getCurrentUser().getId());
         return convertSuccessResult(true);
+    }
+
+
+    @GetMapping("/getByUserId")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<PageResult<PostItemResp>> pageQueryUserPost(UserPostReq userPostReq) {
+        Long userId = userPostReq.getId() != null ? userPostReq.getId() : getCurrentUser().getId();
+        List<PostItemResp> postItemRespList = postService.pageQuery(userPostReq.getPage(), userPostReq.getSize(), null, userId, false);
+        Integer count = postService.countByUserId(userId);
+        return convertSuccessResult(new PageResult<>(postItemRespList, count));
+    }
+
+    @GetMapping("/getUserMessageList")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<PageResult<UserReplyResp>> getUserMessageList(MessageReplyReq messageReplyReq) {
+        Long userId = messageReplyReq.getId() != null ? messageReplyReq.getId() : getCurrentUser().getId();
+        return convertSuccessResult(replyService.pageQueryUserReplyByReceiverId(messageReplyReq.getPage(), messageReplyReq.getSize(), userId));
     }
 }

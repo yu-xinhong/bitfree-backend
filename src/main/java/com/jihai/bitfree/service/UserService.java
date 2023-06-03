@@ -6,7 +6,7 @@ import com.jihai.bitfree.constants.OperateTypeEnum;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
-import com.jihai.bitfree.dto.resp.UserDTO;
+import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
@@ -79,7 +79,7 @@ public class UserService {
         return userDO.getPassword();
     }
 
-    public UserDTO getByToken(String token) {
+    public UserResp getByToken(String token) {
         return DO2DTOConvert.convertUser(userDao.getByToken(token));
     }
 }

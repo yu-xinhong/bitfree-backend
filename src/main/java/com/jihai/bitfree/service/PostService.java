@@ -8,8 +8,8 @@ import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.ReplyDAO;
 import com.jihai.bitfree.dao.UserDAO;
-import com.jihai.bitfree.dto.resp.PostDetailDTO;
-import com.jihai.bitfree.dto.resp.PostItemDTO;
+import com.jihai.bitfree.dto.resp.PostDetailResp;
+import com.jihai.bitfree.dto.resp.PostItemResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.PostDO;
 import com.jihai.bitfree.entity.ReplyDO;
@@ -42,27 +42,31 @@ public class PostService {
     @Autowired
     private UserDAO userDAO;
 
-    public List<PostItemDTO> pageQuery(Integer page, Integer size, Long topicId) {
-        List<Long> topPostIdList = queryTopIdList();
-        // 置顶的先查出来
-        List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
-        size -= topPostList.size();
+    public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, Long userId, boolean includeTopList) {
         List<PostDO> resultPostList = Lists.newArrayList();
+        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, userId);
 
-        // 先填充置顶的帖子
-        if (topPostList.size() > 0) {
-            topPostList.forEach(post -> post.setTitle("【置顶】" + post.getTitle()));
-            resultPostList.addAll(topPostList);
+        if (includeTopList) {
+            List<Long> topPostIdList = queryTopIdList();
+            // 置顶的先查出来
+            List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
+
+            size -= topPostList.size();
+
+            // 先填充置顶的帖子
+            if (topPostList.size() > 0) {
+                topPostList.forEach(post -> post.setTitle("【置顶】" + post.getTitle()));
+                resultPostList.addAll(topPostList);
+            }
+            postDOS.removeIf(postDO -> topPostIdList.contains(postDO.getId()));
         }
 
-        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId);
-        postDOS.removeIf(postDO -> topPostIdList.contains(postDO.getId()));
 
         resultPostList.addAll(postDOS);
-        ArrayList<PostItemDTO> postItemDTOS = Lists.newArrayList();
+        ArrayList<PostItemResp> postItemResps = Lists.newArrayList();
         if (CollectionUtils.isEmpty(resultPostList)) {
-            return postItemDTOS;
+            return postItemResps;
         }
 
         List<Long> postIdList = resultPostList.stream().map(PostDO::getId).collect(Collectors.toList());
@@ -74,15 +78,16 @@ public class PostService {
         List<UserDO> userDOS = userDAO.batchQueryByIdList(resultPostList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
-        List<PostItemDTO> pageList = resultPostList.stream().map(postDO -> {
-            PostItemDTO postItemDTO = new PostItemDTO();
-            postItemDTO.setId(postDO.getId());
-            postItemDTO.setTitle(postDO.getTitle());
-            postItemDTO.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
-            postItemDTO.setUpdateTime(postDO.getUpdateTime());
+        List<PostItemResp> pageList = resultPostList.stream().map(postDO -> {
+            PostItemResp postItemResp = new PostItemResp();
+            postItemResp.setId(postDO.getId());
+            postItemResp.setTitle(postDO.getTitle());
+            postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
+            postItemResp.setUpdateTime(postDO.getUpdateTime());
+            postItemResp.setCreateTime(postDO.getCreateTime());
             Long count = replyCountMap.getOrDefault(postDO.getId(), 0L);
-            if (count != null) postItemDTO.setReplyCount(count.intValue());
-            return postItemDTO;
+            if (count != null) postItemResp.setReplyCount(count.intValue());
+            return postItemResp;
         }).collect(Collectors.toList());
 
         return pageList;
@@ -100,19 +105,19 @@ public class PostService {
         return DataConvert.convertValue2List(configDO.getValue());
     }
 
-    public PostDetailDTO getDetail(Long id) {
+    public PostDetailResp getDetail(Long id) {
         PostDO postDO = postDAO.getById(id);
         if (postDO == null) {
             log.error("risk id {} not exists in db", id);
             return null;
         }
 
-        PostDetailDTO postDetailDTO = new PostDetailDTO();
-        BeanUtils.copyProperties(postDO, postDetailDTO);
+        PostDetailResp postDetailResp = new PostDetailResp();
+        BeanUtils.copyProperties(postDO, postDetailResp);
 
         UserDO userDO = userDAO.getById(postDO.getCreatorId());
-        postDetailDTO.setCreatorName(userDO.getName());
-        return postDetailDTO;
+        postDetailResp.setCreatorName(userDO.getName());
+        return postDetailResp;
     }
 
     public void add(String title, String content, Integer topicId, Long userId) {
@@ -124,5 +129,9 @@ public class PostService {
         postDO.setTopicId(topicId);
         postDO.setLastUpdaterId(userId);
         postDAO.insert(postDO);
+    }
+
+    public Integer countByUserId(Long userId) {
+        return postDAO.countByUserId(userId);
     }
 }

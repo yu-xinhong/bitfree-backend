@@ -35,6 +35,9 @@
         <if test="topicId != null">
             AND topic_id = #{topicId}
         </if>
+        <if test="userId != null">
+            AND creator_id = #{userId}
+        </if>
         ORDER BY update_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="queryByIdList" resultMap="postResultMap">
@@ -56,5 +59,8 @@
             #{id}
         </foreach>
         AND deleted = 0
+    </select>
+    <select id="countByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM post WHERE creator_id = #{userId} AND deleted = 0
     </select>
 </mapper>

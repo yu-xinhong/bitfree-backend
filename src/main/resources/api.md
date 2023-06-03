@@ -198,6 +198,20 @@ postId : 1
 ]
 }
 
+- 获取某个用户发布的帖子 /post/getByUserId
+
+request {
+  id: 1 // 不传取当前
+}
+
+response : {
+    total : 100,
+    list : [
+
+ 
+    ] 
+}
+
 - 发布帖子post  /post/add
 
 request : {

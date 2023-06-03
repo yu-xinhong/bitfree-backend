@@ -1,8 +1,8 @@
 package com.jihai.bitfree.dto.resp;
 
-import com.jihai.bitfree.base.BaseDTO;
+import com.jihai.bitfree.base.BaseResp;
 
-public class TopicDTO extends BaseDTO {
+public class TopicResp extends BaseResp {
 
 
     private static final long serialVersionUID = -7621167340762790576L;

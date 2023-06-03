@@ -36,17 +36,17 @@
         FROM reply
         WHERE post_id = #{postId}
     </select>
-    <select id="getBySendUserId" resultMap="replyResultMap">
+    <select id="pageQueryBySendUserId" resultMap="replyResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM reply
         WHERE send_user_id = #{userId}
         AND deleted = 0
         ORDER BY create_time DESC LIMIT #{start}, #{size}
     </select>
-    <select id="count" resultType="java.lang.Integer">
+    <select id="countBySendUserId" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM reply
-        WHERE receiver_id = #{userId}
+        WHERE send_user_id = #{userId}
         AND deleted = 0
     </select>
     <select id="queryByIdList" resultMap="replyResultMap">
@@ -61,6 +61,19 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM reply
         WHERE id = #{id}
+        AND deleted = 0
+    </select>
+    <select id="pageQueryByReceiverId" resultMap="replyResultMap">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM reply
+        WHERE receiver_id = #{userId}
+        AND deleted = 0
+        ORDER BY create_time DESC LIMIT #{start}, #{size}
+    </select>
+    <select id="countByReceiverId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM reply
+        WHERE  receiver_id = #{userId}
         AND deleted = 0
     </select>
 </mapper>

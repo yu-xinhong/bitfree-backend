@@ -1,11 +1,11 @@
 package com.jihai.bitfree.dto.resp;
 
-import com.jihai.bitfree.base.BaseDTO;
+import com.jihai.bitfree.base.BaseResp;
 
 import java.util.Date;
 import java.util.List;
 
-public class ReplyListDTO extends BaseDTO {
+public class ReplyListResp extends BaseResp {
 
     private static final long serialVersionUID = -7308285401009752244L;
 
@@ -19,7 +19,7 @@ public class ReplyListDTO extends BaseDTO {
 
     private Date createTime;
 
-    private List<ReplyListDTO> subReplyList;
+    private List<ReplyListResp> subReplyList;
 
     public Long getId() {
         return id;
@@ -61,11 +61,11 @@ public class ReplyListDTO extends BaseDTO {
         this.createTime = createTime;
     }
 
-    public List<ReplyListDTO> getSubReplyList() {
+    public List<ReplyListResp> getSubReplyList() {
         return subReplyList;
     }
 
-    public void setSubReplyList(List<ReplyListDTO> subReplyList) {
+    public void setSubReplyList(List<ReplyListResp> subReplyList) {
         this.subReplyList = subReplyList;
     }
 }

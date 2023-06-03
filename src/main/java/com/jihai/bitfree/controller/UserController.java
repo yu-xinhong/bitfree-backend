@@ -6,7 +6,7 @@ import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.*;
-import com.jihai.bitfree.dto.resp.UserDTO;
+import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
@@ -56,14 +56,14 @@ public class UserController extends BaseController {
     @PostMapping("/logout")
     @LoggedCheck
     public Result<Boolean> logout() {
-        UserDTO currentUser = getCurrentUser();
+        UserResp currentUser = getCurrentUser();
         userService.logout(currentUser.getId());
         return convertSuccessResult(true);
     }
 
     @GetMapping("/getDetail")
     @LoggedCheck
-    public Result<UserDTO> getDetail(UserDetailReq userDetailReq) {
+    public Result<UserResp> getDetail(UserDetailReq userDetailReq) {
         if (userDetailReq.getId() == null) return convertSuccessResult(getCurrentUser());
         return convertSuccessResult(DO2DTOConvert.convertUser(userService.getUser(userDetailReq.getId())));
     }

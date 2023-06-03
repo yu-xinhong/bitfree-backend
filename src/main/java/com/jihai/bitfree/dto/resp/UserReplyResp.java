@@ -1,10 +1,10 @@
 package com.jihai.bitfree.dto.resp;
 
-import com.jihai.bitfree.base.BaseDTO;
+import com.jihai.bitfree.base.BaseResp;
 
 import java.util.Date;
 
-public class UserReplyDTO extends BaseDTO {
+public class UserReplyResp extends BaseResp {
 
     private static final long serialVersionUID = -876420912127120411L;
 

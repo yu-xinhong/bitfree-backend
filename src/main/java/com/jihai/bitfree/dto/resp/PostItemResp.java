@@ -1,10 +1,10 @@
 package com.jihai.bitfree.dto.resp;
 
-import com.jihai.bitfree.base.BaseDTO;
+import com.jihai.bitfree.base.BaseResp;
 
 import java.util.Date;
 
-public class PostItemDTO extends BaseDTO {
+public class PostItemResp extends BaseResp {
 
     private Long id;
 
@@ -15,6 +15,8 @@ public class PostItemDTO extends BaseDTO {
     private Date updateTime;
 
     private Integer replyCount;
+
+    private Date createTime;
 
     public Long getId() {
         return id;
@@ -54,5 +56,13 @@ public class PostItemDTO extends BaseDTO {
 
     public void setReplyCount(Integer replyCount) {
         this.replyCount = replyCount;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

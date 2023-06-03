@@ -1,8 +1,8 @@
 package com.jihai.bitfree.dto.resp;
 
-import com.jihai.bitfree.base.BaseDTO;
+import com.jihai.bitfree.base.BaseResp;
 
-public class UserDTO extends BaseDTO {
+public class UserResp extends BaseResp {
 
     private Long id;
 

@@ -8,8 +8,8 @@ import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.ReplyDAO;
 import com.jihai.bitfree.dao.ReplyNoticeDAO;
 import com.jihai.bitfree.dao.UserDAO;
-import com.jihai.bitfree.dto.resp.ReplyListDTO;
-import com.jihai.bitfree.dto.resp.UserReplyDTO;
+import com.jihai.bitfree.dto.resp.ReplyListResp;
+import com.jihai.bitfree.dto.resp.UserReplyResp;
 import com.jihai.bitfree.entity.PostDO;
 import com.jihai.bitfree.entity.ReplyDO;
 import com.jihai.bitfree.entity.ReplyNoticeDO;
@@ -39,11 +39,11 @@ public class ReplyService {
     @Autowired
     private ReplyNoticeDAO replyNoticeDAO;
 
-    public List<ReplyListDTO> getReplyList(Long id) {
-        List<ReplyListDTO> replyListDTOS = Lists.newArrayList();
+    public List<ReplyListResp> getReplyList(Long id) {
+        List<ReplyListResp> replyListResps = Lists.newArrayList();
         List<ReplyDO> replyDOList = replyDAO.getByPostId(id);
         if (CollectionUtils.isEmpty(replyDOList)) {
-            return replyListDTOS;
+            return replyListResps;
         }
 
         List<Long> sendUserIdList = replyDOList.stream().map(ReplyDO::getSendUserId).collect(Collectors.toList());
@@ -70,22 +70,22 @@ public class ReplyService {
             return replyListDTO;
         }).collect(Collectors.toList());*/
 
-        List<ReplyListDTO> resultList = replyDOList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
+        List<ReplyListResp> resultList = replyDOList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
         resultList.sort((reply1, reply2) -> (int) (reply1.getCreateTime().getTime() - reply2.getCreateTime().getTime()));
         return resultList;
     }
 
-    private ReplyListDTO convertReply2DTO(ReplyDO mainReply, ImmutableMap<Long, UserDO> idUserMap) {
-        ReplyListDTO replyListDTO = new ReplyListDTO();
+    private ReplyListResp convertReply2DTO(ReplyDO mainReply, ImmutableMap<Long, UserDO> idUserMap) {
+        ReplyListResp replyListResp = new ReplyListResp();
 
-        replyListDTO.setId(mainReply.getId());
-        replyListDTO.setReplyContent(mainReply.getReplyContent());
-        replyListDTO.setCreateTime(mainReply.getCreateTime());
-        replyListDTO.setCreatorId(mainReply.getSendUserId());
+        replyListResp.setId(mainReply.getId());
+        replyListResp.setReplyContent(mainReply.getReplyContent());
+        replyListResp.setCreateTime(mainReply.getCreateTime());
+        replyListResp.setCreatorId(mainReply.getSendUserId());
 
-        replyListDTO.setName(idUserMap.get(mainReply.getSendUserId()).getName());
+        replyListResp.setName(idUserMap.get(mainReply.getSendUserId()).getName());
 
-        return replyListDTO;
+        return replyListResp;
     }
 
     public Boolean reply(Long postId, Long replyId, Long userId, String replyContent) {
@@ -116,14 +116,18 @@ public class ReplyService {
         if (replyId != null) {
             ReplyDO targetReplyDO = replyDAO.getById(replyId);
             if (targetReplyDO.getSendUserId().equals(userId)) {
-                // 自己不需要通知
+                // 自己回复自己的子回复不需要通知
                 return true;
             }
             replyNoticeDO.setNotifyUserId(targetReplyDO.getSendUserId());
         } else {
+            // 评论的post
+            if (postDO.getCreatorId().equals(userId)) {
+                // 评论自己不回复
+                return true;
+            }
             replyNoticeDO.setNotifyUserId(postDO.getCreatorId());
         }
-
         replyNoticeDAO.insert(replyNoticeDO);
         return true;
     }
@@ -137,17 +141,14 @@ public class ReplyService {
         return true;
     }
 
-    public PageResult<UserReplyDTO> pageQueryUserReply(Integer page, Integer size, Long userId) {
-        List<ReplyDO> replyDOList = replyDAO.getBySendUserId(userId, (page - 1) * size, size);
-        if (CollectionUtils.isEmpty(replyDOList)) return new PageResult<UserReplyDTO>(Collections.EMPTY_LIST, 0);
 
-        Integer count = replyDAO.count(userId);
-
+    private PageResult<UserReplyResp> pageQueryReplyList(List<ReplyDO> replyDOList, Integer count) {
+        if (CollectionUtils.isEmpty(replyDOList)) return new PageResult<UserReplyResp>(Collections.EMPTY_LIST, 0);
         // 回复可能是楼主，也可能是别人
         List<ReplyDO> subReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() != null).collect(Collectors.toList());
         List<ReplyDO> postReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
 
-        List<UserReplyDTO> userReplyDTOList = Lists.newArrayList();
+        List<UserReplyResp> userReplyRespList = Lists.newArrayList();
 
         // 查询到所有的用户
         List<Long> sendUserIdList = replyDOList.stream().map(replyDO -> replyDO.getSendUserId()).distinct().collect(Collectors.toList());
@@ -162,20 +163,20 @@ public class ReplyService {
 
             ImmutableMap<Long, ReplyDO> subIdReplyMap = Maps.uniqueIndex(replyDOS, ReplyDO::getId);
 
-            List<UserReplyDTO> reply2OtherReplyList = subReplyList.stream().map(subReply -> {
+            List<UserReplyResp> reply2OtherReplyList = subReplyList.stream().map(subReply -> {
                 ReplyDO replyDO = subIdReplyMap.get(subReply.getTargetReplyId());
 
-                UserReplyDTO userReplyDTO = new UserReplyDTO();
-                userReplyDTO.setContent(replyDO.getReplyContent());
-                userReplyDTO.setReply(subReply.getReplyContent());
-                userReplyDTO.setId(subReply.getId());
-                userReplyDTO.setCreateTime(subReply.getCreateTime());
-                userReplyDTO.setSendUserName(userIdMap.get(subReply.getSendUserId()).getName());
-                userReplyDTO.setPostId(subReply.getPostId());
-                return userReplyDTO;
+                UserReplyResp userReplyResp = new UserReplyResp();
+                userReplyResp.setContent(replyDO.getReplyContent());
+                userReplyResp.setReply(subReply.getReplyContent());
+                userReplyResp.setId(subReply.getId());
+                userReplyResp.setCreateTime(subReply.getCreateTime());
+                userReplyResp.setSendUserName(userIdMap.get(subReply.getSendUserId()).getName());
+                userReplyResp.setPostId(subReply.getPostId());
+                return userReplyResp;
             }).collect(Collectors.toList());
 
-            userReplyDTOList.addAll(reply2OtherReplyList);
+            userReplyRespList.addAll(reply2OtherReplyList);
         }
 
         if (! CollectionUtils.isEmpty(postReplyList)) {
@@ -183,21 +184,68 @@ public class ReplyService {
             List<PostDO> postDOS = postDAO.getByIdList(postReplyList.stream().map(reply -> reply.getPostId()).collect(Collectors.toList()));
             ImmutableMap<Long, PostDO> postIdMap = Maps.uniqueIndex(postDOS, PostDO::getId);
 
-            List<UserReplyDTO> reply2PostList = postReplyList.stream().map(replyDO -> {
+            List<UserReplyResp> reply2PostList = postReplyList.stream().map(replyDO -> {
                 PostDO postDO = postIdMap.get(replyDO.getPostId());
 
-                UserReplyDTO userReplyDTO = new UserReplyDTO();
-                userReplyDTO.setReply(replyDO.getReplyContent());
-                userReplyDTO.setId(replyDO.getId());
-                userReplyDTO.setContent(postDO.getContent());
-                userReplyDTO.setCreateTime(replyDO.getCreateTime());
-                userReplyDTO.setSendUserName(userIdMap.get(replyDO.getSendUserId()).getName());
-                userReplyDTO.setPostId(replyDO.getPostId());
-                return userReplyDTO;
+                UserReplyResp userReplyResp = new UserReplyResp();
+                userReplyResp.setReply(replyDO.getReplyContent());
+                userReplyResp.setId(replyDO.getId());
+                userReplyResp.setContent(postDO.getContent());
+                userReplyResp.setCreateTime(replyDO.getCreateTime());
+                userReplyResp.setSendUserName(userIdMap.get(replyDO.getSendUserId()).getName());
+                userReplyResp.setPostId(replyDO.getPostId());
+                return userReplyResp;
             }).collect(Collectors.toList());
 
-            userReplyDTOList.addAll(reply2PostList);
+            userReplyRespList.addAll(reply2PostList);
         }
-        return new PageResult<>(userReplyDTOList, count);
+        return new PageResult<>(userReplyRespList, count);
+    }
+
+    public PageResult<UserReplyResp> pageQueryUserReplyBySendUserId(Integer page, Integer size, Long userId) {
+        List<ReplyDO> replyDOList = replyDAO.pageQueryBySendUserId(userId, (page - 1) * size, size);
+        if (CollectionUtils.isEmpty(replyDOList)) return new PageResult<UserReplyResp>(Collections.EMPTY_LIST, 0);
+        Integer count = replyDAO.countBySendUserId(userId);
+        return pageQueryReplyList(replyDOList, count);
+    }
+
+    public PageResult<UserReplyResp> pageQueryUserReplyByReceiverId(Integer page, Integer size, Long userId) {
+        List<ReplyDO> replyDOList = replyDAO.pageQueryByReceiverId(userId, (page - 1) * size, size);
+        Integer count = replyDAO.countByReceiverId(userId);
+
+        List<Long> sendUserIdList = replyDOList.stream().map(replyDO -> replyDO.getSendUserId()).distinct().collect(Collectors.toList());
+        List<UserDO> userDOS = userDAO.batchQueryByIdList(sendUserIdList);
+        ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
+
+
+        List<ReplyDO> subReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() != null).collect(Collectors.toList());
+        List<ReplyDO> postReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
+        // subReply reply  被回复的回复
+        List<Long> replyIdList = subReplyList.stream().map(replyDO -> replyDO.getTargetReplyId()).distinct().collect(Collectors.toList());
+        List<ReplyDO> haveRepliedReplyList = replyDAO.queryByIdList(replyIdList);
+        ImmutableMap<Long, ReplyDO> hadRepliedMap = Maps.uniqueIndex(haveRepliedReplyList, ReplyDO::getId);
+
+        List<Long> postIdList = postReplyList.stream().map(replyDO -> replyDO.getPostId()).distinct().collect(Collectors.toList());
+        List<PostDO> haveRepliedPostList = postDAO.queryByIdList(postIdList);
+        ImmutableMap<Long, PostDO> haveRepliedPostMap = Maps.uniqueIndex(haveRepliedPostList, PostDO::getId);
+
+        List<UserReplyResp> resultList = replyDOList.stream().map(replyDO -> {
+            UserReplyResp userReplyResp = new UserReplyResp();
+
+            userReplyResp.setId(replyDO.getId());
+            if (replyDO.getTargetReplyId() != null) {
+                userReplyResp.setContent(hadRepliedMap.get(replyDO.getTargetReplyId()).getReplyContent());
+            } else {
+                userReplyResp.setContent(haveRepliedPostMap.get(replyDO.getPostId()).getContent());
+            }
+
+            userReplyResp.setReply(replyDO.getReplyContent());
+            userReplyResp.setCreateTime(replyDO.getCreateTime());
+            userReplyResp.setSendUserName(idUserMap.get(replyDO.getSendUserId()).getName());
+            userReplyResp.setPostId(replyDO.getPostId());
+            return userReplyResp;
+        }).collect(Collectors.toList());
+
+        return new PageResult<>(resultList, count);
     }
 }

@@ -3,7 +3,7 @@ package com.jihai.bitfree.unit;
 
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.controller.TopicController;
-import com.jihai.bitfree.dto.resp.TopicDTO;
+import com.jihai.bitfree.dto.resp.TopicResp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ public class AppTest {
 
     @Test
     public void queryAllTopics() {
-        Result<List<TopicDTO>> allTopic = topicController.getAllTopic();
+        Result<List<TopicResp>> allTopic = topicController.getAllTopic();
         Assert.assertTrue(allTopic.getData().size() > 0);
     }
 }

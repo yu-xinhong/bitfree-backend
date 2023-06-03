@@ -2,7 +2,7 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.dao.TopicDAO;
-import com.jihai.bitfree.dto.resp.TopicDTO;
+import com.jihai.bitfree.dto.resp.TopicResp;
 import com.jihai.bitfree.entity.TopicDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +17,15 @@ public class TopicService {
     @Autowired
     private TopicDAO topicDAO;
 
-    public List<TopicDTO> getAllTopic() {
+    public List<TopicResp> getAllTopic() {
         List<TopicDO> topicDOList = topicDAO.getAllTopic();
         if (CollectionUtils.isEmpty(topicDOList)) return Lists.newArrayList();
 
         return topicDOList.stream().map(topicDO -> {
-            TopicDTO topicDTO = new TopicDTO();
-            topicDTO.setId(topicDO.getId());
-            topicDTO.setName(topicDO.getName());
-            return topicDTO;
+            TopicResp topicResp = new TopicResp();
+            topicResp.setId(topicDO.getId());
+            topicResp.setName(topicDO.getName());
+            return topicResp;
         }).collect(Collectors.toList());
     }
 }

@@ -1,15 +1,13 @@
 package com.jihai.bitfree.base;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
-import com.jihai.bitfree.dto.resp.UserDTO;
+import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -23,7 +21,7 @@ public class BaseController {
     @Autowired
     private UserService userService;
 
-    protected UserDTO getCurrentUser() {
+    protected UserResp getCurrentUser() {
         /*Cookie[] cookies = httpServletRequest.getCookies();
         String token = null;
         for (Cookie cookie : cookies) {
