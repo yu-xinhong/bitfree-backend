@@ -95,6 +95,14 @@ public class PostController extends BaseController {
     }
 
 
+    @GetMapping("/getUserMessageList")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<PageResult<UserReplyResp>> getUserMessageList(MessageReplyReq messageReplyReq) {
+        Long userId = messageReplyReq.getId() != null ? messageReplyReq.getId() : getCurrentUser().getId();
+        return convertSuccessResult(replyService.pageQueryUserReplyByReceiverId(messageReplyReq.getPage(), messageReplyReq.getSize(), userId));
+    }
+
     @GetMapping("/getByUserId")
     @ParameterCheck
     @LoggedCheck
@@ -103,13 +111,5 @@ public class PostController extends BaseController {
         List<PostItemResp> postItemRespList = postService.pageQuery(userPostReq.getPage(), userPostReq.getSize(), null, userId, false);
         Integer count = postService.countByUserId(userId);
         return convertSuccessResult(new PageResult<>(postItemRespList, count));
-    }
-
-    @GetMapping("/getUserMessageList")
-    @ParameterCheck
-    @LoggedCheck
-    public Result<PageResult<UserReplyResp>> getUserMessageList(MessageReplyReq messageReplyReq) {
-        Long userId = messageReplyReq.getId() != null ? messageReplyReq.getId() : getCurrentUser().getId();
-        return convertSuccessResult(replyService.pageQueryUserReplyByReceiverId(messageReplyReq.getPage(), messageReplyReq.getSize(), userId));
     }
 }
