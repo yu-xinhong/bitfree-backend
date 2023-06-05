@@ -147,11 +147,11 @@ public class ReplyService {
         List<ReplyDO> postReplyList = replyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
         // subReply reply  被回复的回复
         List<Long> replyIdList = subReplyList.stream().map(replyDO -> replyDO.getTargetReplyId()).distinct().collect(Collectors.toList());
-        List<ReplyDO> haveRepliedReplyList = replyDAO.queryByIdList(replyIdList);
+        List<ReplyDO> haveRepliedReplyList = CollectionUtils.isEmpty(replyIdList) ? Lists.newArrayList() : replyDAO.queryByIdList(replyIdList);
         ImmutableMap<Long, ReplyDO> hadRepliedMap = Maps.uniqueIndex(haveRepliedReplyList, ReplyDO::getId);
 
         List<Long> postIdList = postReplyList.stream().map(replyDO -> replyDO.getPostId()).distinct().collect(Collectors.toList());
-        List<PostDO> haveRepliedPostList = postDAO.queryByIdList(postIdList);
+        List<PostDO> haveRepliedPostList = CollectionUtils.isEmpty(postIdList) ? Lists.newArrayList() : postDAO.queryByIdList(postIdList);
         ImmutableMap<Long, PostDO> haveRepliedPostMap = Maps.uniqueIndex(haveRepliedPostList, PostDO::getId);
 
         List<UserReplyResp> resultList = replyDOList.stream().map(replyDO -> {

@@ -6,12 +6,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
 @Aspect
 @Order(3)
 //@Component
-public class ParameterAspect {
+public class ParameterCheckAspect {
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object process(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
