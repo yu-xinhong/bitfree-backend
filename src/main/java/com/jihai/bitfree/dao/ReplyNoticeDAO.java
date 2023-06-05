@@ -10,4 +10,6 @@ public interface ReplyNoticeDAO {
     Integer countReplyCount(@Param("userId") Long userId);
 
     void updateStatus(@Param("userId") Long userId);
+
+    void deleted(@Param("postId") Long postId);
 }

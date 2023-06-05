@@ -67,5 +67,16 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM user WHERE email = #{email} AND deleted = 0
     </select>
+    <select id="ActivityUserResp" resultType="com.jihai.bitfree.dto.resp.ActivityUserResp">
+        SELECT user.name AS name, COUNT(*) AS count
+        FROM user
+        RIGHT JOIN reply
+        ON user.id = reply.send_user_id
+        WHERE reply.create_time > DATE_SUB(CURDATE(), interval 1 day)
+        AND user.deleted = 0
+        AND reply.deleted = 0
+        GROUP BY reply.send_user_id
+        ORDER BY COUNT(*) DESC LIMIT 10
+    </select>
 
 </mapper>

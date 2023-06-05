@@ -26,6 +26,11 @@
         UPDATE post SET update_time = NOW()
         WHERE id = #{postId} AND deleted = 0
     </update>
+    <update id="deleted">
+
+        UPDATE post SET deleted = 1
+        WHERE id = #{postId}
+    </update>
 
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM post WHERE deleted = 0

@@ -1,5 +1,6 @@
 package com.jihai.bitfree.dao;
 
+import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,4 +25,7 @@ public interface UserDAO {
     UserDO queryByEmail(String email);
 
     void save(@Param("userId") Long userId, @Param("name") String name, @Param("city") String city, @Param("position") String position,@Param("seniority") String seniority,@Param("password") String password);
+
+    List<ActivityUserResp> ActivityUserResp();
+
 }

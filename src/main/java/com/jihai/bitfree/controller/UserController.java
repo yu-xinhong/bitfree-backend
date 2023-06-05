@@ -6,6 +6,7 @@ import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.*;
+import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.service.NotifyService;
@@ -14,6 +15,7 @@ import com.jihai.bitfree.utils.DO2DTOConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -77,6 +79,7 @@ public class UserController extends BaseController {
         return convertSuccessResult(password);
     }
 
+
     @PostMapping("/save")
     @ParameterCheck
     @LoggedCheck
@@ -94,4 +97,13 @@ public class UserController extends BaseController {
     public Result<Boolean> hadModifyPwd() {
         return convertSuccessResult(userService.hadModifyPwd(getCurrentUser().getId()));
     }
+
+    @GetMapping("/getActivityList")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<List<ActivityUserResp>> getActivityList() {
+        return convertSuccessResult(userService.getActivityList());
+    }
+
+
 }

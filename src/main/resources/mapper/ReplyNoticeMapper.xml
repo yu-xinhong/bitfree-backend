@@ -23,6 +23,11 @@
     <update id="updateStatus">
         UPDATE reply_notice SET `status` = 1 WHERE notify_user_id = #{userId} AND deleted = 0
     </update>
+    <update id="deleted">
+        UPDATE reply_notice
+        SET deleted = 1
+        WHERE post_id = #{postId}
+    </update>
     <select id="countReplyCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM reply_notice

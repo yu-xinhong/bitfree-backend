@@ -25,4 +25,6 @@ public interface PostDAO {
     void updateTime(@Param("postId") Long postId);
 
     List<RankPostItemResp> queryRankList();
+
+    void deleted(@Param("postId") Long postId);
 }

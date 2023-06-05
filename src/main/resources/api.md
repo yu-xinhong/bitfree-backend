@@ -108,6 +108,15 @@ response : {
 "password" : xxx
 }
 
+- 今日活跃用户 get user/getActivityList
+
+request {}
+
+response [{
+    name : xxx,
+    count : 1
+}]
+
 
 --- 
 ### 帖子

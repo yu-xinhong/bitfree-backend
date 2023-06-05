@@ -7,6 +7,7 @@ import com.jihai.bitfree.constants.OperateTypeEnum;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.OperateLogDO;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -114,5 +116,9 @@ public class UserService {
 
     public Boolean hadModifyPwd(Long id) {
         return operateLogDAO.queryByUserIdAndType(id, OperateTypeEnum.UPDATE_PASSWORD.getCode()) > 0;
+    }
+
+    public List<ActivityUserResp> getActivityList() {
+        return userDao.ActivityUserResp();
     }
 }

@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.constants.Constants;
-import com.jihai.bitfree.dao.ConfigDAO;
-import com.jihai.bitfree.dao.PostDAO;
-import com.jihai.bitfree.dao.ReplyDAO;
-import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
@@ -20,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.management.RuntimeMBeanException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,9 @@ public class PostService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private ReplyNoticeDAO replyNoticeDAO;
 
 
     public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, Long userId, boolean includeTopList) {
@@ -148,5 +150,21 @@ public class PostService {
 
     public List<RankPostItemResp> getRankList() {
         return postDAO.queryRankList();
+    }
+
+    @Transactional
+    public Boolean deletePost(Long postId, String secret) {
+        ConfigDO config = configDAO.getByKey(Constants.SECRET);
+        if (config == null) {
+            throw new RuntimeException("secret not config !");
+        }
+        if (! config.getValue().equals(secret)) {
+            log.warn("secret is error ! {}", secret);
+            throw new RuntimeException("secret error");
+        }
+        postDAO.deleted(postId);
+        replyDAO.deleted(postId);
+        replyNoticeDAO.deleted(postId);
+        return true;
     }
 }

@@ -24,4 +24,6 @@ public interface ReplyDAO {
     List<ReplyDO> pageQueryByReceiverId(@Param("userId") Long userId, @Param("start") Integer start, @Param("size") Integer size);
 
     Integer countByReceiverId(@Param("userId") Long userId);
+
+    void deleted(@Param("postId") Long postId);
 }

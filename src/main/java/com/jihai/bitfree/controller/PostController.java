@@ -116,4 +116,12 @@ public class PostController extends BaseController {
     public Result<List<RankPostItemResp>> getRankList() {
         return convertSuccessResult(postService.getRankList());
     }
+
+
+
+    @PostMapping("/deletePost")
+    @ParameterCheck
+    public Result<Boolean> deletedPost(@RequestBody DeletePostReq deletePostReq) {
+        return convertSuccessResult(postService.deletePost(deletePostReq.getPostId(), deletePostReq.getSecret()));
+    }
 }
