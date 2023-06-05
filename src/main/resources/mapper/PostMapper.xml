@@ -22,6 +22,10 @@
         INSERT INTO post(`title`, `content`, `creator_id`, `topic_id`, `last_updater_id`)
         VALUE(#{title}, #{content}, #{creatorId}, #{topicId}, #{lastUpdaterId})
     </insert>
+    <update id="updateTime">
+        UPDATE post SET update_time = NOW()
+        WHERE id = #{postId} AND deleted = 0
+    </update>
 
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM post WHERE deleted = 0

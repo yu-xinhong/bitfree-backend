@@ -118,6 +118,9 @@ public class ReplyService {
             replyNoticeDO.setNotifyUserId(postDO.getCreatorId());
         }
         replyNoticeDAO.insert(replyNoticeDO);
+
+        // 更新post时间
+        postDAO.updateTime(replyDO.getPostId());
         return true;
     }
 

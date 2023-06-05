@@ -42,8 +42,6 @@ public class RequestLogAspect {
                 requestLog.append("\n params -> " + paramsBuffer.substring(0, paramsBuffer.length() - 1));
             }
 
-
-
             // 理论上，这是最外层的切面，不可能抛异常
             Object returnObj = proceedingJoinPoint.proceed();
 

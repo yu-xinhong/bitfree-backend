@@ -20,4 +20,6 @@ public interface PostDAO {
     void insert(PostDO postDO);
 
     Integer countByUserId(@Param("userId") Long userId);
+
+    void updateTime(@Param("postId") Long postId);
 }
