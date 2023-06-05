@@ -101,6 +101,9 @@ public class ReplyService {
         replyNoticeDO.setPostId(postId);
         replyNoticeDO.setReplyId(replyDO.getId());
 
+        // 更新post时间
+        postDAO.updateTime(replyDO.getPostId());
+
         // 此处可以考虑异步化
         // 发送通知, 此处如果回复的子评论，不通知到发帖人，只通知子评论的人
         if (targetReply != null) {
@@ -118,9 +121,6 @@ public class ReplyService {
             replyNoticeDO.setNotifyUserId(postDO.getCreatorId());
         }
         replyNoticeDAO.insert(replyNoticeDO);
-
-        // 更新post时间
-        postDAO.updateTime(replyDO.getPostId());
         return true;
     }
 

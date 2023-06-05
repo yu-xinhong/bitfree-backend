@@ -36,7 +36,7 @@ public class BaseController {
         return userService.getByToken(token);*/
 
         // FIXME 先直接写死
-        return DO2DTOConvert.convertUser(userService.getUser(1L));
+        return DO2DTOConvert.convertUser(userService.getUser(2L));
     }
 
     protected <T> Result<T> convertSuccessResult(T data) {
