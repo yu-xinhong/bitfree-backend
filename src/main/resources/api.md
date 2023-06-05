@@ -224,6 +224,18 @@ response : {
 true
 }
 
+
+- 帖子日榜post /post/dayRankList
+
+request {
+}
+
+response {
+    id : 1,
+    title : xxx,
+    replyCount: xx
+}
+
 --- 
 ### topic
 - 获取置topic get  /topic/getAllTopic

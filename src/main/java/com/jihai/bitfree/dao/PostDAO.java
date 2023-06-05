@@ -1,5 +1,6 @@
 package com.jihai.bitfree.dao;
 
+import com.jihai.bitfree.dto.req.RankPostItemResp;
 import com.jihai.bitfree.entity.PostDO;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,4 +23,6 @@ public interface PostDAO {
     Integer countByUserId(@Param("userId") Long userId);
 
     void updateTime(@Param("postId") Long postId);
+
+    List<RankPostItemResp> queryRankList();
 }

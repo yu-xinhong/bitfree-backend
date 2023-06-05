@@ -112,4 +112,11 @@ public class PostController extends BaseController {
         Integer count = postService.countByUserId(userId);
         return convertSuccessResult(new PageResult<>(postItemRespList, count));
     }
+
+    @GetMapping("/getRankList")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<List<RankPostItemResp>> getRankList() {
+        return convertSuccessResult(postService.getRankList());
+    }
 }

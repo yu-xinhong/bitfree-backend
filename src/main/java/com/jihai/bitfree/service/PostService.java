@@ -8,6 +8,7 @@ import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.ReplyDAO;
 import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dto.req.RankPostItemResp;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
 import com.jihai.bitfree.entity.ConfigDO;
@@ -133,5 +134,9 @@ public class PostService {
 
     public Integer countByUserId(Long userId) {
         return postDAO.countByUserId(userId);
+    }
+
+    public List<RankPostItemResp> getRankList() {
+        return postDAO.queryRankList();
     }
 }
