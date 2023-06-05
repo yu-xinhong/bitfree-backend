@@ -76,4 +76,22 @@ public class UserController extends BaseController {
         notifyService.sendNotice(addUserReq.getEmail(), password);
         return convertSuccessResult(password);
     }
+
+    @PostMapping("/save")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Boolean> save(@RequestBody SaveUserReq saveUserReq) {
+        return convertSuccessResult(userService.save(saveUserReq.getName(), saveUserReq.getCity(),
+                saveUserReq.getPosition(), saveUserReq.getSeniority(),
+                getCurrentUser().getId(), saveUserReq.getOldPwd(),
+                saveUserReq.getPwd()));
+    }
+
+
+    @GetMapping("/hadModifyPwd")
+    @ParameterCheck
+    @LoggedCheck
+    public Result<Boolean> hadModifyPwd() {
+        return convertSuccessResult(userService.hadModifyPwd(getCurrentUser().getId()));
+    }
 }

@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.OperateTypeEnum;
 import com.jihai.bitfree.dao.ConfigDAO;
@@ -15,6 +16,8 @@ import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.UUID;
 
@@ -81,5 +84,35 @@ public class UserService {
 
     public UserResp getByToken(String token) {
         return DO2DTOConvert.convertUser(userDao.getByToken(token));
+    }
+
+    @Transactional
+    public Boolean save(String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
+        if (StringUtils.hasText(password)) {
+            UserDO userDO = userDao.getById(userId);
+            if (! userDO.getPassword().equals(originPassword)) {
+                log.warn("some one password new and old not equals");
+                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
+            }
+
+            if (userDO.getPassword().equals(password)) {
+                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
+            }
+        }
+        userDao.save(userId, name, city, position, seniority, password);
+
+        // 清除token
+        if (StringUtils.hasText(password)) userDao.clearToken(userId);
+
+        OperateLogDO operateLogDO = new OperateLogDO();
+        operateLogDO.setUserId(userId);
+        operateLogDO.setType(OperateTypeEnum.UPDATE_PASSWORD.getCode());
+
+        operateLogDAO.insert(operateLogDO);
+        return true;
+    }
+
+    public Boolean hadModifyPwd(Long id) {
+        return operateLogDAO.queryByUserIdAndType(id, OperateTypeEnum.UPDATE_PASSWORD.getCode()) > 0;
     }
 }

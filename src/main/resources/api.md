@@ -74,6 +74,29 @@ position
 }
 
 
+- 保存用户信息 post /user/save
+
+request : {
+    name : xxx,
+    city : xxx,
+    position : xxxxx,
+    seniority : 11,
+    password : xxx
+}
+
+response : {
+    true
+}
+
+
+- 是否修改过密码 post /user/hadModifyPassword
+
+request : {}
+
+response : {
+    true
+}
+
 - 后门工具 post /user/addUser
 
 request : {

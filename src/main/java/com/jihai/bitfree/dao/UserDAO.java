@@ -22,4 +22,6 @@ public interface UserDAO {
     UserDO getByToken(@Param("token") String token);
 
     UserDO queryByEmail(String email);
+
+    void save(@Param("userId") Long userId, @Param("name") String name, @Param("city") String city, @Param("position") String position,@Param("seniority") String seniority,@Param("password") String password);
 }

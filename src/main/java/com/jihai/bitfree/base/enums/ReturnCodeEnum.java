@@ -2,7 +2,9 @@ package com.jihai.bitfree.base.enums;
 
 public enum ReturnCodeEnum {
     SUCCESS(200, "成功"),
-    SYSTEM_ERROR(500, "系统异常");
+    SYSTEM_ERROR(500, "系统异常"),
+    USER_OLD_PASSWORD_ERROR(403, "原密码错误"),
+    SAME_PASSWORD_ERROR(405, "不能与原密码一样");
 
     ReturnCodeEnum(Integer code, String desc) {
         this.code = code;
