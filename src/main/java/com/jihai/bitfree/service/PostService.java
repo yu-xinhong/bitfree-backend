@@ -53,8 +53,6 @@ public class PostService {
             // 置顶的先查出来
             List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
-            size -= topPostList.size();
-
             // 先填充置顶的帖子
             if (topPostList.size() > 0) {
                 topPostList.forEach(post -> post.setTitle("【置顶】" + post.getTitle()));
@@ -79,15 +77,27 @@ public class PostService {
         List<UserDO> userDOS = userDAO.batchQueryByIdList(resultPostList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
+
+        List<UserDO> replyUserList = userDAO.batchQueryByIdList(replyDOList.stream().map(ReplyDO::getSendUserId).collect(Collectors.toList()));
+        ImmutableMap<Long, UserDO> replyUserIdMap = Maps.uniqueIndex(replyUserList, UserDO::getId);
+
         List<PostItemResp> pageList = resultPostList.stream().map(postDO -> {
             PostItemResp postItemResp = new PostItemResp();
             postItemResp.setId(postDO.getId());
             postItemResp.setTitle(postDO.getTitle());
-            postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
+
+            // 如果replyCount == 0
             postItemResp.setUpdateTime(postDO.getUpdateTime());
             postItemResp.setCreateTime(postDO.getCreateTime());
-            Long count = replyCountMap.getOrDefault(postDO.getId(), 0L);
-            if (count != null) postItemResp.setReplyCount(count.intValue());
+            Long replyCount = replyCountMap.getOrDefault(postDO.getId(), 0L);
+            postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
+                // 获取最新回复的人的名字
+            if (replyCount > 0) {
+                List<ReplyDO> curPostReplyList = replyDOList.stream().filter(replyDO -> replyDO.getPostId().equals(postDO.getId())).collect(Collectors.toList());
+                curPostReplyList.sort((r1, r2) -> (int) (r2.getCreateTime().getTime() - r1.getCreateTime().getTime()));
+                postItemResp.setUpdateUserName(replyUserIdMap.get(curPostReplyList.get(0).getSendUserId()).getName());
+            }
+            if (replyCount != null) postItemResp.setReplyCount(replyCount.intValue());
             return postItemResp;
         }).collect(Collectors.toList());
 

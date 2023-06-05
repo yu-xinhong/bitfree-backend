@@ -127,13 +127,14 @@ id: 1,
 title : xxx,
 creatorName: xxx,
 updateTime: xxx,
-repleyCount: 11
+repleyCount: 11,
+updateUserName : "xxx"
 }
 ]
 }
 
 
-- 帖子详情get /post/detail
+- 帖子详情get /post/getDetail
 
 request : {
 id : 1

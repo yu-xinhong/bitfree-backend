@@ -12,6 +12,8 @@ public class PostItemResp extends BaseResp {
 
     private String creatorName;
 
+    private String updateUserName;
+
     private Date updateTime;
 
     private Integer replyCount;
@@ -40,6 +42,14 @@ public class PostItemResp extends BaseResp {
 
     public void setCreatorName(String creatorName) {
         this.creatorName = creatorName;
+    }
+
+    public String getUpdateUserName() {
+        return updateUserName;
+    }
+
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
     }
 
     public Date getUpdateTime() {
