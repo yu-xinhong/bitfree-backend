@@ -67,7 +67,7 @@
     <select id="countByUserId" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM post WHERE creator_id = #{userId} AND deleted = 0
     </select>
-    <select id="queryRankList" resultType="com.jihai.bitfree.dto.req.RankPostItemResp">
+    <select id="queryRankList" resultType="com.jihai.bitfree.dto.resp.RankPostItemResp">
         SELECT post.id AS id, post.title AS title, COUNT(reply.id) AS replyCount FROM
         post RIGHT JOIN
         reply ON post.id = reply.post_id

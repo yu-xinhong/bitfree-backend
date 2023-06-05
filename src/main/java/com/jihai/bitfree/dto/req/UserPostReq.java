@@ -1,7 +1,9 @@
 package com.jihai.bitfree.dto.req;
 
 import com.jihai.bitfree.base.BaseReq;
-import jakarta.validation.constraints.Size;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 public class UserPostReq extends BaseReq {
 
@@ -9,10 +11,12 @@ public class UserPostReq extends BaseReq {
 
     private Long id;
 
-    @Size(min = 0, message = "页码不合法")
+    @Min(0)
+    @Max(100)
     private Integer page;
 
-    @Size(min = 0, max = 100, message = "长度不支持")
+    @Min(0)
+    @Max(100)
     private Integer size;
 
     public Long getId() {

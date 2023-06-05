@@ -1,4 +1,4 @@
-package com.jihai.bitfree.dto.req;
+package com.jihai.bitfree.dto.resp;
 
 import com.jihai.bitfree.base.BaseResp;
 

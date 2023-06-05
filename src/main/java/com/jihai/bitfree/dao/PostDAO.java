@@ -1,6 +1,6 @@
 package com.jihai.bitfree.dao;
 
-import com.jihai.bitfree.dto.req.RankPostItemResp;
+import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.entity.PostDO;
 import org.apache.ibatis.annotations.Param;
 
