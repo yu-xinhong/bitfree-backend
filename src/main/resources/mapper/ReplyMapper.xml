@@ -25,6 +25,11 @@
         SET deleted = 1
         WHERE post_id = #{postId}
     </update>
+    <update id="deletedById">
+        UPDATE reply
+        SET deleted = 1
+        WHERE id = #{id}
+    </update>
 
 
     <select id="queryByPostIdList" resultMap="replyResultMap">
@@ -39,7 +44,7 @@
     <select id="getByPostId" resultMap="replyResultMap">
         SELECT <include refid="BASE_COLUMN"/>
         FROM reply
-        WHERE post_id = #{postId}
+        WHERE post_id = #{postId} AND deleted = 0
     </select>
     <select id="pageQueryBySendUserId" resultMap="replyResultMap">
         SELECT <include refid="BASE_COLUMN"/>

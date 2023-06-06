@@ -26,4 +26,6 @@ public interface ReplyDAO {
     Integer countByReceiverId(@Param("userId") Long userId);
 
     void deleted(@Param("postId") Long postId);
+
+    void deletedById(Long id);
 }

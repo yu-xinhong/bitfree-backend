@@ -28,6 +28,11 @@
         SET deleted = 1
         WHERE post_id = #{postId}
     </update>
+    <update id="deletedByReplyId">
+        UPDATE reply_notice
+        SET deleted = 1
+        WHERE reply_id = #{replyId}
+    </update>
     <select id="countReplyCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM reply_notice

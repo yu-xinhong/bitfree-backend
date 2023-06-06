@@ -12,4 +12,6 @@ public interface ReplyNoticeDAO {
     void updateStatus(@Param("userId") Long userId);
 
     void deleted(@Param("postId") Long postId);
+
+    void deletedByReplyId(@Param("replyId") Long id);
 }

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.management.RuntimeMBeanException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -155,18 +154,18 @@ public class PostService {
     }
 
     @Transactional
-    public Boolean deletePost(Long postId, String secret) {
-        ConfigDO config = configDAO.getByKey(Constants.SECRET);
-        if (config == null) {
-            throw new RuntimeException("secret not config !");
-        }
-        if (! config.getValue().equals(secret)) {
-            log.warn("secret is error ! {}", secret);
-            throw new RuntimeException("secret error");
-        }
+    public Boolean deletePost(Long postId) {
+
         postDAO.deleted(postId);
         replyDAO.deleted(postId);
         replyNoticeDAO.deleted(postId);
+        return true;
+    }
+
+    @Transactional
+    public Boolean deleteReply(Long id) {
+        replyDAO.deletedById(id);
+        replyNoticeDAO.deletedByReplyId(id);
         return true;
     }
 }

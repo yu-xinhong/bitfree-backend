@@ -121,6 +121,14 @@ public class PostController extends BaseController {
     @PostMapping("/deletePost")
     @ParameterCheck
     public Result<Boolean> deletedPost(@RequestBody DeletePostReq deletePostReq) {
-        return convertSuccessResult(postService.deletePost(deletePostReq.getPostId(), deletePostReq.getSecret()));
+        super.checkSecret(deletePostReq.getSecret());
+        return convertSuccessResult(postService.deletePost(deletePostReq.getPostId()));
+    }
+
+    @PostMapping("/deleteReply")
+    @ParameterCheck
+    public Result<Boolean> deleteReply(@RequestBody DeleteReplyReq deleteReplyReq) {
+        checkSecret(deleteReplyReq.getSecret());
+        return convertSuccessResult(postService.deleteReply(deleteReplyReq.getId()));
     }
 }

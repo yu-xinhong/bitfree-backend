@@ -1,7 +1,10 @@
 package com.jihai.bitfree.base;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dto.resp.UserResp;
+import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,4 +57,17 @@ public class BaseController {
     }
 
 
+    @Autowired
+    private ConfigDAO configDAO;
+
+    protected void checkSecret(String secret) {
+        ConfigDO config = configDAO.getByKey(Constants.SECRET);
+        if (config == null) {
+            throw new RuntimeException("secret not config !");
+        }
+        if (! config.getValue().equals(secret)) {
+            log.warn("secret is error ! {}", secret);
+            throw new RuntimeException("secret error");
+        }
+    }
 }
