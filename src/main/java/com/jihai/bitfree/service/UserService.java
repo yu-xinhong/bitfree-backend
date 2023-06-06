@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
+    public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
         if (StringUtils.hasText(password)) {
             UserDO userDO = userDao.getById(userId);
             if (! userDO.getPassword().equals(originPassword)) {
@@ -101,7 +101,7 @@ public class UserService {
                 throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
             }
         }
-        userDao.save(userId, name, city, position, seniority, password);
+        userDao.save(userId, avatar, name, city, position, seniority, password);
 
         // 清除token
         if (StringUtils.hasText(password)) userDao.clearToken(userId);

@@ -86,6 +86,7 @@ public class PostService {
         List<PostItemResp> pageList = resultPostList.stream().map(postDO -> {
             PostItemResp postItemResp = new PostItemResp();
             postItemResp.setId(postDO.getId());
+            postItemResp.setAvatar(idUserMap.get(postDO.getCreatorId()).getAvatar());
             postItemResp.setTitle(postDO.getTitle());
 
             // 如果replyCount == 0
@@ -130,6 +131,7 @@ public class PostService {
 
         UserDO userDO = userDAO.getById(postDO.getCreatorId());
         postDetailResp.setCreatorName(userDO.getName());
+        postDetailResp.setAvatar(userDO.getAvatar());
         return postDetailResp;
     }
 

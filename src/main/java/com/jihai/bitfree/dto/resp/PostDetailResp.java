@@ -8,6 +8,8 @@ public class PostDetailResp extends BaseResp {
 
     private static final long serialVersionUID = -6737144697361321893L;
 
+    private String avatar;
+
     private String title;
 
     private String content;
@@ -19,6 +21,14 @@ public class PostDetailResp extends BaseResp {
     private Date createTime;
 
     private Date updateTime;
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     public String getTitle() {
         return title;

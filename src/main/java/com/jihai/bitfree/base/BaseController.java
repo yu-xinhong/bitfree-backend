@@ -3,16 +3,15 @@ package com.jihai.bitfree.base;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.service.UserService;
-import com.jihai.bitfree.utils.DO2DTOConvert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 
 @Slf4j
-@CrossOrigin("*")
 public class BaseController {
 
     @Autowired
@@ -22,7 +21,7 @@ public class BaseController {
     private UserService userService;
 
     protected UserResp getCurrentUser() {
-        /*Cookie[] cookies = httpServletRequest.getCookies();
+        Cookie[] cookies = httpServletRequest.getCookies();
         String token = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
@@ -33,10 +32,10 @@ public class BaseController {
         if (! StringUtils.hasText(token)) {
             throw new RuntimeException("token is empty");
         }
-        return userService.getByToken(token);*/
+        return userService.getByToken(token);
 
         // FIXME 先直接写死
-        return DO2DTOConvert.convertUser(userService.getUser(2L));
+//        return DO2DTOConvert.convertUser(userService.getUser(1L));
     }
 
     protected <T> Result<T> convertSuccessResult(T data) {

@@ -8,6 +8,8 @@ public class ActivityUserResp extends BaseResp  {
 
     private String name;
 
+    private String avatar;
+
     private Integer count;
 
     public String getName() {
@@ -16,6 +18,14 @@ public class ActivityUserResp extends BaseResp  {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Integer getCount() {

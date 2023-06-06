@@ -6,6 +6,8 @@ public class SaveUserReq extends BaseReq {
 
     private static final long serialVersionUID = -3194199142275222567L;
 
+    private String avatar;
+
     private String name;
 
     private String city;
@@ -17,6 +19,14 @@ public class SaveUserReq extends BaseReq {
     private String oldPwd;
 
     private String pwd;
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     public String getName() {
         return name;

@@ -20,7 +20,6 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin("*")
 public class UserController extends BaseController {
 
     @Autowired
@@ -84,7 +83,7 @@ public class UserController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> save(@RequestBody SaveUserReq saveUserReq) {
-        return convertSuccessResult(userService.save(saveUserReq.getName(), saveUserReq.getCity(),
+        return convertSuccessResult(userService.save(saveUserReq.getAvatar(), saveUserReq.getName(), saveUserReq.getCity(),
                 saveUserReq.getPosition(), saveUserReq.getSeniority(),
                 getCurrentUser().getId(), saveUserReq.getOldPwd(),
                 saveUserReq.getPwd()));

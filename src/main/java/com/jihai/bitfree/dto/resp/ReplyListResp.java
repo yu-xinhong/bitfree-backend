@@ -11,6 +11,8 @@ public class ReplyListResp extends BaseResp {
 
     private Long id;
 
+    private String avatar;
+
     private String replyContent;
 
     private String name;
@@ -27,6 +29,14 @@ public class ReplyListResp extends BaseResp {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getReplyContent() {

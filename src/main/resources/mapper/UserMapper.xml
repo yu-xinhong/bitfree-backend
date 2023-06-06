@@ -7,6 +7,7 @@
     <resultMap id="userResultMap" type="com.jihai.bitfree.entity.UserDO">
         <result column="id" property="id" />
         <result column="name" property="name" />
+        <result column="avatar" property="avatar" />
         <result column="position" property="position" />
         <result column="city" property="city" />
         <result column="seniority" property="seniority" />
@@ -20,7 +21,7 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, name, position, city, seniority, token, status, email, password, contact, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, name, avatar, position, city, seniority, token, status, email, password, contact, deleted, create_time, update_time</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`email`, `password`)
         VALUE(#{email}, #{password})
@@ -44,6 +45,7 @@
     <update id="save">
         UPDATE user SET
         name = #{name},
+        avatar = #{avatar},
         position = #{position},
         seniority = #{seniority},
         city = #{city},
@@ -68,7 +70,7 @@
         FROM user WHERE email = #{email} AND deleted = 0
     </select>
     <select id="ActivityUserResp" resultType="com.jihai.bitfree.dto.resp.ActivityUserResp">
-        SELECT user.name AS name, COUNT(*) AS count
+        SELECT user.name AS name, user.avatar AS avatar, COUNT(*) AS count
         FROM user
         RIGHT JOIN reply
         ON user.id = reply.send_user_id

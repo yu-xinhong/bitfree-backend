@@ -2,6 +2,7 @@ package com.jihai.bitfree.aspect;
 
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Slf4j
-//@Component
+@Component
 @Profile({"dev", "prod"})
 @Order(2)
 public class LoggedCheckAspect {
@@ -33,7 +34,7 @@ public class LoggedCheckAspect {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies == null) {
             log.error("The request {} headers not exists cookies", httpServletRequest.getRemoteHost());
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         String token = null;
         for (Cookie cookie : cookies) {
@@ -44,11 +45,11 @@ public class LoggedCheckAspect {
         }
         if (token == null) {
             log.error("The request {} try to access protected resources", httpServletRequest.getRemoteHost());
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         if (userDAO.getByToken(token) == null) {
             log.error("The request {} try fake token", httpServletRequest.getRemoteHost());
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         return proceedingJoinPoint.proceed();
     }

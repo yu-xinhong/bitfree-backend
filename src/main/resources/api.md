@@ -81,7 +81,8 @@ request : {
     city : xxx,
     position : xxxxx,
     seniority : 11,
-    password : xxx
+    password : xxx,
+    avatar : xxx
 }
 
 response : {
@@ -133,6 +134,7 @@ total : 1000,
 list : [
 {
 id: 1,
+avatar : xxx
 title : xxx,
 creatorName: xxx,
 updateTime: xxx,
@@ -151,6 +153,7 @@ id : 1
 
 response : {
 id : 1,
+avatar : xxx
 content : xxx
 creatorName : xxx,
 creatorId : 11,

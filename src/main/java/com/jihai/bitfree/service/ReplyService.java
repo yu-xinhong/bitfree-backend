@@ -65,6 +65,7 @@ public class ReplyService {
         replyListResp.setReplyContent(mainReply.getReplyContent());
         replyListResp.setCreateTime(mainReply.getCreateTime());
         replyListResp.setCreatorId(mainReply.getSendUserId());
+        replyListResp.setAvatar(idUserMap.get(mainReply.getSendUserId()).getAvatar());
 
         replyListResp.setName(idUserMap.get(mainReply.getSendUserId()).getName());
 
