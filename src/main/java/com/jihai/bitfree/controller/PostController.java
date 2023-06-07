@@ -102,7 +102,7 @@ public class PostController extends BaseController {
     @GetMapping("/getByUserId")
     @ParameterCheck
     @LoggedCheck
-    public Result<PageResult<PostItemResp>> pageQueryUserPost(UserPostReq userPostReq) {
+    public Result<PageResult<PostItemResp>> getByUserId(UserPostReq userPostReq) {
         Long userId = userPostReq.getId() != null ? userPostReq.getId() : getCurrentUser().getId();
         List<PostItemResp> postItemRespList = postService.pageQuery(userPostReq.getPage(), userPostReq.getSize(), null, userId, false);
         Integer count = postService.countByUserId(userId);

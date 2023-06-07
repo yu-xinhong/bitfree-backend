@@ -71,15 +71,15 @@ public class PostService {
 
         List<Long> postIdList = resultPostList.stream().map(PostDO::getId).collect(Collectors.toList());
         // 查询回复数量
-        List<ReplyDO> replyDOList = replyDAO.queryByPostIdList(postIdList);
+        List<ReplyDO> replyDOList = CollectionUtils.isEmpty(postIdList) ? Lists.newArrayList() : replyDAO.queryByPostIdList(postIdList);
         Map<Long, Long> replyCountMap = replyDOList.stream().collect(Collectors.groupingBy(ReplyDO::getPostId, Collectors.counting()));
 
         // 查询用户名称
-        List<UserDO> userDOS = userDAO.batchQueryByIdList(resultPostList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
+        List<UserDO> userDOS = CollectionUtils.isEmpty(resultPostList) ? Lists.newArrayList() : userDAO.batchQueryByIdList(resultPostList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
 
-        List<UserDO> replyUserList = userDAO.batchQueryByIdList(replyDOList.stream().map(ReplyDO::getSendUserId).collect(Collectors.toList()));
+        List<UserDO> replyUserList = CollectionUtils.isEmpty(replyDOList) ? Lists.newArrayList() : userDAO.batchQueryByIdList(replyDOList.stream().map(ReplyDO::getSendUserId).collect(Collectors.toList()));
         ImmutableMap<Long, UserDO> replyUserIdMap = Maps.uniqueIndex(replyUserList, UserDO::getId);
 
         List<PostItemResp> pageList = resultPostList.stream().map(postDO -> {

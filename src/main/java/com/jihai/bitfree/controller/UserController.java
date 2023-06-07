@@ -31,7 +31,7 @@ public class UserController extends BaseController {
     @PostMapping("/login")
     @ParameterCheck
     public Result<String> login(@RequestBody LoginReq loginReq) {
-        UserDO userDO = userService.queryByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword());
+        UserDO userDO = userService.queryByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword().toUpperCase());
         if (Objects.isNull(userDO)) {
             return convertFailResult(null, "用户或密码错误");
         }

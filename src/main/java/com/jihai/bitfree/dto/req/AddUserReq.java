@@ -1,6 +1,7 @@
 package com.jihai.bitfree.dto.req;
 
 import com.jihai.bitfree.base.BaseReq;
+
 import javax.validation.constraints.NotNull;
 
 public class AddUserReq extends BaseReq {

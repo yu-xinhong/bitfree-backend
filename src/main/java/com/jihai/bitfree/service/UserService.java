@@ -15,6 +15,7 @@ import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +73,7 @@ public class UserService {
         userDO.setEmail(email);
 
         String password = PasswordUtils.generatePwd();
-        userDO.setPassword(password);
+        userDO.setPassword(PasswordUtils.md5(password));
 
         userDao.insert(userDO);
 
@@ -81,7 +82,7 @@ public class UserService {
         operateLogDO.setType(OperateTypeEnum.INIT_USER.getCode());
 
         operateLogDAO.insert(operateLogDO);
-        return userDO.getPassword();
+        return password;
     }
 
     public UserResp getByToken(String token) {
@@ -92,12 +93,12 @@ public class UserService {
     public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
         if (StringUtils.hasText(password)) {
             UserDO userDO = userDao.getById(userId);
-            if (! userDO.getPassword().equals(originPassword)) {
+            if (! userDO.getPassword().equalsIgnoreCase(originPassword)) {
                 log.warn("some one password new and old not equals");
                 throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
             }
 
-            if (userDO.getPassword().equals(password)) {
+            if (userDO.getPassword().equalsIgnoreCase(password)) {
                 throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
             }
         }
