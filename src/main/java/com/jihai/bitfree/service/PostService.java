@@ -49,8 +49,8 @@ public class PostService {
         List<PostDO> resultPostList = Lists.newArrayList();
         List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, userId);
 
-        if (includeTopList) {
-            List<Long> topPostIdList = queryTopIdList();
+        List<Long> topPostIdList;
+        if (includeTopList && ! CollectionUtils.isEmpty(topPostIdList = queryTopIdList())) {
             // 置顶的先查出来
             List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
