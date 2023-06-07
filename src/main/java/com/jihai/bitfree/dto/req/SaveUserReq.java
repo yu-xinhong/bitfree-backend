@@ -1,5 +1,6 @@
 package com.jihai.bitfree.dto.req;
 
+import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
 
 public class SaveUserReq extends BaseReq {
@@ -8,12 +9,16 @@ public class SaveUserReq extends BaseReq {
 
     private String avatar;
 
+    @SensitiveText
     private String name;
 
+    @SensitiveText
     private String city;
 
+    @SensitiveText
     private String position;
 
+    @SensitiveText
     private String seniority;
 
     private String oldPwd;

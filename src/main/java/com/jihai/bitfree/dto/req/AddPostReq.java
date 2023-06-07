@@ -1,6 +1,8 @@
 package com.jihai.bitfree.dto.req;
 
+import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
+
 import javax.validation.constraints.NotNull;
 
 public class AddPostReq extends BaseReq {
@@ -8,9 +10,11 @@ public class AddPostReq extends BaseReq {
     private static final long serialVersionUID = 2399161127153942996L;
 
     @NotNull(message = "标题为空")
+    @SensitiveText
     private String title;
 
     @NotNull(message = "内容为空")
+    @SensitiveText
     private String content;
 
     @NotNull(message = "topic为空")

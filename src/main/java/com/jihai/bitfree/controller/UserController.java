@@ -38,13 +38,6 @@ public class UserController extends BaseController {
         return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword()));
     }
 
-    @PostMapping("/update")
-    @LoggedCheck
-    @ParameterCheck
-    public Result<Boolean> update(@RequestBody UpdateUserReq updateUserReq) {
-        return null;
-    }
-
 
     @GetMapping("/checkName")
     @LoggedCheck

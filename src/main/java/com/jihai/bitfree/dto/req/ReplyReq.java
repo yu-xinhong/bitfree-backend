@@ -1,11 +1,10 @@
 package com.jihai.bitfree.dto.req;
 
+import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 public class ReplyReq extends BaseReq {
 
@@ -18,6 +17,7 @@ public class ReplyReq extends BaseReq {
     private Long replyId;
 
     @NotNull(message = "回复内容为空")
+    @SensitiveText
     private String replyContent;
 
     public Long getPostId() {
