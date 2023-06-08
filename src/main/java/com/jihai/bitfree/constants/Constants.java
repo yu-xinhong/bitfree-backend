@@ -5,4 +5,5 @@ public interface Constants {
     String SECRET = "SECRET";
     String TOKEN = "token";
     String ACCESS_FORBIDDEN = "access forbidden!";
+    String EMAIL_SECRET = "MAIL_SECRET";
 }
