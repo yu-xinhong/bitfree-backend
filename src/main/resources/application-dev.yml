@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 
 logging:
@@ -7,15 +7,17 @@ logging:
   level:
     "io.springcloud.mybatis.mapper": "DEBUG"
 
-LOG_PATH: /Users/micro/jihai/logs
-
-datasource:
-  config-path: /Users/micro/jihai
-
-
+LOG_PATH: /home/jihai/bitfree/logs
 spring:
+  # MYSQL data source configuration. No need to explain too much.
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bitfree_dev?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: bitfree-dev
+    password: '#*BaE<c&2u1'
   profiles:
-    active: local
+    active: dev
 mybatis:
   # Set the xml configuration file address for mybatis.
   # config-location: "classpath:mybatis/mybatis-config.xml"

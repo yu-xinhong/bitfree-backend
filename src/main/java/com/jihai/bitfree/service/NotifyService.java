@@ -59,14 +59,14 @@ public class NotifyService {
                     new InternetAddress(toMail));
 
             // Set Subject: 头部头字段
-            message.setSubject("欢迎加入极海开发者社区!");
+            message.setSubject("欢迎加入极海开发者bitfree社区!");
 
             // 设置消息体
-            message.setText("你好！" + toMail + ",你的默认密码为： " + toContent);
+            message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent);
 
             // 发送消息
             Transport.send(message);
-            System.out.println("Sent message successfully....from runoob.com");
+            System.out.println("Sent message successfully....from bitfree");
         }catch (Throwable mex) {
             log.error("发送邮件异常 需要尽快手动通知 email {}, password {}", toMail, toContent, mex);
             throw new RuntimeException(ReturnCodeEnum.SEND_MAIL_ERROR.getDesc());

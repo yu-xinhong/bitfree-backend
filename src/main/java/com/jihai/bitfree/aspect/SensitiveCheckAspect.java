@@ -1,6 +1,7 @@
 package com.jihai.bitfree.aspect;
 
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jihai.bitfree.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,13 +9,16 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Set;
 
 @Aspect
@@ -26,18 +30,16 @@ public class SensitiveCheckAspect {
     private Set<String> sensitiveSet = Sets.newHashSet();
 
     {
-        ClassPathResource classPathResource = new ClassPathResource("sensitiveWord");
         try {
-            File dir = classPathResource.getFile();
-            File[] files = dir.listFiles();
-            for (File file : files) {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
+            List<String> fileNameList = Lists.newArrayList("政治类.txt", "网址.txt", "色情类.txt");
+
+            for (String file : fileNameList) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream("sensitiveWord/" + file);
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (line.replace(" ", "").length() > 0) {
-                        sensitiveSet.add(line.replace(",", ""));
-                    }
+                while ((line = br.readLine()) != null) {
+                    sensitiveSet.add(line);
                 }
             }
             log.info("sensitive word {}", sensitiveSet);
