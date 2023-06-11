@@ -12,6 +12,7 @@ import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
+import com.jihai.bitfree.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private NotifyService notifyService;
+
+    @Autowired
+    private PasswordUtils passwordUtils;
 
     @PostMapping("/login")
     @ParameterCheck
@@ -95,6 +99,13 @@ public class UserController extends BaseController {
     @LoggedCheck
     public Result<List<ActivityUserResp>> getActivityList() {
         return convertSuccessResult(userService.getActivityList());
+    }
+
+
+    @PostMapping("/resetPassword")
+    @ParameterCheck
+    public Result<Boolean> resetPassword(@RequestBody ResetPasswordReq resetPasswordReq) {
+        return convertSuccessResult(userService.resetPassword(resetPasswordReq.getId() , resetPasswordReq.getSecret(), passwordUtils.defaultPassword()));
     }
 
 

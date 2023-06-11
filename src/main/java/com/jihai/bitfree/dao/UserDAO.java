@@ -28,4 +28,5 @@ public interface UserDAO {
 
     List<ActivityUserResp> ActivityUserResp();
 
+    void updatePasswordAndClearToken(@Param("id") Long id, @Param("password") String password);
 }

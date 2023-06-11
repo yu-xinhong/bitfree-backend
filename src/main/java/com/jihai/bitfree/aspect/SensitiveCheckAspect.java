@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @Aspect
-@Component
+//@Component
 @Slf4j
 @Order(5)
 public class SensitiveCheckAspect {

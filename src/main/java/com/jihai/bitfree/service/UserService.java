@@ -56,13 +56,8 @@ public class UserService {
     }
 
     public String addUser(String email, String secret) {
-        ConfigDO configDO = configDAO.getByKey(Constants.SECRET);
-        if (! configDO.getValue().equals(secret)) {
-            log.error("warn ! addUser is only allow administrator jihai!");
-            // send alert
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
-        }
 
+        checkSecret(secret);
         // 校验
         if (userDao.queryByEmail(email) != null) {
             log.error("email {} is duplicated", email);
@@ -83,6 +78,15 @@ public class UserService {
 
         operateLogDAO.insert(operateLogDO);
         return password;
+    }
+
+    private void checkSecret(String secret) {
+        ConfigDO configDO = configDAO.getByKey(Constants.SECRET);
+        if (! configDO.getValue().equals(secret)) {
+            log.error("warn ! addUser is only allow administrator jihai!");
+            // send alert
+            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+        }
     }
 
     public UserResp getByToken(String token) {
@@ -121,5 +125,11 @@ public class UserService {
 
     public List<ActivityUserResp> getActivityList() {
         return userDao.ActivityUserResp();
+    }
+
+    public Boolean resetPassword(Long id, String secret, String defaultPassword) {
+        checkSecret(secret);
+        userDao.updatePasswordAndClearToken(id, defaultPassword);
+        return true;
     }
 }

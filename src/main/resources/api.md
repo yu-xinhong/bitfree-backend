@@ -119,6 +119,18 @@ response [{
 }]
 
 
+- 重置用户密码 post user/resetpassword
+
+request {
+    id : 11,
+    secret : xxx
+}
+
+response {
+    true
+}
+
+
 --- 
 ### 帖子
 
