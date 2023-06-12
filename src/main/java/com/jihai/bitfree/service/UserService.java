@@ -55,7 +55,7 @@ public class UserService {
         return userDao.getById(id);
     }
 
-    public String addUser(String email, String secret) {
+    public String addUser(String email, Integer level, String secret) {
 
         checkSecret(secret);
         // 校验
@@ -69,6 +69,8 @@ public class UserService {
 
         String password = PasswordUtils.generatePwd();
         userDO.setPassword(PasswordUtils.md5(password));
+
+        userDO.setLevel(level);
 
         userDao.insert(userDO);
 

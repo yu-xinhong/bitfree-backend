@@ -14,6 +14,8 @@ public class UserDO extends BaseDO {
 
     private String city;
 
+    private Integer level;
+
     private Integer seniority;
 
     private String token;
@@ -56,6 +58,14 @@ public class UserDO extends BaseDO {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public Integer getSeniority() {

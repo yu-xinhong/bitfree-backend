@@ -70,7 +70,7 @@ public class UserController extends BaseController {
     @PostMapping("/addUser")
     @ParameterCheck
     public Result<String> addUser(@RequestBody AddUserReq addUserReq) {
-        String password = userService.addUser(addUserReq.getEmail(), addUserReq.getSecret());
+        String password = userService.addUser(addUserReq.getEmail(), addUserReq.getLevel(), addUserReq.getSecret());
         notifyService.sendNotice(addUserReq.getEmail(), password);
         return convertSuccessResult(password);
     }

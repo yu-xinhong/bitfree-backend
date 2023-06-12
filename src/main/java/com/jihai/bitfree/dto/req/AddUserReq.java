@@ -11,6 +11,8 @@ public class AddUserReq extends BaseReq {
     @NotNull(message = "email is empty")
     private String email;
 
+    private Integer level;
+
     private String secret;
 
     public String getEmail() {
@@ -19,6 +21,14 @@ public class AddUserReq extends BaseReq {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public String getSecret() {
