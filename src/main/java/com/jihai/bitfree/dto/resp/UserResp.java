@@ -10,6 +10,8 @@ public class UserResp extends BaseResp {
 
     private String avatar;
 
+    private Integer level;
+
     private String position;
 
     private String city;
@@ -38,6 +40,14 @@ public class UserResp extends BaseResp {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public String getAvatar() {

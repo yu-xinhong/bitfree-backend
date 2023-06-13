@@ -33,7 +33,7 @@
     </select>
 
     <select id="getById" resultMap="userResultMap">
-        SELECT * FROM user WHERE id = #{id} AND deleted = 0
+        SELECT <include refid="BASE_COLUMN"/> FROM user WHERE id = #{id} AND deleted = 0
     </select>
 
     <update id="saveToken">

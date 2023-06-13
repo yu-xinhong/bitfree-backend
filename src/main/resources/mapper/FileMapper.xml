@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.FileDAO">
+
+    <resultMap id="userResultMap" type="com.jihai.bitfree.entity.FileDO">
+        <result column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="format" property="format" />
+        <result column="name" property="name" />
+        <result column="user_id" property="userId" />
+        <result column="url" property="url" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, `type`, `format`, name, user_id, url, deleted, create_time, update_time</sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file(`type`, `format`, `name`, `user_id`, `url`)
+        VALUE(#{type}, #{format}, #{name}, #{userId}, #{url})
+    </insert>
+    <select id="getUrlById" resultType="com.jihai.bitfree.entity.FileDO">
+        SELECT * FROM file WHERE id = #{id} AND deleted = 0
+    </select>
+
+
+</mapper>

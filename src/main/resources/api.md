@@ -165,8 +165,9 @@ id : 1
 
 response : {
 id : 1,
-avatar : xxx
-content : xxx
+avatar : xxx,
+content : xxx,
+level : 1,
 creatorName : xxx,
 creatorId : 11,
 createTime: xxx,

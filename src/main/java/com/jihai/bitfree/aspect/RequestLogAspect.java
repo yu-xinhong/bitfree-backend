@@ -11,6 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,9 +38,14 @@ public class RequestLogAspect {
             if (args.length > 0) {
                 StringBuffer paramsBuffer = new StringBuffer();
                 for (Object param : args) {
+                    if (param instanceof MultipartFile) {
+                        continue;
+                    }
                     paramsBuffer.append(JSON.toJSONString(param)).append(",");
                 }
-                requestLog.append("\n params -> " + paramsBuffer.substring(0, paramsBuffer.length() - 1));
+                if (paramsBuffer.length() > 0) {
+                    requestLog.append("\n params -> " + paramsBuffer.substring(0, paramsBuffer.length() - 1));
+                }
             }
 
             // 理论上，这是最外层的切面，不可能抛异常

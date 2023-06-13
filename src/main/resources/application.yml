@@ -16,6 +16,11 @@ datasource:
 spring:
   profiles:
     active: local
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      enabled: true
 mybatis:
   # Set the xml configuration file address for mybatis.
   # config-location: "classpath:mybatis/mybatis-config.xml"
