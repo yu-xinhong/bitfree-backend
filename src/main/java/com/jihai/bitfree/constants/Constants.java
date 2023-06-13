@@ -7,4 +7,5 @@ public interface Constants {
     String ACCESS_FORBIDDEN = "access forbidden!";
     String EMAIL_SECRET = "MAIL_SECRET";
     String DEFAULT_PASSWORD_KEY = "DEFAULT_PASSWORD";
+    String DEFAULT_POSTER = "DEFAULT_POSTER";
 }

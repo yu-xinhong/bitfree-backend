@@ -299,4 +299,16 @@ name : xxx
 ]
 
 
+---
+config
+获取配置  config get /config/getByKey
+
+request {
+}
+
+response {
+   xxxx
+}
+
+
 - 
