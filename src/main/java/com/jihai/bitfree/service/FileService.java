@@ -6,7 +6,6 @@ import com.jihai.bitfree.entity.FileDO;
 import com.jihai.bitfree.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileService {
@@ -14,31 +13,23 @@ public class FileService {
     @Autowired
     private FileDAO fileDAO;
 
-    public FileUploadResp upload(MultipartFile multipartFile, Long userId) {
-        // upload cdn
-        String url = uploadCDN(multipartFile);
+    public String getUrlById(Long id) {
+        FileDO fileDO = fileDAO.getUrlById(id);
+        return fileDO == null ? "" : fileDO.getUrl();
+    }
 
+    public FileUploadResp uploadByMannal(String videoUrl, Long id) {
         FileDO fileDO = new FileDO();
-        fileDO.setUserId(userId);
-        fileDO.setName(multipartFile.getName());
-        fileDO.setFormat(FileUploadUtils.getFormat(multipartFile.getOriginalFilename()));
-        fileDO.setUrl(url);
+        fileDO.setUserId(id);
+        fileDO.setFormat(FileUploadUtils.getFormat(videoUrl));
+        fileDO.setUrl(videoUrl);
         fileDO.setType(FileUploadUtils.convertFormat2Type(fileDO.getFormat()));
 
         fileDAO.insert(fileDO);
 
         FileUploadResp fileUploadResp = new FileUploadResp();
         fileUploadResp.setId(fileDO.getId());
-        fileUploadResp.setUrl(url);
+        fileUploadResp.setUrl(videoUrl);
         return fileUploadResp;
-    }
-
-    private String uploadCDN(MultipartFile multipartFile) {
-        return "https://vjs.zencdn.net/v/oceans.mp4";
-    }
-
-    public String getUrlById(Long id) {
-        FileDO fileDO = fileDAO.getUrlById(id);
-        return fileDO == null ? "" : fileDO.getUrl();
     }
 }

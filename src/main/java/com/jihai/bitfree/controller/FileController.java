@@ -3,13 +3,13 @@ package com.jihai.bitfree.controller;
 import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
+import com.jihai.bitfree.dto.req.FileUploadReq;
 import com.jihai.bitfree.dto.req.GetFileReq;
 import com.jihai.bitfree.dto.resp.FileUploadResp;
 import com.jihai.bitfree.dto.resp.GetFileResp;
 import com.jihai.bitfree.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/file")
@@ -21,8 +21,8 @@ public class FileController extends BaseController {
 
     @PostMapping("/upload")
     @LoggedCheck
-    public Result<FileUploadResp> upload(@RequestParam("file") MultipartFile multipartFile) {
-        return convertSuccessResult(fileService.upload(multipartFile, getCurrentUser().getId()));
+    public Result<FileUploadResp> upload(@RequestBody FileUploadReq fileUploadReq) {
+        return convertSuccessResult(fileService.uploadByMannal(fileUploadReq.getVideoUrl(), getCurrentUser().getId()));
     }
 
     @GetMapping("/getById")
