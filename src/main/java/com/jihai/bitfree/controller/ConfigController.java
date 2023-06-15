@@ -18,10 +18,10 @@ public class ConfigController extends BaseController {
     @Autowired
     private ConfigService configService;
 
-    @GetMapping("/getByKey")
+    @GetMapping("/getDefaultPoster")
     @LoggedCheck
     @ParameterCheck
-    public Result<String> getConfig() {
+    public Result<String> getDefaultPoster() {
         return convertSuccessResult(configService.getByKey(Constants.DEFAULT_POSTER));
     }
 }

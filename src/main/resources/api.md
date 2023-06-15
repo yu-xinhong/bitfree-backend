@@ -301,7 +301,7 @@ name : xxx
 
 ---
 config
-获取配置  config get /config/getByKey
+获取配置  config get /config/getDefaultPoster
 
 request {
 }

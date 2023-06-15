@@ -10,6 +10,11 @@ public class GetFileResp extends BaseResp {
 
     private String url;
 
+    /**
+     * 1-video, 2-image
+     */
+    private Integer type;
+
     public Long getId() {
         return id;
     }
@@ -24,5 +29,13 @@ public class GetFileResp extends BaseResp {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

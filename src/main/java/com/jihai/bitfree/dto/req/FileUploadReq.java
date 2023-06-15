@@ -6,13 +6,13 @@ public class FileUploadReq extends BaseReq {
 
     private static final long serialVersionUID = 7588929113874657328L;
 
-    private String videoUrl;
+    private String fileUrl;
 
-    public String getVideoUrl() {
-        return videoUrl;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 }

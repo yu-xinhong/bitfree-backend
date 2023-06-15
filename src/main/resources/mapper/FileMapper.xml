@@ -21,7 +21,7 @@
         INSERT INTO file(`type`, `format`, `name`, `user_id`, `url`)
         VALUE(#{type}, #{format}, #{name}, #{userId}, #{url})
     </insert>
-    <select id="getUrlById" resultType="com.jihai.bitfree.entity.FileDO">
+    <select id="getById" resultType="com.jihai.bitfree.entity.FileDO">
         SELECT * FROM file WHERE id = #{id} AND deleted = 0
     </select>
 

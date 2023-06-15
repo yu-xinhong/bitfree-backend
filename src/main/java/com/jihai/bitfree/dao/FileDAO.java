@@ -6,5 +6,5 @@ public interface FileDAO {
 
     void insert(FileDO fileDO);
 
-    FileDO getUrlById(Long id);
+    FileDO getById(Long id);
 }

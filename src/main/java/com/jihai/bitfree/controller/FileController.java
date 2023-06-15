@@ -22,15 +22,12 @@ public class FileController extends BaseController {
     @PostMapping("/upload")
     @LoggedCheck
     public Result<FileUploadResp> upload(@RequestBody FileUploadReq fileUploadReq) {
-        return convertSuccessResult(fileService.uploadByMannal(fileUploadReq.getVideoUrl(), getCurrentUser().getId()));
+        return convertSuccessResult(fileService.uploadByMannal(fileUploadReq.getFileUrl(), getCurrentUser().getId()));
     }
 
     @GetMapping("/getById")
     @LoggedCheck
-    public Result<GetFileResp> getUrlById(GetFileReq getFileReq) {
-        GetFileResp getFileResp = new GetFileResp();
-        getFileResp.setId(getFileResp.getId());
-        getFileResp.setUrl(fileService.getUrlById(getFileReq.getId()));
-        return convertSuccessResult(getFileResp);
+    public Result<GetFileResp> getById(GetFileReq getFileReq) {
+        return convertSuccessResult(fileService.getById(getFileReq.getId()));
     }
 }

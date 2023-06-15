@@ -14,13 +14,13 @@ public class FileUploadUtils {
 
     static List<String> videoFormatList = Lists.newArrayList("mp4", "mov");
 
-    public final static Integer IMAGE_TYPE = 1;
+    public final static Integer IMAGE_TYPE = 2;
     public final static Integer VIDEO_TYPE = 1;
 
 
     public static String getFormat(String originalFilename) {
         if (StringUtils.isEmpty(originalFilename)) return "";
-        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1, originalFilename.indexOf("?") == -1 ? originalFilename.length() : originalFilename.indexOf("?"));
     }
 
     public static Integer convertFormat2Type(String format) {
