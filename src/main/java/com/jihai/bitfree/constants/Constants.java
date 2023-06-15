@@ -8,4 +8,5 @@ public interface Constants {
     String EMAIL_SECRET = "MAIL_SECRET";
     String DEFAULT_PASSWORD_KEY = "DEFAULT_PASSWORD";
     String DEFAULT_POSTER = "DEFAULT_POSTER";
+    String SENSITIVE_WORDS = "SENSITIVE_WORDS";
 }
