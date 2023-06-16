@@ -33,7 +33,7 @@ public class RequestLogAspect {
             String methodName = proceedingJoinPoint.getTarget().getClass().getName() + "." + methodSignature.getName();
 
             StringBuffer requestLog = new StringBuffer();
-            requestLog.append(String.format("\n %s request to %s", httpServletRequest.getRemoteAddr(), methodName));
+            requestLog.append(String.format("\n %s request to %s", httpServletRequest.getHeader("X-Real-IP"), methodName));
 
             if (args.length > 0) {
                 StringBuffer paramsBuffer = new StringBuffer();

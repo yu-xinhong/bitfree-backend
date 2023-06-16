@@ -3,7 +3,9 @@ package com.jihai.bitfree.aspect;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.RateLimiter;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
@@ -23,12 +26,25 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 public class IpLimiterAspect {
 
-    private static final double DEFAULT_LIMITER_COUNT_PER_SECOND = 1;
+    private static double DEFAULT_LIMITER_COUNT_PER_SECOND = 0.5;
 
     Cache<String, RateLimiter> limiterCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 
     @Autowired
     private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private ConfigService configService;
+
+    @PostConstruct
+    public void initLimitCount() {
+        try {
+            DEFAULT_LIMITER_COUNT_PER_SECOND = Double.parseDouble(configService.getByKey(Constants.LIMIT_COUNT_PER_SECOND));
+        } catch (NumberFormatException e) {
+            log.error("配置错误");
+            throw new RuntimeException(e);
+        }
+    }
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
