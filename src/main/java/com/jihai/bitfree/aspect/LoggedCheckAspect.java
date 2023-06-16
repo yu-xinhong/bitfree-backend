@@ -1,5 +1,7 @@
 package com.jihai.bitfree.aspect;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.exception.BusinessException;
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Slf4j
 @Component
-@Profile({"dev", "prod"})
+@Profile({"local", "prod"})
 @Order(2)
 public class LoggedCheckAspect {
 
@@ -28,12 +30,12 @@ public class LoggedCheckAspect {
     @Autowired
     private UserDAO userDAO;
 
-
     @Around("@annotation(com.jihai.bitfree.aspect.LoggedCheck)")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Cookie[] cookies = httpServletRequest.getCookies();
+        String ip = httpServletRequest.getHeader("X-Real-IP");
         if (cookies == null) {
-            log.error("The request {} headers not exists cookies", httpServletRequest.getRemoteHost());
+            log.error("The request {} headers not exists cookies", ip);
             throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         String token = null;
@@ -44,11 +46,11 @@ public class LoggedCheckAspect {
             }
         }
         if (token == null) {
-            log.error("The request {} try to access protected resources", httpServletRequest.getRemoteHost());
+            log.error("The request {} try to access protected resources", ip);
             throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         if (userDAO.getByToken(token) == null) {
-            log.error("The request {} try fake token", httpServletRequest.getRemoteHost());
+            log.error("The request {} try fake token", ip);
             throw new BusinessException(Constants.ACCESS_FORBIDDEN);
         }
         return proceedingJoinPoint.proceed();
