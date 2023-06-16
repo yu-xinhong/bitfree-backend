@@ -1,14 +1,18 @@
 package com.jihai.bitfree.dto.req;
 
 import com.jihai.bitfree.base.BaseReq;
+import org.hibernate.validator.constraints.Length;
+
 import javax.validation.constraints.NotNull;
 
 public class LoginReq extends BaseReq {
 
     @NotNull(message = "邮箱不能为空")
+    @Length(max = 100, message = "禁止恶意注入")
     private String email;
 
     @NotNull(message = "密码不能为空")
+    @Length(max = 100, message = "禁止恶意注入")
     private String password;
 
     public String getEmail() {
