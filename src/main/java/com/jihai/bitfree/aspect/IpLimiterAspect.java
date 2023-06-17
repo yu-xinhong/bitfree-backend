@@ -3,7 +3,7 @@ package com.jihai.bitfree.aspect;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.RateLimiter;
-import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
@@ -24,9 +24,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Order(5)
 @Aspect
-public class IpLimiterAspect {
+@RestController
+public class IpLimiterAspect extends BaseController {
 
-    private static double DEFAULT_LIMITER_COUNT_PER_SECOND = 0.5;
+    // 默认2秒产生一个令牌，ip+方法级别2秒最多一个请求, 提供rest修改能力
+    private volatile double DEFAULT_LIMITER_COUNT_PER_SECOND = 0.5;
 
     Cache<String, RateLimiter> limiterCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 
@@ -36,15 +38,6 @@ public class IpLimiterAspect {
     @Autowired
     private ConfigService configService;
 
-    @PostConstruct
-    public void initLimitCount() {
-        try {
-            DEFAULT_LIMITER_COUNT_PER_SECOND = Double.parseDouble(configService.getByKey(Constants.LIMIT_COUNT_PER_SECOND));
-        } catch (NumberFormatException e) {
-            log.error("配置错误");
-            throw new RuntimeException(e);
-        }
-    }
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -62,5 +55,11 @@ public class IpLimiterAspect {
             throw new BusinessException("触发限流, 再请求封禁");
         }
         return proceedingJoinPoint.proceed();
+    }
+
+    public void modifyCount(double count, String secret) {
+        checkSecret(secret);
+        DEFAULT_LIMITER_COUNT_PER_SECOND = count;
+        limiterCache.asMap().values().forEach(limiter -> limiter.setRate(count));
     }
 }

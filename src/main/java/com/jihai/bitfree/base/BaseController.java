@@ -63,11 +63,11 @@ public class BaseController {
     protected void checkSecret(String secret) {
         ConfigDO config = configDAO.getByKey(Constants.SECRET);
         if (config == null) {
-            throw new RuntimeException("secret not config !");
+            throw new RuntimeException("请检查密钥");
         }
         if (! config.getValue().equals(secret)) {
             log.warn("secret is error ! {}", secret);
-            throw new RuntimeException("secret error");
+            throw new RuntimeException("禁止调用");
         }
     }
 }
