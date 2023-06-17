@@ -47,7 +47,7 @@ public class IpLimiterAspect extends BaseController {
         MethodSignature methodSignature = (MethodSignature) signature;
         String methodName = proceedingJoinPoint.getTarget().getClass().getName() + "." + methodSignature.getName();
         String recordKey = ip + "->" + methodName;
-
+        // 此处不需要考虑并发get，底层已lock创建
         RateLimiter rateLimiter = limiterCache.get(recordKey, () -> RateLimiter.create(DEFAULT_LIMITER_COUNT_PER_SECOND));
 
         if (! rateLimiter.tryAcquire()) {

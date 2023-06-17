@@ -3,7 +3,7 @@ package com.jihai.bitfree.service;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
-import com.jihai.bitfree.constants.OperateTypeEnum;
+import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -15,7 +15,6 @@ import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.jihai.bitfree.constants;
+package com.jihai.bitfree.base.enums;
 
 public enum OperateTypeEnum {
     INIT_USER(1, "初始化"),
