@@ -30,7 +30,8 @@ public class ConfigController extends BaseController {
 
     @PostMapping("/modifyLimit")
     public Result<Boolean> modifyLimit(@RequestBody ModifyLimitReq modifyLimitReq) {
-        ipLimiterAspect.modifyCount(modifyLimitReq.getCount(), modifyLimitReq.getSecret());
+        checkSecret(modifyLimitReq.getSecret());
+        ipLimiterAspect.modifyCount(modifyLimitReq.getCount());
         return convertSuccessResult(true);
     }
 }

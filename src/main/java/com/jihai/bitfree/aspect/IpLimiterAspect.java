@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Order(5)
 @Aspect
 @RestController
-public class IpLimiterAspect extends BaseController {
+public class IpLimiterAspect {
 
     // 默认2秒产生一个令牌，ip+方法级别2秒最多一个请求, 提供rest修改能力
     private volatile double DEFAULT_LIMITER_COUNT_PER_SECOND = 0.5;
@@ -57,8 +57,7 @@ public class IpLimiterAspect extends BaseController {
         return proceedingJoinPoint.proceed();
     }
 
-    public void modifyCount(double count, String secret) {
-        checkSecret(secret);
+    public void modifyCount(double count) {
         DEFAULT_LIMITER_COUNT_PER_SECOND = count;
         limiterCache.asMap().values().forEach(limiter -> limiter.setRate(count));
     }
