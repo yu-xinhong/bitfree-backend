@@ -76,7 +76,7 @@
         FROM user WHERE email = #{email} AND deleted = 0
     </select>
     <select id="ActivityUserResp" resultType="com.jihai.bitfree.dto.resp.ActivityUserResp">
-        SELECT user.name AS name, user.avatar AS avatar, COUNT(*) AS count
+        SELECT user.id AS id, user.name AS name, user.avatar AS avatar, COUNT(*) AS count
         FROM user
         RIGHT JOIN reply
         ON user.id = reply.send_user_id
