@@ -18,7 +18,7 @@ public class UserResp extends BaseResp {
 
     private Integer seniority;
 
-    private String token;
+//    private String token;
 
     private Integer status;
 
@@ -82,13 +82,13 @@ public class UserResp extends BaseResp {
         this.seniority = seniority;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
+//    public String getToken() {
+//        return token;
+//    }
+//
+//    public void setToken(String token) {
+//        this.token = token;
+//    }
 
     public Integer getStatus() {
         return status;
