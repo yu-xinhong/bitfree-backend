@@ -66,7 +66,7 @@ public class NotifyService {
 
             // 发送消息
             Transport.send(message);
-            System.out.println("Sent message successfully....from bitfree");
+            log.info("Sent message successfully....from bitfree");
         }catch (Throwable mex) {
             log.error("发送邮件异常 需要尽快手动通知 email {}, password {}", toMail, toContent, mex);
             throw new RuntimeException(ReturnCodeEnum.SEND_MAIL_ERROR.getDesc());

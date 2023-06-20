@@ -3,7 +3,6 @@ package com.jihai.bitfree.aspect;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.RateLimiter;
-import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
