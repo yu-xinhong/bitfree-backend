@@ -52,7 +52,7 @@ public class IpLimiterAspect {
 
         if (! rateLimiter.tryAcquire()) {
             log.error("ip -> method {} 单位请求次数过多", recordKey);
-            throw new BusinessException("触发限流, 再请求封禁");
+            throw new BusinessException("触发限流, 手速慢点");
         }
         return proceedingJoinPoint.proceed();
     }
