@@ -86,7 +86,7 @@ public class UserService {
         if (! configDO.getValue().equals(secret)) {
             log.error("warn ! addUser is only allow administrator jihai!");
             // send alert
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+            throw new RuntimeException(Constants.NOT_LOGIN);
         }
     }
 

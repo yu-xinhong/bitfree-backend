@@ -1,7 +1,5 @@
 package com.jihai.bitfree.aspect;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.exception.BusinessException;
@@ -36,7 +34,7 @@ public class LoggedCheckAspect {
         String ip = httpServletRequest.getHeader("X-Real-IP");
         if (cookies == null) {
             log.error("The request {} headers not exists cookies", ip);
-            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.NOT_LOGIN);
         }
         String token = null;
         for (Cookie cookie : cookies) {
@@ -47,11 +45,11 @@ public class LoggedCheckAspect {
         }
         if (token == null) {
             log.error("The request {} try to access protected resources", ip);
-            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.NOT_LOGIN);
         }
         if (userDAO.getByToken(token) == null) {
             log.error("The request {} try fake token", ip);
-            throw new BusinessException(Constants.ACCESS_FORBIDDEN);
+            throw new BusinessException(Constants.NOT_LOGIN);
         }
         return proceedingJoinPoint.proceed();
     }
