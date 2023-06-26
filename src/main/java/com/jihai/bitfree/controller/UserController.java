@@ -76,6 +76,17 @@ public class UserController extends BaseController {
     }
 
 
+    @RequestMapping("/addUser/{secret}/{level}/{email}")
+    @ParameterCheck
+    public Result<String> addUser(@PathVariable("secret") String secret,
+                                  @PathVariable("level") Integer level,
+                                  @PathVariable("email") String email) {
+        String password = userService.addUser(email, level, secret);
+        notifyService.sendNotice(email, password);
+        return convertSuccessResult(password);
+    }
+
+
     @PostMapping("/save")
     @ParameterCheck
     @LoggedCheck
