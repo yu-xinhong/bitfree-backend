@@ -21,10 +21,6 @@ public class SaveUserReq extends BaseReq {
     @SensitiveText
     private String seniority;
 
-    private String oldPwd;
-
-    private String pwd;
-
     public String getAvatar() {
         return avatar;
     }
@@ -65,19 +61,4 @@ public class SaveUserReq extends BaseReq {
         this.seniority = seniority;
     }
 
-    public String getOldPwd() {
-        return oldPwd;
-    }
-
-    public void setOldPwd(String oldPwd) {
-        this.oldPwd = oldPwd;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
 }

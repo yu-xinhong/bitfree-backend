@@ -24,7 +24,7 @@ public interface UserDAO {
 
     UserDO queryByEmail(String email);
 
-    void save(@Param("userId") Long userId,@Param("avatar") String avatar, @Param("name") String name, @Param("city") String city, @Param("position") String position, @Param("seniority") String seniority, @Param("password") String password);
+    void save(@Param("userId") Long userId,@Param("avatar") String avatar, @Param("name") String name, @Param("city") String city, @Param("position") String position, @Param("seniority") String seniority);
 
     List<ActivityUserResp> ActivityUserResp();
 

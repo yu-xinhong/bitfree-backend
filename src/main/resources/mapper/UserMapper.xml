@@ -49,8 +49,7 @@
         avatar = #{avatar},
         position = #{position},
         seniority = #{seniority},
-        city = #{city},
-        password = #{password}
+        city = #{city}
         WHERE id = #{userId}
         AND deleted = 0
     </update>

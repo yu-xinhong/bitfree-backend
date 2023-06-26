@@ -1,9 +1,9 @@
 package com.jihai.bitfree.service;
 
 
+import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -95,28 +95,8 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
-        if (StringUtils.hasText(password)) {
-            UserDO userDO = userDao.getById(userId);
-            if (! userDO.getPassword().equalsIgnoreCase(originPassword)) {
-                log.warn("some one password new and old not equals");
-                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
-            }
-
-            if (userDO.getPassword().equalsIgnoreCase(password)) {
-                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
-            }
-        }
-        userDao.save(userId, avatar, name, city, position, seniority, password);
-
-        // 清除token
-        if (StringUtils.hasText(password)) userDao.clearToken(userId);
-
-        OperateLogDO operateLogDO = new OperateLogDO();
-        operateLogDO.setUserId(userId);
-        operateLogDO.setType(OperateTypeEnum.UPDATE_PASSWORD.getCode());
-
-        operateLogDAO.insert(operateLogDO);
+    public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId) {
+        userDao.save(userId, avatar, name, city, position, seniority);
         return true;
     }
 
@@ -131,6 +111,29 @@ public class UserService {
     public Boolean resetPassword(Long id, String secret, String defaultPassword) {
         checkSecret(secret);
         userDao.updatePasswordAndClearToken(id, defaultPassword);
+        return true;
+    }
+
+    public Boolean updatePassword(Long id, String oldPassword, String newPassword) {
+        if (StringUtils.hasText(newPassword)) {
+            UserDO userDO = userDao.getById(id);
+            if (! userDO.getPassword().equalsIgnoreCase(oldPassword)) {
+                log.warn("some one password new and old not equals");
+                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
+            }
+
+            if (userDO.getPassword().equalsIgnoreCase(newPassword)) {
+                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
+            }
+        }
+        userDao.updatePasswordAndClearToken(id, newPassword);
+
+        OperateLogDO operateLogDO = new OperateLogDO();
+        operateLogDO.setUserId(id);
+        operateLogDO.setType(OperateTypeEnum.UPDATE_PASSWORD.getCode());
+
+        operateLogDAO.insert(operateLogDO);
+
         return true;
     }
 }
