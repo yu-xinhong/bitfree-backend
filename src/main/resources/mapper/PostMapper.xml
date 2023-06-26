@@ -47,7 +47,7 @@
         <if test="userId != null">
             AND creator_id = #{userId}
         </if>
-        ORDER BY update_time DESC LIMIT #{start}, #{size}
+        ORDER BY create_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="queryByIdList" resultMap="postResultMap">
         SELECT <include refid="BASE_COLUMN"/>
