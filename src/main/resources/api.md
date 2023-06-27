@@ -98,6 +98,18 @@ response : {
     true
 }
 
+
+- 修改密码 post /user/updatePassword
+
+request : {
+    oldPwd: '',
+    pwd: ''
+}
+
+response : {
+    true
+}
+
 - 后门工具 post /user/addUser
 
 request : {

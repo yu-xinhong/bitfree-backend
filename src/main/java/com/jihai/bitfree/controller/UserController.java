@@ -76,14 +76,24 @@ public class UserController extends BaseController {
     }
 
 
+    @RequestMapping("/addUser/{secret}/{level}/{email}")
+    @ParameterCheck
+    public Result<String> addUser(@PathVariable("secret") String secret,
+                                  @PathVariable("level") Integer level,
+                                  @PathVariable("email") String email) {
+        String password = userService.addUser(email, level, secret);
+        notifyService.sendNotice(email, password);
+        return convertSuccessResult(password);
+    }
+
+
     @PostMapping("/save")
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> save(@RequestBody SaveUserReq saveUserReq) {
         return convertSuccessResult(userService.save(saveUserReq.getAvatar(), saveUserReq.getName(), saveUserReq.getCity(),
                 saveUserReq.getPosition(), saveUserReq.getSeniority(),
-                getCurrentUser().getId(), saveUserReq.getOldPwd(),
-                saveUserReq.getPwd()));
+                getCurrentUser().getId()));
     }
 
 
@@ -106,6 +116,13 @@ public class UserController extends BaseController {
     @ParameterCheck
     public Result<Boolean> resetPassword(@RequestBody ResetPasswordReq resetPasswordReq) {
         return convertSuccessResult(userService.resetPassword(resetPasswordReq.getId() , resetPasswordReq.getSecret(), passwordUtils.defaultPassword()));
+    }
+
+
+    @PostMapping("/updatePassword")
+    @ParameterCheck
+    public Result<Boolean> updatePassword(@RequestBody UpdatePasswordReq updatePasswordReq) {
+        return convertSuccessResult(userService.updatePassword(getCurrentUser().getId(), updatePasswordReq.getOldPwd(), updatePasswordReq.getPwd()));
     }
 
 
