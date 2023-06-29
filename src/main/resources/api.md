@@ -183,7 +183,8 @@ level : 1,
 creatorName : xxx,
 creatorId : 11,
 createTime: xxx,
-updateTime: xxx
+updateTime: xxx,
+viewCount : 1
 }
 
 

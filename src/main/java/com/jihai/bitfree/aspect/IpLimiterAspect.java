@@ -51,7 +51,7 @@ public class IpLimiterAspect {
 
         if (! rateLimiter.tryAcquire()) {
             log.error("ip -> method {} 单位请求次数过多", recordKey);
-            throw new BusinessException("骚年手速慢点doge");
+            throw new BusinessException("操作太快");
         }
         return proceedingJoinPoint.proceed();
     }

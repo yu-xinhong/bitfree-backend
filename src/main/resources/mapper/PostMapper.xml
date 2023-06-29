@@ -9,6 +9,7 @@
         <result column="title" property="title" />
         <result column="content" property="content" />
         <result column="creator_id" property="creatorId" />
+        <result column="view_count" property="viewCount" />
         <result column="topic_id" property="topicId" />
         <result column="last_updater_id" property="lastUpdaterId" />
         <result column="create_time" property="createTime" />
@@ -16,7 +17,7 @@
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, last_updater_id, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, view_count, last_updater_id, create_time, update_time, deleted</sql>
 
     <insert id="insert">
         INSERT INTO post(`title`, `content`, `creator_id`, `topic_id`, `last_updater_id`)
@@ -27,9 +28,12 @@
         WHERE id = #{postId} AND deleted = 0
     </update>
     <update id="deleted">
-
         UPDATE post SET deleted = 1
         WHERE id = #{postId}
+    </update>
+    <update id="incrementView">
+        UPDATE post SET view_count = view_count + 1
+        WHERE id = #{id}
     </update>
 
     <select id="count" resultType="int">
