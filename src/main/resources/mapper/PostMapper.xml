@@ -28,7 +28,7 @@
         WHERE id = #{postId} AND deleted = 0
     </update>
     <update id="deleted">
-        UPDATE post SET deleted = 1
+        UPDATE post SET deleted = 1, update_time = NOW()
         WHERE id = #{postId}
     </update>
     <update id="incrementView">
