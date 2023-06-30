@@ -27,4 +27,6 @@ public interface PostDAO {
     List<RankPostItemResp> queryRankList();
 
     void deleted(@Param("postId") Long postId);
+
+    void incrementView(@Param("id") Long id);
 }

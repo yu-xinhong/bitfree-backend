@@ -12,6 +12,7 @@ import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Slf4j
 public class UserService {
 
+    private static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
     @Autowired
     private UserDAO userDao;
 
@@ -64,6 +66,7 @@ public class UserService {
         }
 
         UserDO userDO = new UserDO();
+        userDO.setAvatar(configDAO.getByKey(DEFAULT_AVATAR).getValue());
         userDO.setEmail(email);
 
         String password = PasswordUtils.generatePwd();
@@ -96,6 +99,8 @@ public class UserService {
 
     @Transactional
     public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId) {
+        if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
+        if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
         userDao.save(userId, avatar, name, city, position, seniority);
         return true;
     }

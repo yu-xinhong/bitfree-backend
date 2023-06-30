@@ -131,6 +131,9 @@ public class PostService {
         UserDO userDO = userDAO.getById(postDO.getCreatorId());
         postDetailResp.setCreatorName(userDO.getName());
         postDetailResp.setAvatar(userDO.getAvatar());
+
+        // record view count
+        postDAO.incrementView(id);
         return postDetailResp;
     }
 
