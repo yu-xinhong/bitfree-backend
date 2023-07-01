@@ -24,8 +24,8 @@
 
     <sql id="BASE_COLUMN">id, name, avatar, position, level, city, seniority, token, status, email, password, contact, deleted, create_time, update_time</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO user(`email`, `password`, `level`)
-        VALUE(#{email}, #{password}, #{level})
+        INSERT INTO user(`avatar`, `email`, `password`, `level`)
+        VALUE(#{avatar}, #{email}, #{password}, #{level})
     </insert>
 
     <select id="queryByEmailAndPassword" resultMap="userResultMap">
