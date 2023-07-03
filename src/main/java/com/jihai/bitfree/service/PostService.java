@@ -169,6 +169,7 @@ public class PostService {
     public Boolean deleteReply(Long id) {
         replyDAO.deletedById(id);
         replyNoticeDAO.deletedByReplyId(id);
+        replyDAO.deletedByTargetId(id);
         return true;
     }
 }

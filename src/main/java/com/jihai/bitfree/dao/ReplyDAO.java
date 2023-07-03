@@ -28,4 +28,6 @@ public interface ReplyDAO {
     void deleted(@Param("postId") Long postId);
 
     void deletedById(Long id);
+
+    void deletedByTargetId(@Param("targetReplyId") Long targetReplyId);
 }

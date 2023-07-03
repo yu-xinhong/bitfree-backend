@@ -30,8 +30,11 @@
         SET deleted = 1
         WHERE id = #{id}
     </update>
-
-
+    <update id="deletedByTargetId">
+        UPDATE reply
+        SET deleted = 1
+        WHERE target_reply_id = #{targetReplyId}
+    </update>
     <select id="queryByPostIdList" resultMap="replyResultMap">
         SELECT <include refid="BASE_COLUMN"/> FROM reply WHERE deleted = 0 AND
         post_id IN
