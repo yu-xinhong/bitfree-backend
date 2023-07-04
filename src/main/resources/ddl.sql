@@ -9,19 +9,19 @@ CREATE TABLE `config` (
   UNIQUE KEY `unique_key` (`key`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 CREATE TABLE `file` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) DEFAULT NULL,
   `user_id` bigint NOT NULL,
   `url` text,
+  `poster` text,
   `type` int DEFAULT NULL COMMENT '1-视频，2-图片，3-音频',
   `format` varchar(16) DEFAULT NULL,
   `deleted` tinyint NOT NULL DEFAULT '0',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `operate_log` (
@@ -40,16 +40,18 @@ CREATE TABLE `post` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '标题',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '内容',
-  `view_count` int NOT NULL DEFAULT '0',
   `creator_id` bigint NOT NULL COMMENT '创建者id',
+  `view_count` int NOT NULL DEFAULT '0',
+  `type` int DEFAULT NULL COMMENT '0-帖子区，1-视频区',
   `topic_id` int DEFAULT NULL COMMENT '话题id',
   `last_updater_id` bigint DEFAULT NULL COMMENT '最近回复人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `idx_update_time` (`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=4187 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idx_update_time` (`title`),
+  KEY `idx_creator_id` (`creator_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reply` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
