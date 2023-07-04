@@ -29,4 +29,8 @@ public interface PostDAO {
     void deleted(@Param("postId") Long postId);
 
     void incrementView(@Param("id") Long id);
+
+    List<PostDO> queryVideoList(@Param("start") Integer page, @Param("size") Integer size);
+
+    int countVideo();
 }

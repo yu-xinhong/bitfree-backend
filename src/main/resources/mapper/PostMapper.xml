@@ -9,6 +9,7 @@
         <result column="title" property="title" />
         <result column="content" property="content" />
         <result column="creator_id" property="creatorId" />
+        <result column="type" property="type" />
         <result column="view_count" property="viewCount" />
         <result column="topic_id" property="topicId" />
         <result column="last_updater_id" property="lastUpdaterId" />
@@ -17,11 +18,11 @@
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, title, content, creator_id, topic_id, view_count, last_updater_id, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, title, content, creator_id, type, topic_id, view_count, last_updater_id, create_time, update_time, deleted</sql>
 
     <insert id="insert">
-        INSERT INTO post(`title`, `content`, `creator_id`, `topic_id`, `last_updater_id`)
-        VALUE(#{title}, #{content}, #{creatorId}, #{topicId}, #{lastUpdaterId})
+        INSERT INTO post(`title`, `content`, `type`, `creator_id`, `topic_id`, `last_updater_id`)
+        VALUE(#{title}, #{content}, #{type}, #{creatorId}, #{topicId}, #{lastUpdaterId})
     </insert>
     <update id="updateTime">
         UPDATE post SET update_time = NOW()
@@ -84,5 +85,14 @@
         AND reply.deleted = 0
         GROUP BY post_id
         ORDER BY count(reply.id) DESC LIMIT 10
+    </select>
+    <select id="queryVideoList" resultType="com.jihai.bitfree.entity.PostDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM post WHERE type = 1
+        ORDER BY create_time DESC LIMIT #{start}, #{size}
+    </select>
+    <select id="countVideo" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM post WHERE type = 1
     </select>
 </mapper>

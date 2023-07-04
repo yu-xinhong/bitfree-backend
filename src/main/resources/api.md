@@ -184,9 +184,23 @@ creatorName : xxx,
 creatorId : 11,
 createTime: xxx,
 updateTime: xxx,
-viewCount : 1
+viewCount : 1,
+poster: xxx
 }
 
+
+- 获取视频列表  get/post/pageQueryVideoList
+
+request : {
+}
+
+response : {
+id : 1,
+poster : xxxx,
+createTime : xxx,
+title : xxx,
+creatorName : 
+}
 
 - 获取评论列表get /post/getReplyList
 
@@ -324,4 +338,17 @@ response {
 }
 
 
-- 
+-- 
+file 文件接口
+file get /file/getById
+
+request {
+    id
+}
+
+response {
+    url: xx,
+    type : xx,  // 1-video, 2-image
+    poster : xxx,
+    id : xxx
+}

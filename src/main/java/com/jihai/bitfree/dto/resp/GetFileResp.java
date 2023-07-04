@@ -15,6 +15,8 @@ public class GetFileResp extends BaseResp {
      */
     private Integer type;
 
+    private String poster;
+
     public Long getId() {
         return id;
     }
@@ -37,5 +39,13 @@ public class GetFileResp extends BaseResp {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
     }
 }

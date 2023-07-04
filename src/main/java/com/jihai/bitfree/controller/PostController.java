@@ -131,4 +131,11 @@ public class PostController extends BaseController {
         checkSecret(deleteReplyReq.getSecret());
         return convertSuccessResult(postService.deleteReply(deleteReplyReq.getId()));
     }
+
+
+    @GetMapping("/pageQueryVideoList")
+    @LoggedCheck
+    public Result<PageResult<VideoListResp>> pageQueryVideoList(PageQueryReq pageQueryReq) {
+        return convertSuccessResult(postService.pageQueryVideoList(pageQueryReq.getPage(), pageQueryReq.getSize()));
+    }
 }

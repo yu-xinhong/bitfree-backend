@@ -3,16 +3,17 @@ package com.jihai.bitfree.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.enums.PostTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
-import com.jihai.bitfree.entity.ConfigDO;
-import com.jihai.bitfree.entity.PostDO;
-import com.jihai.bitfree.entity.ReplyDO;
-import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.dto.resp.VideoListResp;
+import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.utils.DataConvert;
+import com.jihai.bitfree.utils.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +45,9 @@ public class PostService {
 
     @Autowired
     private ReplyNoticeDAO replyNoticeDAO;
+
+    @Autowired
+    private FileDAO fileDAO;
 
 
     public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, Long userId, boolean includeTopList) {
@@ -145,7 +150,23 @@ public class PostService {
         postDO.setContent(content);
         postDO.setTopicId(topicId);
         postDO.setLastUpdaterId(userId);
+
+        postDO.setType(getTypeContent(content));
         postDAO.insert(postDO);
+    }
+
+    private Integer getTypeContent(String content) {
+        if (! content.contains("[file")) return PostTypeEnum.POST.getType();
+        Long fileId = getFileIdFromContent(content);
+        if (fileId == null) return PostTypeEnum.POST.getType();
+        FileDO fileDO = fileDAO.getById(fileId);
+        return fileDO.getType() == FileUploadUtils.VIDEO_TYPE ?
+                PostTypeEnum.VIDEO.getType() : PostTypeEnum.POST.getType();
+    }
+
+    private Long getFileIdFromContent(String content) {
+        int startIndex = content.indexOf("[file:") + 9;
+        return Long.valueOf(content.substring(startIndex, content.indexOf("]", startIndex)));
     }
 
     public Integer countByUserId(Long userId) {
@@ -171,5 +192,30 @@ public class PostService {
         replyNoticeDAO.deletedByReplyId(id);
         replyDAO.deletedByTargetId(id);
         return true;
+    }
+
+    public PageResult<VideoListResp> pageQueryVideoList(Integer page, Integer size) {
+        int total = postDAO.countVideo();
+        List<PostDO> postDOList = postDAO.queryVideoList((page - 1) * size, size);
+        if (CollectionUtils.isEmpty(postDOList)) return new PageResult<>(Collections.emptyList(), total);
+
+        List<Long> userIdList = postDOList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList());
+        List<UserDO> userDOList = userDAO.batchQueryByIdList(userIdList);
+        ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
+
+        List<Long> fileIdList = postDOList.stream().map(post -> getFileIdFromContent(post.getContent())).distinct().collect(Collectors.toList());
+        List<FileDO> fileDOList = fileDAO.batchQueryById(fileIdList);
+        ImmutableMap<Long, FileDO> fileMap = Maps.uniqueIndex(fileDOList, FileDO::getId);
+
+        List<VideoListResp> videoListRespList = postDOList.stream().map(post -> {
+            VideoListResp videoListResp = new VideoListResp();
+            videoListResp.setId(post.getId());
+            videoListResp.setTitle(post.getTitle());
+            videoListResp.setPoster(fileMap.get(getFileIdFromContent(post.getContent())).getPoster());
+            videoListResp.setCreateTime(post.getCreateTime());
+            videoListResp.setCreatorName(userIdMap.get(post.getCreatorId()).getName());
+            return videoListResp;
+        }).collect(Collectors.toList());
+        return new PageResult<>(videoListRespList, total);
     }
 }

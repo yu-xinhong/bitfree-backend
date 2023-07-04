@@ -98,7 +98,7 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId) {
+    public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId) {
         if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
         if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
         userDao.save(userId, avatar, name, city, position, seniority);

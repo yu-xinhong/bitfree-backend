@@ -3,23 +3,29 @@ package com.jihai.bitfree.dto.req;
 import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
 
+import javax.validation.constraints.NotNull;
+
 public class SaveUserReq extends BaseReq {
 
     private static final long serialVersionUID = -3194199142275222567L;
 
+    @NotNull
     private String avatar;
 
     @SensitiveText
+    @NotNull
     private String name;
 
     @SensitiveText
+    @NotNull
     private String city;
 
     @SensitiveText
+    @NotNull
     private String position;
 
-    @SensitiveText
-    private String seniority;
+    @NotNull
+    private Integer seniority;
 
     public String getAvatar() {
         return avatar;
@@ -53,12 +59,11 @@ public class SaveUserReq extends BaseReq {
         this.position = position;
     }
 
-    public String getSeniority() {
+    public Integer getSeniority() {
         return seniority;
     }
 
-    public void setSeniority(String seniority) {
+    public void setSeniority(Integer seniority) {
         this.seniority = seniority;
     }
-
 }
