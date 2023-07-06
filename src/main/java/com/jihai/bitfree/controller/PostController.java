@@ -128,7 +128,13 @@ public class PostController extends BaseController {
     @PostMapping("/deleteReply")
     @ParameterCheck
     public Result<Boolean> deleteReply(@RequestBody DeleteReplyReq deleteReplyReq) {
-        checkSecret(deleteReplyReq.getSecret());
+        // 超级管理员 可以不登陆，但是得提供密钥
+        if (getCurrentUser() == null) {
+            checkSecret(deleteReplyReq.getSecret());
+        } else {
+            // 只能删除自己得回复
+            postService.checkIsCurUserReply(deleteReplyReq.getId(), getCurrentUser().getId());
+        }
         return convertSuccessResult(postService.deleteReply(deleteReplyReq.getId()));
     }
 

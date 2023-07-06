@@ -12,6 +12,7 @@ import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
 import com.jihai.bitfree.dto.resp.VideoListResp;
 import com.jihai.bitfree.entity.*;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DataConvert;
 import com.jihai.bitfree.utils.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -217,5 +218,17 @@ public class PostService {
             return videoListResp;
         }).collect(Collectors.toList());
         return new PageResult<>(videoListRespList, total);
+    }
+
+    public void checkIsCurUserReply(Long id, Long userId) {
+        ReplyDO replyDO = replyDAO.getById(id);
+        if (replyDO == null) {
+            log.warn("someone try to delete not exits post {} ", id);
+            throw new BusinessException("帖子不存在");
+        }
+        if (! replyDO.getSendUserId().equals(userId)) {
+            log.warn("someone try to delete else reply postId {}, userId {}", id, userId);
+            throw new BusinessException("非法操作");
+        }
     }
 }
