@@ -155,6 +155,8 @@ public class UserService {
 
     @Transactional
     public Boolean checkIn(Long userId) {
+        if (getCheckIn(userId)) throw new BusinessException("重复签到");
+
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
         userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
         return true;
