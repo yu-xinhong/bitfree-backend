@@ -126,4 +126,17 @@ public class UserController extends BaseController {
     }
 
 
+    @GetMapping("/getCheckIn")
+    @LoggedCheck
+    public Result<Boolean> getCheckIn() {
+        return convertSuccessResult(userService.getCheckIn(getCurrentUser().getId()));
+    }
+
+    @PostMapping("/checkIn")
+    @LoggedCheck
+    public Result<Boolean> checkIn() {
+        return convertSuccessResult(userService.checkIn(getCurrentUser().getId()));
+    }
+
+
 }

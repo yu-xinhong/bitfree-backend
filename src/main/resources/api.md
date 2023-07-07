@@ -352,3 +352,20 @@ response {
     poster : xxx,
     id : xxx
 }
+
+
+# 签到功能
+-- 查询 get  user/getCheckIn
+
+request {}
+
+response {
+    true
+}
+
+-- 签到 post user/checkIn
+
+request {}
+
+response {}
+

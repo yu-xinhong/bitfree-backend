@@ -3,7 +3,9 @@ package com.jihai.bitfree.service;
 
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.dao.CheckInDAO;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -14,6 +16,7 @@ import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DO2DTOConvert;
+import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +41,9 @@ public class UserService {
 
     @Autowired
     private OperateLogDAO operateLogDAO;
+
+    @Autowired
+    private CheckInDAO checkInDAO;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDao.queryByEmailAndPassword(email, password);
@@ -139,6 +146,17 @@ public class UserService {
 
         operateLogDAO.insert(operateLogDO);
 
+        return true;
+    }
+
+    public Boolean getCheckIn(Long userId) {
+        return checkInDAO.getByCurrentDay(userId, DateUtils.formatDay(new Date())) > 0;
+    }
+
+    @Transactional
+    public Boolean checkIn(Long userId) {
+        checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
+        userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
         return true;
     }
 }

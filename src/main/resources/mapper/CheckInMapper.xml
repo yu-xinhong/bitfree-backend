@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.CheckInDAO">
+
+    <sql id="BASE_COLUMN">id, user_id, date, deleted, create_time, update_time</sql>
+    <insert id="insert">
+        INSERT INTO check_in(`user_id`, `date`)
+        VALUE(#{userId}, #{date})
+    </insert>
+
+    <select id="getByCurrentDay" resultType="integer">
+        SELECT COUNT(*)
+        FROM check_in
+        WHERE user_id = #{userId}
+        AND date = #{date} AND deleted = 0
+    </select>
+
+</mapper>
