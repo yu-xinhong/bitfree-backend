@@ -16,6 +16,8 @@ public class UserResp extends BaseResp {
 
     private String city;
 
+    private Integer coins;
+
     private Integer seniority;
 
 //    private String token;
@@ -72,6 +74,14 @@ public class UserResp extends BaseResp {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Integer getCoins() {
+        return coins;
+    }
+
+    public void setCoins(Integer coins) {
+        this.coins = coins;
     }
 
     public Integer getSeniority() {
