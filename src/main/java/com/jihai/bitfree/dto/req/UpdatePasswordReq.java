@@ -6,10 +6,10 @@ import javax.validation.constraints.NotNull;
 
 public class UpdatePasswordReq extends BaseReq {
 
-    @NotNull
+    @NotNull(message = "老密码不能为空")
     private String oldPwd;
 
-    @NotNull
+    @NotNull(message = "新密码不能为空")
     private String pwd;
 
     public String getOldPwd() {

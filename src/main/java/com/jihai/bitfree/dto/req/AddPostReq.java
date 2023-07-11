@@ -9,15 +9,15 @@ public class AddPostReq extends BaseReq {
 
     private static final long serialVersionUID = 2399161127153942996L;
 
-    @NotNull(message = "标题为空")
+    @NotNull(message = "标题不能为空")
     @SensitiveText
     private String title;
 
-    @NotNull(message = "内容为空")
+    @NotNull(message = "内容不能为空")
     @SensitiveText
     private String content;
 
-    @NotNull(message = "topic为空")
+    @NotNull(message = "topic不能为空")
     private Integer topicId;
 
     public String getTitle() {

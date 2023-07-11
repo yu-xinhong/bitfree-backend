@@ -8,7 +8,7 @@ public class FileUploadReq extends BaseReq {
 
     private static final long serialVersionUID = 7588929113874657328L;
 
-    @NotNull
+    @NotNull(message = "fileUrl 不能为空")
     private String fileUrl;
 
     private String poster;

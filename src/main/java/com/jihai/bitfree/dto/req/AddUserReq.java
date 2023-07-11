@@ -8,7 +8,7 @@ public class AddUserReq extends BaseReq {
 
     private static final long serialVersionUID = -6255319867205574466L;
 
-    @NotNull(message = "email is empty")
+    @NotNull(message = "email不能为空")
     private String email;
 
     private Integer level;

@@ -4,6 +4,7 @@ import com.jihai.bitfree.base.BaseReq;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 public class MessageReplyReq extends BaseReq {
 
@@ -13,10 +14,12 @@ public class MessageReplyReq extends BaseReq {
 
     @Min(0)
     @Max(100)
+    @NotNull(message = "page不能为空")
     private Integer page;
 
     @Min(0)
     @Max(100)
+    @NotNull(message = "size不能为空")
     private Integer size;
 
     public Long getId() {

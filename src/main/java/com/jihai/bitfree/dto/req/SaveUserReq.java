@@ -9,22 +9,22 @@ public class SaveUserReq extends BaseReq {
 
     private static final long serialVersionUID = -3194199142275222567L;
 
-    @NotNull
+    @NotNull(message = "头像不能为空")
     private String avatar;
 
     @SensitiveText
-    @NotNull
+    @NotNull(message = "昵称不能为空")
     private String name;
 
     @SensitiveText
-    @NotNull
+    @NotNull(message = "城市不能为空")
     private String city;
 
     @SensitiveText
-    @NotNull
+    @NotNull(message = "职位不能为空")
     private String position;
 
-    @NotNull
+    @NotNull(message = "工龄不能为空")
     private Integer seniority;
 
     public String getAvatar() {

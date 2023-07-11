@@ -8,7 +8,7 @@ public class DeleteReplyReq extends BaseReq  {
 
     private static final long serialVersionUID = -8369083239437853478L;
 
-    @NotNull
+    @NotNull(message = "id不能为空")
     private Long id;
 
     private String secret;

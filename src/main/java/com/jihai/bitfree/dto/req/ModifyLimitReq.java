@@ -8,10 +8,10 @@ public class ModifyLimitReq extends BaseReq {
 
     private static final long serialVersionUID = 2346195956977518079L;
 
-    @NotNull
+    @NotNull(message = "count不能为空")
     private Double count;
 
-    @NotNull
+    @NotNull(message = "密钥不能为空")
     private String secret;
 
     public Double getCount() {
