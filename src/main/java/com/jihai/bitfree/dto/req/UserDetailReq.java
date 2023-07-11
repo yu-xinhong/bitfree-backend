@@ -8,7 +8,6 @@ public class UserDetailReq extends BaseReq {
 
     private static final long serialVersionUID = 4732223495813514307L;
 
-    @NotNull(message = "id不能为空")
     private Long id;
 
     public Long getId() {
