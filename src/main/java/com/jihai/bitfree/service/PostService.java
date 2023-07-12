@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.*;
-import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
+import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.PostDO;
 import com.jihai.bitfree.entity.ReplyDO;
@@ -45,9 +45,9 @@ public class PostService {
     private ReplyNoticeDAO replyNoticeDAO;
 
 
-    public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, Long userId, boolean includeTopList) {
+    public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, String searchText, Long userId, boolean includeTopList) {
         List<PostDO> resultPostList = Lists.newArrayList();
-        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, userId);
+        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, "%" + searchText, userId);
 
         List<Long> topPostIdList;
         if (includeTopList && ! CollectionUtils.isEmpty(topPostIdList = queryTopIdList())) {

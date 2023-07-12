@@ -29,7 +29,7 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<PageResult<PostItemResp>> pageQuery(PageQueryReq pageQueryReq) {
         // 置顶的要减去size
-        List<PostItemResp> postItemRespList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize(), pageQueryReq.getTopicId(), null, true);
+        List<PostItemResp> postItemRespList = postService.pageQuery(pageQueryReq.getPage(), pageQueryReq.getSize(), pageQueryReq.getTopicId(), pageQueryReq.getSearchText(), null, true);
         Integer count = postService.count(pageQueryReq.getTopicId());
         return convertSuccessResult(new PageResult<>(postItemRespList, count));
     }
@@ -104,7 +104,7 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<PageResult<PostItemResp>> getByUserId(UserPostReq userPostReq) {
         Long userId = userPostReq.getId() != null ? userPostReq.getId() : getCurrentUser().getId();
-        List<PostItemResp> postItemRespList = postService.pageQuery(userPostReq.getPage(), userPostReq.getSize(), null, userId, false);
+        List<PostItemResp> postItemRespList = postService.pageQuery(userPostReq.getPage(), userPostReq.getSize(), null, null, userId, false);
         Integer count = postService.countByUserId(userId);
         return convertSuccessResult(new PageResult<>(postItemRespList, count));
     }

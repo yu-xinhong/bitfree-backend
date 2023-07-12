@@ -47,6 +47,9 @@
         <if test="userId != null">
             AND creator_id = #{userId}
         </if>
+        <if test="searchText != null">
+            AND title LIKE #{searchText}
+        </if>
         ORDER BY update_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="queryByIdList" resultMap="postResultMap">

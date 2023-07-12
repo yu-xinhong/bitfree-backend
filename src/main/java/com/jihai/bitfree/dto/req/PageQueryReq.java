@@ -1,6 +1,7 @@
 package com.jihai.bitfree.dto.req;
 
 import com.jihai.bitfree.base.BaseReq;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 
@@ -20,6 +21,9 @@ public class PageQueryReq extends BaseReq {
 
 
     private Long topicId;
+
+    @Length(max = 200)
+    private String searchText;
 
     public Long getTopicId() {
         return topicId;
@@ -43,5 +47,13 @@ public class PageQueryReq extends BaseReq {
 
     public void setSize(Integer size) {
         this.size = size;
+    }
+
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
     }
 }

@@ -10,7 +10,7 @@ public interface PostDAO {
 
     Integer count(Long topicId);
 
-    List<PostDO> pageQuery(@Param("start") Integer start, @Param("size") Integer size, @Param("topicId") Long topicId,@Param("userId") Long userId);
+    List<PostDO> pageQuery(@Param("start") Integer start, @Param("size") Integer size, @Param("topicId") Long topicId, String searchText, @Param("userId") Long userId);
 
     List<PostDO> queryByIdList(@Param("topPostIdList") List<Long> topPostIdList);
 

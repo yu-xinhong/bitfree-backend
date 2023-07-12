@@ -41,15 +41,17 @@ CREATE TABLE `post` (
   `title` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '标题',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '内容',
   `creator_id` bigint NOT NULL COMMENT '创建者id',
+  `view_count` int NOT NULL DEFAULT '0',
+  `type` int DEFAULT NULL COMMENT '0-帖子区，1-视频区',
   `topic_id` int DEFAULT NULL COMMENT '话题id',
   `last_updater_id` bigint DEFAULT NULL COMMENT '最近回复人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `idx_update_time` (`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+  KEY `idx_creator_id` (`creator_id`),
+  KEY `idx_title` (`title`)
+) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reply` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
