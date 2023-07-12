@@ -15,12 +15,13 @@ public class FileService {
     @Autowired
     private FileDAO fileDAO;
 
-    public FileUploadResp uploadByMannal(String videoUrl, Long id) {
+    public FileUploadResp uploadByMannal(String videoUrl, String poster, Long userId) {
         FileDO fileDO = new FileDO();
-        fileDO.setUserId(id);
+        fileDO.setUserId(userId);
         fileDO.setFormat(FileUploadUtils.getFormat(videoUrl));
         fileDO.setUrl(videoUrl);
         fileDO.setType(FileUploadUtils.convertFormat2Type(fileDO.getFormat()));
+        fileDO.setPoster(poster);
 
         fileDAO.insert(fileDO);
 

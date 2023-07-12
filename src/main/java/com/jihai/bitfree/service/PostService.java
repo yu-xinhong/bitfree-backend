@@ -3,24 +3,28 @@ package com.jihai.bitfree.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.enums.PostTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
 import com.jihai.bitfree.dto.resp.RankPostItemResp;
-import com.jihai.bitfree.entity.ConfigDO;
-import com.jihai.bitfree.entity.PostDO;
-import com.jihai.bitfree.entity.ReplyDO;
-import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.dto.resp.VideoListResp;
+import com.jihai.bitfree.entity.*;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DataConvert;
+import com.jihai.bitfree.utils.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,10 +48,13 @@ public class PostService {
     @Autowired
     private ReplyNoticeDAO replyNoticeDAO;
 
+    @Autowired
+    private FileDAO fileDAO;
+
 
     public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, String searchText, Long userId, boolean includeTopList) {
         List<PostDO> resultPostList = Lists.newArrayList();
-        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, "%" + searchText, userId);
+        List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, StringUtils.isEmpty(searchText) ? null : "%" + searchText.trim() + "%", userId);
 
         List<Long> topPostIdList;
         if (includeTopList && ! CollectionUtils.isEmpty(topPostIdList = queryTopIdList())) {
@@ -131,6 +138,9 @@ public class PostService {
         UserDO userDO = userDAO.getById(postDO.getCreatorId());
         postDetailResp.setCreatorName(userDO.getName());
         postDetailResp.setAvatar(userDO.getAvatar());
+
+        // record view count
+        postDAO.incrementView(id);
         return postDetailResp;
     }
 
@@ -142,7 +152,23 @@ public class PostService {
         postDO.setContent(content);
         postDO.setTopicId(topicId);
         postDO.setLastUpdaterId(userId);
+
+        postDO.setType(getTypeContent(content));
         postDAO.insert(postDO);
+    }
+
+    private Integer getTypeContent(String content) {
+        if (! content.contains("[file")) return PostTypeEnum.POST.getType();
+        Long fileId = getFileIdFromContent(content);
+        if (fileId == null) return PostTypeEnum.POST.getType();
+        FileDO fileDO = fileDAO.getById(fileId);
+        return fileDO.getType() == FileUploadUtils.VIDEO_TYPE ?
+                PostTypeEnum.VIDEO.getType() : PostTypeEnum.POST.getType();
+    }
+
+    private Long getFileIdFromContent(String content) {
+        int startIndex = content.indexOf("[file:") + 9;
+        return Long.valueOf(content.substring(startIndex, content.indexOf("]", startIndex)));
     }
 
     public Integer countByUserId(Long userId) {
@@ -166,6 +192,44 @@ public class PostService {
     public Boolean deleteReply(Long id) {
         replyDAO.deletedById(id);
         replyNoticeDAO.deletedByReplyId(id);
+        replyDAO.deletedByTargetId(id);
         return true;
+    }
+
+    public PageResult<VideoListResp> pageQueryVideoList(Integer page, Integer size) {
+        int total = postDAO.countVideo();
+        List<PostDO> postDOList = postDAO.queryVideoList((page - 1) * size, size);
+        if (CollectionUtils.isEmpty(postDOList)) return new PageResult<>(Collections.emptyList(), total);
+
+        List<Long> userIdList = postDOList.stream().map(PostDO::getCreatorId).distinct().collect(Collectors.toList());
+        List<UserDO> userDOList = userDAO.batchQueryByIdList(userIdList);
+        ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
+
+        List<Long> fileIdList = postDOList.stream().map(post -> getFileIdFromContent(post.getContent())).distinct().collect(Collectors.toList());
+        List<FileDO> fileDOList = fileDAO.batchQueryById(fileIdList);
+        ImmutableMap<Long, FileDO> fileMap = Maps.uniqueIndex(fileDOList, FileDO::getId);
+
+        List<VideoListResp> videoListRespList = postDOList.stream().map(post -> {
+            VideoListResp videoListResp = new VideoListResp();
+            videoListResp.setId(post.getId());
+            videoListResp.setTitle(post.getTitle());
+            videoListResp.setPoster(fileMap.get(getFileIdFromContent(post.getContent())).getPoster());
+            videoListResp.setCreateTime(post.getCreateTime());
+            videoListResp.setCreatorName(userIdMap.get(post.getCreatorId()).getName());
+            return videoListResp;
+        }).collect(Collectors.toList());
+        return new PageResult<>(videoListRespList, total);
+    }
+
+    public void checkIsCurUserReply(Long id, Long userId) {
+        ReplyDO replyDO = replyDAO.getById(id);
+        if (replyDO == null) {
+            log.warn("someone try to delete not exits post {} ", id);
+            throw new BusinessException("帖子不存在");
+        }
+        if (! replyDO.getSendUserId().equals(userId)) {
+            log.warn("someone try to delete else reply postId {}, userId {}", id, userId);
+            throw new BusinessException("非法操作");
+        }
     }
 }

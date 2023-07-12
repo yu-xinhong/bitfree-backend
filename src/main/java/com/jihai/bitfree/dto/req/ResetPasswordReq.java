@@ -8,10 +8,10 @@ public class ResetPasswordReq extends BaseReq {
 
     private static final long serialVersionUID = 5482188868605110432L;
 
-    @NotNull
+    @NotNull(message = "id不能为空")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "密钥不能为空")
     private String secret;
 
     public Long getId() {

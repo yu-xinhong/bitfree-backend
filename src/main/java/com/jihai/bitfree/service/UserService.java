@@ -1,9 +1,11 @@
 package com.jihai.bitfree.service;
 
 
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
-import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.constants.CoinsDefinitions;
+import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.dao.CheckInDAO;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -12,7 +14,9 @@ import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.ConfigDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DO2DTOConvert;
+import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +32,7 @@ import java.util.UUID;
 @Slf4j
 public class UserService {
 
+    private static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
     @Autowired
     private UserDAO userDao;
 
@@ -35,6 +41,9 @@ public class UserService {
 
     @Autowired
     private OperateLogDAO operateLogDAO;
+
+    @Autowired
+    private CheckInDAO checkInDAO;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDao.queryByEmailAndPassword(email, password);
@@ -64,6 +73,7 @@ public class UserService {
         }
 
         UserDO userDO = new UserDO();
+        userDO.setAvatar(configDAO.getByKey(DEFAULT_AVATAR).getValue());
         userDO.setEmail(email);
 
         String password = PasswordUtils.generatePwd();
@@ -86,7 +96,7 @@ public class UserService {
         if (! configDO.getValue().equals(secret)) {
             log.error("warn ! addUser is only allow administrator jihai!");
             // send alert
-            throw new RuntimeException(Constants.ACCESS_FORBIDDEN);
+            throw new RuntimeException(Constants.NOT_LOGIN);
         }
     }
 
@@ -95,28 +105,10 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String avatar, String name, String city, String position, String seniority, Long userId, String originPassword, String password) {
-        if (StringUtils.hasText(password)) {
-            UserDO userDO = userDao.getById(userId);
-            if (! userDO.getPassword().equalsIgnoreCase(originPassword)) {
-                log.warn("some one password new and old not equals");
-                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
-            }
-
-            if (userDO.getPassword().equalsIgnoreCase(password)) {
-                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
-            }
-        }
-        userDao.save(userId, avatar, name, city, position, seniority, password);
-
-        // 清除token
-        if (StringUtils.hasText(password)) userDao.clearToken(userId);
-
-        OperateLogDO operateLogDO = new OperateLogDO();
-        operateLogDO.setUserId(userId);
-        operateLogDO.setType(OperateTypeEnum.UPDATE_PASSWORD.getCode());
-
-        operateLogDAO.insert(operateLogDO);
+    public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId) {
+        if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
+        if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
+        userDao.save(userId, avatar, name, city, position, seniority);
         return true;
     }
 
@@ -131,6 +123,42 @@ public class UserService {
     public Boolean resetPassword(Long id, String secret, String defaultPassword) {
         checkSecret(secret);
         userDao.updatePasswordAndClearToken(id, defaultPassword);
+        return true;
+    }
+
+    public Boolean updatePassword(Long id, String oldPassword, String newPassword) {
+        if (StringUtils.hasText(newPassword)) {
+            UserDO userDO = userDao.getById(id);
+            if (! userDO.getPassword().equalsIgnoreCase(oldPassword)) {
+                log.warn("some one password new and old not equals");
+                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
+            }
+
+            if (userDO.getPassword().equalsIgnoreCase(newPassword)) {
+                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
+            }
+        }
+        userDao.updatePasswordAndClearToken(id, newPassword);
+
+        OperateLogDO operateLogDO = new OperateLogDO();
+        operateLogDO.setUserId(id);
+        operateLogDO.setType(OperateTypeEnum.UPDATE_PASSWORD.getCode());
+
+        operateLogDAO.insert(operateLogDO);
+
+        return true;
+    }
+
+    public Boolean getCheckIn(Long userId) {
+        return checkInDAO.getByCurrentDay(userId, DateUtils.formatDay(new Date())) > 0;
+    }
+
+    @Transactional
+    public Boolean checkIn(Long userId) {
+        if (getCheckIn(userId)) throw new BusinessException("重复签到");
+
+        checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
+        userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
         return true;
     }
 }

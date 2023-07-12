@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 public class GetFileReq extends BaseReq {
 
-    @NotNull
+    @NotNull(message = "id不能为空")
     private Long id;
 
     public Long getId() {

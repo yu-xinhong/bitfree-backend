@@ -22,7 +22,7 @@ public class FileController extends BaseController {
     @PostMapping("/upload")
     @LoggedCheck
     public Result<FileUploadResp> upload(@RequestBody FileUploadReq fileUploadReq) {
-        return convertSuccessResult(fileService.uploadByMannal(fileUploadReq.getFileUrl(), getCurrentUser().getId()));
+        return convertSuccessResult(fileService.uploadByMannal(fileUploadReq.getFileUrl(), fileUploadReq.getPoster(), getCurrentUser().getId()));
     }
 
     @GetMapping("/getById")

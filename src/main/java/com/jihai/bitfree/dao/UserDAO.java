@@ -24,9 +24,11 @@ public interface UserDAO {
 
     UserDO queryByEmail(String email);
 
-    void save(@Param("userId") Long userId,@Param("avatar") String avatar, @Param("name") String name, @Param("city") String city, @Param("position") String position, @Param("seniority") String seniority, @Param("password") String password);
+    void save(@Param("userId") Long userId,@Param("avatar") String avatar, @Param("name") String name, @Param("city") String city, @Param("position") String position, @Param("seniority") Integer seniority);
 
     List<ActivityUserResp> ActivityUserResp();
 
     void updatePasswordAndClearToken(@Param("id") Long id, @Param("password") String password);
+
+    void incrementCoins(@Param("userId") Long userId, @Param("coins") Integer coins);
 }

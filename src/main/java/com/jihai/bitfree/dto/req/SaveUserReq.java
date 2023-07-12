@@ -3,27 +3,29 @@ package com.jihai.bitfree.dto.req;
 import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
 
+import javax.validation.constraints.NotNull;
+
 public class SaveUserReq extends BaseReq {
 
     private static final long serialVersionUID = -3194199142275222567L;
 
+    @NotNull(message = "头像不能为空")
     private String avatar;
 
     @SensitiveText
+    @NotNull(message = "昵称不能为空")
     private String name;
 
     @SensitiveText
+    @NotNull(message = "城市不能为空")
     private String city;
 
     @SensitiveText
+    @NotNull(message = "职位不能为空")
     private String position;
 
-    @SensitiveText
-    private String seniority;
-
-    private String oldPwd;
-
-    private String pwd;
+    @NotNull(message = "工龄不能为空")
+    private Integer seniority;
 
     public String getAvatar() {
         return avatar;
@@ -57,27 +59,11 @@ public class SaveUserReq extends BaseReq {
         this.position = position;
     }
 
-    public String getSeniority() {
+    public Integer getSeniority() {
         return seniority;
     }
 
-    public void setSeniority(String seniority) {
+    public void setSeniority(Integer seniority) {
         this.seniority = seniority;
-    }
-
-    public String getOldPwd() {
-        return oldPwd;
-    }
-
-    public void setOldPwd(String oldPwd) {
-        this.oldPwd = oldPwd;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
     }
 }

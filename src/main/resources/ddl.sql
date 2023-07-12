@@ -9,19 +9,19 @@ CREATE TABLE `config` (
   UNIQUE KEY `unique_key` (`key`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 CREATE TABLE `file` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) DEFAULT NULL,
   `user_id` bigint NOT NULL,
   `url` text,
+  `poster` text,
   `type` int DEFAULT NULL COMMENT '1-视频，2-图片，3-音频',
   `format` varchar(16) DEFAULT NULL,
   `deleted` tinyint NOT NULL DEFAULT '0',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `operate_log` (
@@ -96,12 +96,13 @@ CREATE TABLE `topic` (
 CREATE TABLE `user` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '花名',
-  `avatar` varchar(256) DEFAULT NULL,
+  `avatar` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
   `position` varchar(128) DEFAULT NULL,
+  `level` int DEFAULT NULL,
   `city` varchar(64) DEFAULT NULL,
+  `coins` int NOT NULL DEFAULT '0',
   `seniority` int DEFAULT NULL COMMENT '工龄',
   `token` varchar(128) DEFAULT NULL,
-  `level` int DEFAULT NULL,
   `status` int DEFAULT NULL,
   `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
@@ -113,7 +114,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_name` (`name`),
   KEY `idx_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- 字典初始化数据
@@ -125,3 +126,17 @@ VALUES
 	(3, 'MAIL_SECRET', '{\n    \"secret\":\"test\",\n    \"sendMail\":\"test@qq.com\"\n}', 0, '2023-06-08 11:14:00', '2023-06-08 11:17:54'),
 	(4, 'DEFAULT_PASSWORD', '123456', 0, '2023-06-09 19:40:07', '2023-06-09 19:40:09'),
 	(5, 'DEFAULT_POSTER', 'xxxx', 0, '2023-06-13 15:10:14', '2023-06-13 15:10:14');
+
+
+--- 签到表
+
+CREATE TABLE `check_in` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `date` datetime NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

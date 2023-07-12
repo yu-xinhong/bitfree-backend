@@ -8,7 +8,7 @@ public class ConfigReq extends BaseReq {
 
     private static final long serialVersionUID = 7300571886429519730L;
 
-    @NotNull
+    @NotNull(message = "key不能为空")
     private String key;
 
     public String getKey() {

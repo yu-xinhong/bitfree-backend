@@ -10,6 +10,10 @@ public class PostDO extends BaseDO {
 
     private String content;
 
+    private Integer viewCount;
+
+    private Integer type;
+
     private Long creatorId;
 
     private Integer topicId;
@@ -32,12 +36,28 @@ public class PostDO extends BaseDO {
         this.content = content;
     }
 
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
     public Long getCreatorId() {
         return creatorId;
     }
 
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getTopicId() {

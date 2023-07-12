@@ -4,10 +4,9 @@ public interface Constants {
     String TOP_POST_ID = "TOP_POST_ID";
     String SECRET = "SECRET";
     String TOKEN = "token";
-    String ACCESS_FORBIDDEN = "access forbidden!";
+    String NOT_LOGIN = "请重新登陆!";
     String EMAIL_SECRET = "MAIL_SECRET";
     String DEFAULT_PASSWORD_KEY = "DEFAULT_PASSWORD";
     String DEFAULT_POSTER = "DEFAULT_POSTER";
     String SENSITIVE_WORDS = "SENSITIVE_WORDS";
-    String LIMIT_COUNT_PER_SECOND = "LIMIT_COUNT_PER_SECOND";
 }

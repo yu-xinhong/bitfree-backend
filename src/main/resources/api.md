@@ -98,6 +98,18 @@ response : {
     true
 }
 
+
+- 修改密码 post /user/updatePassword
+
+request : {
+    oldPwd: '',
+    pwd: ''
+}
+
+response : {
+    true
+}
+
 - 后门工具 post /user/addUser
 
 request : {
@@ -171,9 +183,24 @@ level : 1,
 creatorName : xxx,
 creatorId : 11,
 createTime: xxx,
-updateTime: xxx
+updateTime: xxx,
+viewCount : 1,
+poster: xxx
 }
 
+
+- 获取视频列表  get/post/pageQueryVideoList
+
+request : {
+}
+
+response : {
+id : 1,
+poster : xxxx,
+createTime : xxx,
+title : xxx,
+creatorName : 
+}
 
 - 获取评论列表get /post/getReplyList
 
@@ -311,4 +338,34 @@ response {
 }
 
 
-- 
+-- 
+file 文件接口
+file get /file/getById
+
+request {
+    id
+}
+
+response {
+    url: xx,
+    type : xx,  // 1-video, 2-image
+    poster : xxx,
+    id : xxx
+}
+
+
+# 签到功能
+-- 查询 get  user/getCheckIn
+
+request {}
+
+response {
+    true
+}
+
+-- 签到 post user/checkIn
+
+request {}
+
+response {}
+
