@@ -1,5 +1,7 @@
 package com.jihai.bitfree.service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -8,6 +10,7 @@ import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.dto.resp.MessageResp;
+import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.MessageDO;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.UserDO;
@@ -19,6 +22,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +39,10 @@ public class MessageService {
     @Autowired
     private MessageNoticeDAO messageNoticeDAO;
 
-    public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size) {
+    private Cache<Long, UserResp> liveUserCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
+
+
+    public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size, UserResp currentUser) {
         List<MessageDO> messageDOList = messageDAO.pageQueryRecentList((page - 1) * size, size);
         if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
@@ -54,7 +63,13 @@ public class MessageService {
 
         Integer total = messageDAO.count();
 
+        refreshLiveUser(currentUser);
+
         return new PageResult<>(messageRespList, total);
+    }
+
+    private void refreshLiveUser(UserResp currentUser) {
+        liveUserCache.put(currentUser.getId(), currentUser);
     }
 
     @Transactional
@@ -81,5 +96,9 @@ public class MessageService {
         }).collect(Collectors.toList());
 
         messageNoticeDAO.batchInsert(messageNoticeDOList);
+    }
+
+    public List<UserResp> getLiveUserCache() {
+        return Lists.newArrayList(liveUserCache.asMap().values());
     }
 }

@@ -401,3 +401,16 @@ response : {
     true
 }
 
+-- 查询在线人员
+request post message/getLiveUserList
+{
+}
+
+response [
+    {
+        id : 1,
+        name : xxx,
+        avatar : xxx
+    }
+]
+
