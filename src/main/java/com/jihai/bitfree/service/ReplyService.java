@@ -40,7 +40,7 @@ public class ReplyService {
     @Autowired
     private ReplyNoticeDAO replyNoticeDAO;
 
-    public List<ReplyListResp> getReplyList(Long id) {
+    public List<ReplyListResp> getReplyList(Long id, String order) {
         List<ReplyListResp> replyListResps = Lists.newArrayList();
         List<ReplyDO> replyDOList = replyDAO.getByPostId(id);
         if (CollectionUtils.isEmpty(replyDOList)) {
@@ -54,7 +54,11 @@ public class ReplyService {
 
 
         List<ReplyListResp> resultList = replyDOList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
-        resultList.sort((reply1, reply2) -> (int) (reply1.getCreateTime().getTime() - reply2.getCreateTime().getTime()));
+        resultList.sort((reply1, reply2) -> {
+            long time1 = reply1.getCreateTime().getTime();
+            long time2 = reply2.getCreateTime().getTime();
+            return "DESC".equals(order) ? ((int) (time2 - time1)) : ((int) (time1 - time2));
+        });
         return resultList;
     }
 

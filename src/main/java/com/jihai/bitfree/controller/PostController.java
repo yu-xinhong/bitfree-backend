@@ -45,7 +45,7 @@ public class PostController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<List<ReplyListResp>> getReplyList(ReplyListReq replyListReq) {
-        return convertSuccessResult(replyService.getReplyList(replyListReq.getId()));
+        return convertSuccessResult(replyService.getReplyList(replyListReq.getId(), replyListReq.getOrder()));
     }
 
     @PostMapping("/reply")
