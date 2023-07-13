@@ -31,4 +31,7 @@ public interface UserDAO {
     void updatePasswordAndClearToken(@Param("id") Long id, @Param("password") String password);
 
     void incrementCoins(@Param("userId") Long userId, @Param("coins") Integer coins);
+
+    List<Long> listAllUserId();
+
 }

@@ -26,8 +26,15 @@ public class ExceptionHandlerAspect {
             return errorResult(ReturnCodeEnum.BUSINESS_ERROR, businessException);
         } catch (Throwable e) {
             log.error("Request ERROR", e);
-            return errorResult(ReturnCodeEnum.SYSTEM_ERROR, e);
+            return errorResult(ReturnCodeEnum.SYSTEM_ERROR, ReturnCodeEnum.SYSTEM_ERROR.getDesc());
         }
+    }
+
+    private Object errorResult(ReturnCodeEnum returnCodeEnum, String desc) {
+        Result<Boolean> result = new Result<>();
+        result.setCode(returnCodeEnum.getCode());
+        result.setMessage(desc);
+        return result;
     }
 
     private Object errorResult(ReturnCodeEnum returnCodeEnum, Throwable throwable) {

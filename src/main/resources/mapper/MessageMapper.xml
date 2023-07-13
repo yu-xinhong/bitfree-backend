@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.MessageDAO">
+    <resultMap id="configResultMap" type="com.jihai.bitfree.entity.MessageDO">
+        <result column="id" property="id" />
+        <result column="content" property="content" />
+        <result column="send_user_id" property="sendUserId" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, send_user_id, content, create_time, update_time, deleted</sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message(`send_user_id`, `content`)
+        VALUE(#{sendUserId}, #{content})
+    </insert>
+    <select id="pageQueryRecentList" resultType="com.jihai.bitfree.entity.MessageDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM message
+        WHERE deleted = 0
+        ORDER BY create_time DESC LIMIT #{start}, #{size}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM message
+        WHERE deleted = 0
+    </select>
+
+</mapper>

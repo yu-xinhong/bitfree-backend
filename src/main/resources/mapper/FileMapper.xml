@@ -18,6 +18,7 @@
     </resultMap>
 
     <sql id="BASE_COLUMN">id, `type`, `poster`,`format`, name, user_id, url, deleted, create_time, update_time</sql>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO file(`type`, `format`, `name`, `user_id`, `url`, `poster`)
         VALUE(#{type}, #{format}, #{name}, #{userId}, #{url}, #{poster})

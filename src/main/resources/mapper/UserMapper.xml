@@ -91,5 +91,10 @@
         GROUP BY reply.send_user_id
         ORDER BY COUNT(*) DESC LIMIT 10
     </select>
+    <select id="listAllUserId" resultType="long">
+        SELECT id
+        FROM user
+        WHERE deleted = 0
+    </select>
 
 </mapper>

@@ -369,3 +369,35 @@ request {}
 
 response {}
 
+
+# 私信功能
+-- 查询当前最近20条消息
+get message/getRecentList
+
+request : {
+    page : 1,
+    size : 2
+}
+
+response : [
+    {
+        id : xx,
+        userId : xxx,
+        userName : xxx,
+        create_time : xxx,
+        avatar : xxx
+    }
+]
+
+
+-- 发送消息
+request
+post message/sendMessage
+{
+    content: xxx
+}
+
+response : {
+    true
+}
+
