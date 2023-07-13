@@ -66,7 +66,7 @@ public class MessageService {
         messageDAO.insert(messageDO);
 
         // 通知所有用户，类似写扩散，这里可能存在性能瓶颈，现在用户量不大，暂时这样处理
-        notifyAllUser(messageDO.getId());
+//        notifyAllUser(messageDO.getId());
         return true;
     }
 
