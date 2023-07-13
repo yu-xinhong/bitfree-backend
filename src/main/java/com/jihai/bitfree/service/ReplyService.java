@@ -57,7 +57,7 @@ public class ReplyService {
         resultList.sort((reply1, reply2) -> {
             long time1 = reply1.getCreateTime().getTime();
             long time2 = reply2.getCreateTime().getTime();
-            return "DESC".equals(order) ? ((int) (time2 - time1)) : ((int) (time1 - time2));
+            return "DESC".equals(order) ? (time2 >= time1 ? 1 : -1) : (time1 >= time2 ? 1 : -1);
         });
         return resultList;
     }
