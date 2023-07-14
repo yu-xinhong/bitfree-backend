@@ -2,6 +2,7 @@ package com.jihai.bitfree.aspect;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jihai.bitfree.exception.BusinessException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,7 +32,7 @@ public class ParameterCheckAspect {
                 Set<ConstraintViolation<Object>> checkResult = validator.validate(param);
                 if (! CollectionUtils.isEmpty(checkResult)) {
                     List<String> resultMsg = checkResult.stream().map(e -> e.getMessage()).collect(Collectors.toList());
-                    throw new RuntimeException(JSON.toJSONString(resultMsg));
+                    throw new BusinessException(JSON.toJSONString(resultMsg));
                 }
             }
         }
