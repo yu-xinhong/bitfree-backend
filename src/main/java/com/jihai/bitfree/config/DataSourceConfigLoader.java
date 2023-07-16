@@ -33,7 +33,7 @@ public class DataSourceConfigLoader implements BeanPostProcessor, EnvironmentAwa
             String config = FileUtils.readFileToString(new File(configPath + "/db.json"), Charset.defaultCharset());
             JSONObject configJson = JSON.parseObject(config);
             environment.getSystemProperties().put("spring.datasource.type", "com.zaxxer.hikari.HikariDataSource");
-            environment.getSystemProperties().put("spring.datasource.driver-class-name", "com.zaxxer.hikari.HikariDataSource");
+            environment.getSystemProperties().put("spring.datasource.driver-class-name", "com.mysql.jdbc.Driver");
             environment.getSystemProperties().put("spring.datasource.url", configJson.getString("url"));
             environment.getSystemProperties().put("spring.datasource.password", configJson.getString("password"));
             environment.getSystemProperties().put("spring.datasource.username", configJson.getString("username"));
