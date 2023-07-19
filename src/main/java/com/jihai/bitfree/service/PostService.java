@@ -49,6 +49,9 @@ public class PostService {
     private ReplyNoticeDAO replyNoticeDAO;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private FileDAO fileDAO;
 
 
@@ -144,7 +147,11 @@ public class PostService {
         return postDetailResp;
     }
 
+    @Transactional
     public void add(String title, String content, Integer topicId, Long userId) {
+        // 理论上要加锁，这里简单乐观锁实现, 因为并发概率很低
+        userService.checkCoins(userId, 2);
+
         PostDO postDO = new PostDO();
 
         postDO.setCreatorId(userId);
@@ -155,6 +162,9 @@ public class PostService {
 
         postDO.setType(getTypeContent(content));
         postDAO.insert(postDO);
+
+        // 这里会再去判断coins >= 2
+        userService.consumeCoins(userId, 2);
     }
 
     private Integer getTypeContent(String content) {

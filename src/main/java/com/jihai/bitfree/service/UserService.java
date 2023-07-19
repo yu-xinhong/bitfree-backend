@@ -161,4 +161,13 @@ public class UserService {
         userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
         return true;
     }
+
+    public void checkCoins(Long userId, int coins) {
+        UserDO userDO = userDao.getById(userId);
+        if (userDO.getCoins() <= coins) throw new BusinessException("需要" + coins + "个硬币才能此操作");
+    }
+
+    public void consumeCoins(Long userId, int coins) {
+        userDao.incrementCoins(userId, - coins);
+    }
 }

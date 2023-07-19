@@ -62,7 +62,7 @@
     <update id="incrementCoins">
         UPDATE user
         SET coins = coins + #{coins}
-        WHERE id = #{userId} AND deleted = 0
+        WHERE id = #{userId} AND deleted = 0 AND (coins + #{coins}) >= 0
     </update>
 
     <select id="batchQueryByIdList" resultMap="userResultMap">
