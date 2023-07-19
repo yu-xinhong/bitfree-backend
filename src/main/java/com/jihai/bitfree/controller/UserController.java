@@ -9,6 +9,7 @@ import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
@@ -136,6 +137,12 @@ public class UserController extends BaseController {
     @LoggedCheck
     public Result<Boolean> checkIn() {
         return convertSuccessResult(userService.checkIn(getCurrentUser().getId()));
+    }
+
+    @PostMapping("/like")
+    @LoggedCheck
+    public Result<Boolean> like(@RequestBody LikeReq likeReq) {
+        return convertSuccessResult(userService.like(likeReq.getId(), likeReq.getType(), likeReq.getLike(), getCurrentUser().getId()));
     }
 
 

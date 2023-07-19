@@ -21,6 +21,8 @@ public class ReplyListResp extends BaseResp {
 
     private Date createTime;
 
+    private Boolean like;
+
     private List<ReplyListResp> subReplyList;
 
     public Long getId() {
@@ -69,6 +71,14 @@ public class ReplyListResp extends BaseResp {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getLike() {
+        return like;
+    }
+
+    public void setLike(Boolean like) {
+        this.like = like;
     }
 
     public List<ReplyListResp> getSubReplyList() {

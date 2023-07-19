@@ -9,6 +9,7 @@ import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.*;
 import com.jihai.bitfree.service.PostService;
 import com.jihai.bitfree.service.ReplyService;
+import com.jihai.bitfree.service.UserLikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,9 @@ public class PostController extends BaseController {
 
     @Autowired
     private ReplyService replyService;
+
+    @Autowired
+    private UserLikeService userLikeService;
 
     @GetMapping("/pageQuery")
     @ParameterCheck
@@ -45,7 +49,9 @@ public class PostController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<List<ReplyListResp>> getReplyList(ReplyListReq replyListReq) {
-        return convertSuccessResult(replyService.getReplyList(replyListReq.getId(), replyListReq.getOrder()));
+        List<ReplyListResp> replyList = replyService.getReplyList(replyListReq.getId(), replyListReq.getOrder());
+        userLikeService.fillUserLike(replyList, getCurrentUser().getId());
+        return convertSuccessResult(replyList);
     }
 
     @PostMapping("/reply")
