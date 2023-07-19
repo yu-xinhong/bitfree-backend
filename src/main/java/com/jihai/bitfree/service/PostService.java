@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.PostTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.*;
@@ -50,6 +51,9 @@ public class PostService {
 
     @Autowired
     private FileDAO fileDAO;
+
+    @Autowired
+    private UserLikeDAO userLikeDAO;
 
 
     public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, String searchText, Long userId, boolean includeTopList) {
@@ -138,6 +142,8 @@ public class PostService {
         UserDO userDO = userDAO.getById(postDO.getCreatorId());
         postDetailResp.setCreatorName(userDO.getName());
         postDetailResp.setAvatar(userDO.getAvatar());
+
+        postDetailResp.setLikeCount(userLikeDAO.countLike(id, LikeTypeEnum.POST.getType()));
 
         // record view count
         postDAO.incrementView(id);

@@ -1,19 +1,15 @@
 package com.jihai.bitfree.service;
 
 
+import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
-import com.jihai.bitfree.dao.CheckInDAO;
-import com.jihai.bitfree.dao.ConfigDAO;
-import com.jihai.bitfree.dao.OperateLogDAO;
-import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
-import com.jihai.bitfree.entity.ConfigDO;
-import com.jihai.bitfree.entity.OperateLogDO;
-import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
@@ -44,6 +40,12 @@ public class UserService {
 
     @Autowired
     private CheckInDAO checkInDAO;
+
+    @Autowired
+    private UserLikeDAO userLikeDAO;
+
+    @Autowired
+    private ReplyDAO replyDAO;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDao.queryByEmailAndPassword(email, password);
@@ -159,6 +161,25 @@ public class UserService {
 
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
         userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
+        return true;
+    }
+
+    public Boolean like(Long id, Integer type, Boolean like, Long userId) {
+        UserLikeDO userLikeDO = new UserLikeDO();
+        userLikeDO.setTargetId(id);
+        userLikeDO.setType(type);
+        userLikeDO.setUserId(userId);
+        userLikeDO.setValue(like);
+
+        userLikeDAO.insert(userLikeDO);
+
+        // 给目标用户添加硬币
+        if (type == LikeTypeEnum.REPLY.getType()) {
+            // 添加一个1个币
+            ReplyDO replyDO = replyDAO.getById(id);
+            Long sendUserId = replyDO.getSendUserId();
+            userDao.incrementCoins(sendUserId, 1);
+        }
         return true;
     }
 }

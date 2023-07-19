@@ -185,7 +185,8 @@ creatorId : 11,
 createTime: xxx,
 updateTime: xxx,
 viewCount : 1,
-poster: xxx
+poster: xxx,
+likeCount : 1
 }
 
 
@@ -213,8 +214,9 @@ response : [
 id : 222,
 replyContent: xxx,
 name : xxx,
-createTime,
-creatorId,
+createTime : xx,
+creatorId : 1,
+like : true,
 subReplyList : [
 {
 id : 444,

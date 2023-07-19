@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.UserLikeDAO">
+
+    <resultMap id="topicResultMap" type="com.jihai.bitfree.entity.UserLikeDO">
+        <result column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="target_id" property="targetId" />
+        <result column="type" property="type" />
+        <result column="value" property="value" />
+        <result column="deleted" property="deleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="BASE_COLUMN">id, user_id, target_id, type, value</sql>
+    <insert id="insert">
+        INSERT INTO user_like(`user_id`, `target_id`, `type`, `value`)
+        VALUE(#{userId}, #{targetId}, #{type}, #{value})
+    </insert>
+    <select id="countLike" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user_like
+        WHERE target_id = #{id}
+        AND type = #{type}
+        AND deleted = 0
+    </select>
+    <select id="getLikeList" resultType="com.jihai.bitfree.entity.UserLikeDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM user_like
+        WHERE  deleted = 0
+        AND user_id = #{userId}
+        AND type = #{type}
+        AND target_id IN
+        <foreach collection="targetIdList" item="targetId" open="(" separator="," close=")">
+            #{targetId}
+        </foreach>
+
+    </select>
+
+</mapper>

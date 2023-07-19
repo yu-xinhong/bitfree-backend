@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.dao.PostDAO;
-import com.jihai.bitfree.dao.ReplyDAO;
-import com.jihai.bitfree.dao.ReplyNoticeDAO;
-import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ReplyListResp;
 import com.jihai.bitfree.dto.resp.UserReplyResp;
 import com.jihai.bitfree.entity.PostDO;
@@ -40,6 +37,9 @@ public class ReplyService {
     @Autowired
     private ReplyNoticeDAO replyNoticeDAO;
 
+    @Autowired
+    private UserLikeDAO userLikeDAO;
+
     public List<ReplyListResp> getReplyList(Long id, String order) {
         List<ReplyListResp> replyListResps = Lists.newArrayList();
         List<ReplyDO> replyDOList = replyDAO.getByPostId(id);
@@ -51,7 +51,6 @@ public class ReplyService {
         List<UserDO> userDOS = userDAO.batchQueryByIdList(sendUserIdList);
 
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
-
 
         List<ReplyListResp> resultList = replyDOList.stream().map(replyDO -> convertReply2DTO(replyDO, idUserMap)).collect(Collectors.toList());
         resultList.sort((reply1, reply2) -> {

@@ -16,6 +16,8 @@ public class PostDetailResp extends BaseResp {
 
     private Integer viewCount;
 
+    private Integer likeCount;
+
     private String creatorName;
 
     private Long creatorId;
@@ -54,6 +56,14 @@ public class PostDetailResp extends BaseResp {
 
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 
     public String getCreatorName() {

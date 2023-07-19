@@ -163,3 +163,19 @@ CREATE TABLE `message_notice` (
   `deleted` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+CREATE TABLE `user_like` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint DEFAULT NULL,
+  `target_id` bigint DEFAULT NULL,
+  `type` tinyint DEFAULT NULL,
+  `value` tinyint DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_id_target_id_type` (`user_id`,`target_id`,`type`),
+  KEY `idx_target_id` (`target_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
