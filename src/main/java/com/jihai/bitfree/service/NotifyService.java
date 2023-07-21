@@ -3,6 +3,7 @@ package com.jihai.bitfree.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.base.enums.UserLevelEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.entity.ConfigDO;
@@ -23,14 +24,14 @@ public class NotifyService {
     private ConfigDAO configDAO;
 
 
-    public void sendNotice(String email, String password) {
+    public void sendNotice(String email, String password, Integer level) {
         ConfigDO emailConfig = configDAO.getByKey(Constants.EMAIL_SECRET);
         JSONObject configJson = JSON.parseObject(emailConfig.getValue());
-        sendEMail(email, configJson.getString("sendMail"), configJson.getString("secret"), password);
+        sendEMail(email, configJson.getString("sendMail"), configJson.getString("secret"), password, level);
         log.info("send password {} to email {}", password, email);
     }
 
-    private void sendEMail(String toMail, String fromMail, String secret, String toContent) {
+    private void sendEMail(String toMail, String fromMail, String secret, String toContent, Integer level) {
         // 指定发送邮件的主机为 smtp.qq.com
         String host = "smtp.qq.com";  //QQ 邮件服务器
         // 获取系统属性
@@ -61,8 +62,12 @@ public class NotifyService {
             // Set Subject: 头部头字段
             message.setSubject("欢迎加入极海开发者bitfree社区!");
 
-            // 设置消息体
-            message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent);
+            if (UserLevelEnum.COMMUNITY.getLevel().equals(level)) {
+                // 设置消息体
+                message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent);
+            } else if (UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
+                message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent + "\nGithub 账号直接B站私信极海。");
+            }
 
             // 发送消息
             Transport.send(message);

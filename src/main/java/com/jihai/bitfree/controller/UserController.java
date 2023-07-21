@@ -9,7 +9,6 @@ import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
-import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
@@ -72,7 +71,7 @@ public class UserController extends BaseController {
     @ParameterCheck
     public Result<String> addUser(@RequestBody AddUserReq addUserReq) {
         String password = userService.addUser(addUserReq.getEmail().trim(), addUserReq.getLevel(), addUserReq.getSecret());
-        notifyService.sendNotice(addUserReq.getEmail(), password);
+        notifyService.sendNotice(addUserReq.getEmail(), password, addUserReq.getLevel());
         return convertSuccessResult(password);
     }
 
@@ -83,7 +82,7 @@ public class UserController extends BaseController {
                                   @PathVariable("level") Integer level,
                                   @PathVariable("email") String email) {
         String password = userService.addUser(email, level, secret);
-        notifyService.sendNotice(email, password);
+        notifyService.sendNotice(email, password, level);
         return convertSuccessResult(password);
     }
 
