@@ -66,7 +66,7 @@ public class NotifyService {
                 // 设置消息体
                 message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent);
             } else if (UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
-                message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent + "\nGithub 账号直接B站私信极海。");
+                message.setText("你好！" + toMail + " ,你的默认密码为： " + toContent + " , Github 账号直接B站私信极海。");
             }
 
             // 发送消息

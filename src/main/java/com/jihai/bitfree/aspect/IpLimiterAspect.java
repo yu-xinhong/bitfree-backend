@@ -39,7 +39,7 @@ public class IpLimiterAspect {
     @Autowired
     private ConfigService configService;
 
-    private List<String> WHITE_LIST = Lists.newArrayList("com.jihai.bitfree.controller.MessageController.getRecentList");
+    private List<String> WHITE_LIST = Lists.newArrayList("com.jihai.bitfree.controller.MessageController.getRecentList", "com.jihai.bitfree.controller.UserController.getDetail");
 
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
