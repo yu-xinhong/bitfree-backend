@@ -18,6 +18,7 @@ public class UserLikeService {
     private UserLikeDAO userLikeDAO;
 
     public void fillUserLike(List<ReplyListResp> replyList, Long userId) {
+        if (CollectionUtils.isEmpty(replyList)) return ;
         List<Long> targetIdList = replyList.stream().map(ReplyListResp::getId).distinct().collect(Collectors.toList());
         List<UserLikeDO> likeDOList = userLikeDAO.getLikeList(targetIdList, LikeTypeEnum.REPLY.getType(), userId);
         if (CollectionUtils.isEmpty(likeDOList)) return ;
