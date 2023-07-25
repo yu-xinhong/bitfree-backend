@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 本地lock实现，后面切换到集群模式，直接替换此lock实现即可
+ */
 @Component
 public class LocalLock implements DistributedLock {
 
