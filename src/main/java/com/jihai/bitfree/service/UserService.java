@@ -214,11 +214,15 @@ public class UserService {
                 // 添加一个1个币
                 ReplyDO replyDO = replyDAO.getById(id);
                 Long sendUserId = replyDO.getSendUserId();
+                if (userId.equals(sendUserId)) throw new BusinessException("禁止给自己点赞");
+
                 userDao.incrementCoins(sendUserId, 1);
             } else if (LikeTypeEnum.POST.getType().equals(type)) {
                 // 帖子被赞增加2个币
                 PostDO postDO = postDAO.getById(id);
                 Long creatorId = postDO.getCreatorId();
+                if (userId.equals(creatorId)) throw new BusinessException("禁止给自己点赞");
+
                 userDao.incrementCoins(creatorId, 2);
             }
         } finally {
