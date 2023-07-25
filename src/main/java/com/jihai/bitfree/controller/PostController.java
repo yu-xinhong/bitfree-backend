@@ -42,7 +42,9 @@ public class PostController extends BaseController {
     @LoggedCheck
     @ParameterCheck
     public Result<PostDetailResp> getDetail(PostDetailReq postDetailReq) {
-        return convertSuccessResult(postService.getDetail(postDetailReq.getId()));
+        PostDetailResp detail = postService.getDetail(postDetailReq.getId());
+        detail.setLikePost(userLikeService.isLikePost(postDetailReq.getId(), getCurrentUser().getId()));
+        return convertSuccessResult(detail);
     }
 
     @GetMapping("/getReplyList")

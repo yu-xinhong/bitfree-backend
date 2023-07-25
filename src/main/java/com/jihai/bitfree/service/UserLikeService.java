@@ -1,5 +1,6 @@
 package com.jihai.bitfree.service;
 
+import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.dao.UserLikeDAO;
 import com.jihai.bitfree.dto.resp.ReplyListResp;
@@ -25,5 +26,9 @@ public class UserLikeService {
         replyList.forEach(replyListResp -> {
             replyListResp.setLike(likeDOList.stream().anyMatch(e -> e.getTargetId().equals(replyListResp.getId())));
         });
+    }
+
+    public Boolean isLikePost(Long id, Long userId) {
+        return userLikeDAO.getLikeList(Lists.newArrayList(id), LikeTypeEnum.POST.getType(), userId).size() > 0;
     }
 }

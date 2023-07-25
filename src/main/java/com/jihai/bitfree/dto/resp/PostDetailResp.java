@@ -26,6 +26,8 @@ public class PostDetailResp extends BaseResp {
 
     private Date updateTime;
 
+    private Boolean likePost;
+
     public String getAvatar() {
         return avatar;
     }
@@ -96,5 +98,13 @@ public class PostDetailResp extends BaseResp {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Boolean getLikePost() {
+        return likePost;
+    }
+
+    public void setLikePost(Boolean likePost) {
+        this.likePost = likePost;
     }
 }

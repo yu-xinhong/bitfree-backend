@@ -186,7 +186,8 @@ createTime: xxx,
 updateTime: xxx,
 viewCount : 1,
 poster: xxx,
-likeCount : 1
+likeCount : 1,
+likePost : true
 }
 
 

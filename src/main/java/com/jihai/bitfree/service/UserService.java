@@ -1,6 +1,9 @@
 package com.jihai.bitfree.service;
 
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
@@ -11,6 +14,7 @@ import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
@@ -23,6 +27,9 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -46,6 +53,9 @@ public class UserService {
 
     @Autowired
     private ReplyDAO replyDAO;
+
+    @Autowired
+    private PostDAO postDAO;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDao.queryByEmailAndPassword(email, password);
@@ -173,21 +183,46 @@ public class UserService {
         userDao.incrementCoins(userId, - coins);
     }
 
+    private static final String LIKE_LOCK_PREFIX = "like_lock_";
+
+    @Autowired
+    private DistributedLock distributedLock;
+
     public Boolean like(Long id, Integer type, Boolean like, Long userId) {
-        UserLikeDO userLikeDO = new UserLikeDO();
-        userLikeDO.setTargetId(id);
-        userLikeDO.setType(type);
-        userLikeDO.setUserId(userId);
-        userLikeDO.setValue(like);
+        // 这里控制幂等, 现在单实例防并发，后面集群模式需要切换为分布式锁
+        String key = LIKE_LOCK_PREFIX + "|" + id + "|" + userId;
 
-        userLikeDAO.insert(userLikeDO);
+        if (! distributedLock.lock(key, 1, TimeUnit.MINUTES)) {
+            throw new BusinessException("请稍后操作");
+        }
+        try {
+            // 幂等
+            if (userLikeDAO.getLikeList(Lists.newArrayList(id), type, userId).size() > 0) {
+                throw new BusinessException("重复点赞");
+            }
 
-        // 给目标用户添加硬币
-        if (type == LikeTypeEnum.REPLY.getType()) {
-            // 添加一个1个币
-            ReplyDO replyDO = replyDAO.getById(id);
-            Long sendUserId = replyDO.getSendUserId();
-            userDao.incrementCoins(sendUserId, 1);
+            UserLikeDO userLikeDO = new UserLikeDO();
+            userLikeDO.setTargetId(id);
+            userLikeDO.setType(type);
+            userLikeDO.setUserId(userId);
+            userLikeDO.setValue(like);
+
+            userLikeDAO.insert(userLikeDO);
+
+            // 给目标用户添加硬币
+            if (LikeTypeEnum.REPLY.getType().equals(type)) {
+                // 添加一个1个币
+                ReplyDO replyDO = replyDAO.getById(id);
+                Long sendUserId = replyDO.getSendUserId();
+                userDao.incrementCoins(sendUserId, 1);
+            } else if (LikeTypeEnum.POST.getType().equals(type)) {
+                // 帖子被赞增加2个币
+                PostDO postDO = postDAO.getById(id);
+                Long creatorId = postDO.getCreatorId();
+                userDao.incrementCoins(creatorId, 2);
+            }
+        } finally {
+            distributedLock.unlock(key);
         }
         return true;
     }
