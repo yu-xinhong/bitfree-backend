@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class IpLimiterAspect {
 
     // 默认2秒产生一个令牌，ip+方法级别2秒最多一个请求, 提供rest修改能力
-    private volatile double DEFAULT_LIMITER_COUNT_PER_SECOND = 0.5;
+    private volatile double DEFAULT_LIMITER_COUNT_PER_SECOND = 1;
 
     Cache<String, RateLimiter> limiterCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 
