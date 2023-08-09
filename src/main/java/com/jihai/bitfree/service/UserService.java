@@ -1,8 +1,6 @@
 package com.jihai.bitfree.service;
 
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
@@ -22,14 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -170,8 +167,29 @@ public class UserService {
         if (getCheckIn(userId)) throw new BusinessException("重复签到");
 
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
-        userDao.incrementCoins(userId, CoinsDefinitions.CHECK_IN);
+
+        Integer incrementCoins = getIncrementCoins(userId);
+        userDao.incrementCoins(userId, incrementCoins);
         return true;
+    }
+
+    // 连续签到可以奖励, 7天内签到，连续每天增加1个硬币，上限2+6=8
+    private Integer getIncrementCoins(Long userId) {
+        List<CheckInDO> checkInDOList = checkInDAO.listRecentWeek(userId);
+        if (CollectionUtils.isEmpty(checkInDOList)) return CoinsDefinitions.CHECK_IN;
+
+        int coins = CoinsDefinitions.CHECK_IN;
+        for (int i = 1; i < 7; i++) {
+            if (! hasCheckIn(checkInDOList, i)) {
+                break;
+            }
+            coins += 1;
+        }
+        return coins;
+    }
+
+    private boolean hasCheckIn(List<CheckInDO> checkInDOList, int beforeDays) {
+        return checkInDOList.stream().anyMatch(e -> DateUtils.formatDay(new Date()).getTime() - e.getDate().getTime() == 24 * 60 * 60 * 1000 * beforeDays);
     }
 
     public void checkCoins(Long userId, int coins) {

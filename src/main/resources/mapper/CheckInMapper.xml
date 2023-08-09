@@ -16,5 +16,12 @@
         WHERE user_id = #{userId}
         AND date = #{date} AND deleted = 0
     </select>
+    <select id="listRecentWeek" resultType="com.jihai.bitfree.entity.CheckInDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM check_in
+        WHERE user_id = #{userId}
+        AND deleted = 0
+        ORDER BY date DESC LIMIT 7
+    </select>
 
 </mapper>
