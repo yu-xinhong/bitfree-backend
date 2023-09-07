@@ -12,7 +12,7 @@ public class FileUploadUtils {
 
     static List<String> imageFormatList = Lists.newArrayList("png", "jpeg", "jpg");
 
-    static List<String> videoFormatList = Lists.newArrayList("mp4", "mov");
+    static List<String> videoFormatList = Lists.newArrayList("mp4", "mov", "mp3");
 
     public final static Integer IMAGE_TYPE = 2;
     public final static Integer VIDEO_TYPE = 1;
