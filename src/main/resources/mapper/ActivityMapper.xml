@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jihai.bitfree.dao.ActivityDAO">
+
+    <sql id="BASE_COLUMN">id, name, stock, total, cost, detail, start_time, end_time, deleted, create_time, update_time</sql>
+    <update id="updateStock">
+        UPDATE activity
+        SET stock = stock - #{count}
+        WHERE stock >= #{count}
+        AND id = #{id}
+        AND deleted = 0
+    </update>
+    <select id="getRecent" resultType="com.jihai.bitfree.entity.ActivityDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM activity
+        WHERE start_time &gt; NOW()
+        AND deleted = 0
+        ORDER BY start_time ASC LIMIT 1
+    </select>
+    <select id="queryActivity" resultType="com.jihai.bitfree.entity.ActivityDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM activity
+        WHERE id = #{activityId}
+        AND deleted = 0
+    </select>
+
+
+</mapper>
