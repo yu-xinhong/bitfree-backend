@@ -19,15 +19,12 @@ public class OrderDetailReq extends BaseReq {
     private String address;
 
     @NotNull
-    @Length(max = 10)
     private String size;
 
     @NotNull
-    @Length(max = 10)
     private String color;
 
     @NotNull
-    @Length(max = 10)
     private String tel;
 
     public Long getActivityId() {
