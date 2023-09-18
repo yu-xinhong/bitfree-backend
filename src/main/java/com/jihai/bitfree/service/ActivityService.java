@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -46,8 +47,13 @@ public class ActivityService {
         if (activityDO == null) {
             throw new BusinessException("活动不存在");
         }
+
+        if (new Date().before(activityDO.getStartTime()) || new Date().after(activityDO.getEndTime())) {
+            throw new BusinessException("请在活动时间内领取");
+        }
+
         if (activityDO.getStock() <= 0) {
-            throw new BusinessException("抢购已结束");
+            throw new BusinessException("库存不足");
         }
 
         if (userDAO.getById(userId).getCoins() < activityDO.getCost()) {
@@ -79,7 +85,7 @@ public class ActivityService {
                 return false;
             }
 
-            userDAO.incrementCoins(userId, activityDO.getCost());
+            userDAO.incrementCoins(userId, - activityDO.getCost());
             orderDAO.insert(orderDO);
         } finally {
             reentrantLock.unlock();
