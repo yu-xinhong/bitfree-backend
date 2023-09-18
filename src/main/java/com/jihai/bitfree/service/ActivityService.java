@@ -99,6 +99,6 @@ public class ActivityService {
     }
 
     public Boolean getRight(Long userId, Long activityId) {
-        return orderDAO.getUserActivity(userId, activityId) != null;
+        return orderDAO.getUserActivity(userId, activityId) == null;
     }
 }
