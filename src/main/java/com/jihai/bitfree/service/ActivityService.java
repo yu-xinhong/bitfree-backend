@@ -36,6 +36,7 @@ public class ActivityService {
 
     public ActivityResp getRecent() {
         ActivityDO activityDO = activityDAO.getRecent();
+        if (activityDO == null) return null;
         ActivityResp target = new ActivityResp();
         BeanUtils.copyProperties(activityDO, target);
         return target;
@@ -85,7 +86,9 @@ public class ActivityService {
                 return false;
             }
 
-            userDAO.incrementCoins(userId, - activityDO.getCost());
+            if (userDAO.incrementCoins(userId, - activityDO.getCost()) < 1) {
+                throw new BusinessException("硬币余额不足");
+            };
             orderDAO.insert(orderDO);
         } finally {
             reentrantLock.unlock();
