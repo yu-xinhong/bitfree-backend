@@ -22,6 +22,8 @@ public class PostItemResp extends BaseResp {
 
     private Date createTime;
 
+    private Boolean newPost;
+
     public Long getId() {
         return id;
     }
@@ -84,5 +86,13 @@ public class PostItemResp extends BaseResp {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getNewPost() {
+        return newPost;
+    }
+
+    public void setNewPost(Boolean newPost) {
+        this.newPost = newPost;
     }
 }

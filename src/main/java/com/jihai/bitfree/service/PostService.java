@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,6 +104,7 @@ public class PostService {
             postItemResp.setCreateTime(postDO.getCreateTime());
             Long replyCount = replyCountMap.getOrDefault(postDO.getId(), 0L);
             postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
+            postItemResp.setNewPost(isNew(postDO.getCreateTime()));
                 // 获取最新回复的人的名字
             if (replyCount > 0) {
                 List<ReplyDO> curPostReplyList = replyDOList.stream().filter(replyDO -> replyDO.getPostId().equals(postDO.getId())).collect(Collectors.toList());
@@ -231,10 +229,16 @@ public class PostService {
             videoListResp.setTitle(post.getTitle());
             videoListResp.setPoster(fileMap.get(getFileIdFromContent(post.getContent())).getPoster());
             videoListResp.setCreateTime(post.getCreateTime());
+            videoListResp.setNewVideo(isNew(post.getCreateTime()));
             videoListResp.setCreatorName(userIdMap.get(post.getCreatorId()).getName());
             return videoListResp;
         }).collect(Collectors.toList());
         return new PageResult<>(videoListRespList, total);
+    }
+
+    private Boolean isNew(Date createTime) {
+        // 一天内为新视频
+        return new Date().getTime() - createTime.getTime() < 1000 * 60 * 60 * 24;
     }
 
     public void checkIsCurUserReply(Long id, Long userId) {

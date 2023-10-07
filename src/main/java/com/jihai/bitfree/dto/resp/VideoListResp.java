@@ -16,6 +16,8 @@ public class VideoListResp extends BaseResp {
 
     private String title;
 
+    private Boolean newVideo;
+
     public Long getId() {
         return id;
     }
@@ -54,5 +56,13 @@ public class VideoListResp extends BaseResp {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Boolean getNewVideo() {
+        return newVideo;
+    }
+
+    public void setNewVideo(Boolean newVideo) {
+        this.newVideo = newVideo;
     }
 }
