@@ -14,6 +14,7 @@ import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.MessageDO;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,5 +99,9 @@ public class MessageService {
 
     public List<UserResp> getLiveUserCache() {
         return Lists.newArrayList(liveUserCache.asMap().values());
+    }
+
+    public Integer getRecentMessageCount() {
+        return messageDAO.getRecentMessageCount();
     }
 }

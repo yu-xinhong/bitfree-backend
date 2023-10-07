@@ -11,4 +11,7 @@ public interface MessageDAO {
     Integer count();
 
     void insert(MessageDO messageDO);
+
+    Integer getRecentMessageCount();
+
 }

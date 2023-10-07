@@ -29,5 +29,11 @@
         FROM message
         WHERE deleted = 0
     </select>
+    <select id="getRecentMessageCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM message
+        WHERE create_time &gt; DATE_SUB(CURDATE(), interval 1 day)
+        AND deleted = 0
+    </select>
 
 </mapper>

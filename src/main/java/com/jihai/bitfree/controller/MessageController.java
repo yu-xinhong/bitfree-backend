@@ -38,4 +38,10 @@ public class MessageController extends BaseController {
     public Result<List<UserResp>> getLiveUserList() {
         return convertSuccessResult(messageService.getLiveUserCache());
     }
+
+    @GetMapping("/getRecentMessageCount")
+    @LoggedCheck
+    public Result<Integer> getRecentMessageCount() {
+        return convertSuccessResult(messageService.getRecentMessageCount());
+    }
 }
