@@ -22,4 +22,11 @@
     <select id="queryByUserIdAndType" resultType="integer">
         SELECT COUNT(*) FROM operate_log WHERE user_id = #{userId} AND `type` = #{type} AND deleted = 0
     </select>
+    <select id="countRecentOpenChatLog" resultType="integer">
+        SELECT COUNT(*)
+        FROM operate_log
+        WHERE user_id = #{userId} AND `type` = #{type}
+        AND create_time &gt; DATE_SUB(CURDATE(), interval 1 day)
+        AND deleted = 0
+    </select>
 </mapper>

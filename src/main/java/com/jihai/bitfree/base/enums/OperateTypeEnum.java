@@ -2,7 +2,8 @@ package com.jihai.bitfree.base.enums;
 
 public enum OperateTypeEnum {
     INIT_USER(1, "初始化"),
-    UPDATE_PASSWORD(2, "修改密码");
+    UPDATE_PASSWORD(2, "修改密码"),
+    CHAT(3, "聊天室");
 
     OperateTypeEnum(Integer code, String desc) {
         this.code = code;

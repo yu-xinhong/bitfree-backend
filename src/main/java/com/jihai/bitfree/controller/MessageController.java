@@ -42,6 +42,12 @@ public class MessageController extends BaseController {
     @GetMapping("/getRecentMessageCount")
     @LoggedCheck
     public Result<Integer> getRecentMessageCount() {
-        return convertSuccessResult(messageService.getRecentMessageCount());
+        return convertSuccessResult(messageService.getRecentMessageCount(getCurrentUser().getId()));
+    }
+
+    @PostMapping("/openChat")
+    @LoggedCheck
+    public Result<Boolean> openChat() {
+        return convertSuccessResult(messageService.openChat(getCurrentUser().getId()));
     }
 }

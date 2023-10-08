@@ -7,4 +7,6 @@ public interface OperateLogDAO {
     void insert(OperateLogDO operateLogDO);
 
     Integer queryByUserIdAndType(@Param("userId") Long id,@Param("type") Integer type);
+
+    Integer countRecentOpenChatLog(Long userId, Integer type);
 }

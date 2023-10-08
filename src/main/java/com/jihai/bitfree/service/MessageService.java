@@ -6,15 +6,19 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
+import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.dto.resp.MessageResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.MessageDO;
 import com.jihai.bitfree.entity.MessageNoticeDO;
+import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
-import com.jihai.bitfree.utils.DateUtils;
+import com.jihai.bitfree.lock.DistributedLock;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +26,13 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MessageService {
 
     @Autowired
@@ -37,6 +43,12 @@ public class MessageService {
 
     @Autowired
     private MessageNoticeDAO messageNoticeDAO;
+
+    @Autowired
+    private OperateLogDAO operateLogDAO;
+
+    @Autowired
+    private DistributedLock distributedLock;
 
     private Cache<Long, UserResp> liveUserCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
 
@@ -101,7 +113,32 @@ public class MessageService {
         return Lists.newArrayList(liveUserCache.asMap().values());
     }
 
-    public Integer getRecentMessageCount() {
+    public Integer getRecentMessageCount(Long userId) {
+        // 24小时内有消息，并且没有点开聊天室才展示
+        if (operateLogDAO.countRecentOpenChatLog(userId, OperateTypeEnum.CHAT.getCode()) > 0) return 0;
         return messageDAO.getRecentMessageCount();
+    }
+
+    public Boolean openChat(Long id) {
+        // 主要为了控制红圈标识，24H只记录记一次即可，避免log过多
+        if (operateLogDAO.countRecentOpenChatLog(id, OperateTypeEnum.CHAT.getCode()) > 0) {
+            return true;
+        }
+
+        Boolean lock = distributedLock.lock(String.valueOf(id), 10, TimeUnit.SECONDS);
+        if (! lock) {
+            log.warn("{} 并发Chat日志写入", id);
+            return false;
+        }
+        try {
+            OperateLogDO operateLogDO = new OperateLogDO();
+            operateLogDO.setType(OperateTypeEnum.CHAT.getCode());
+            operateLogDO.setUserId(id);
+
+            operateLogDAO.insert(operateLogDO);
+            return true;
+        } finally {
+            distributedLock.unlock(String.valueOf(id));
+        }
     }
 }
