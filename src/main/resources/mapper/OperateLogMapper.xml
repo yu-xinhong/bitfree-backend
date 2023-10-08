@@ -32,7 +32,8 @@
     <select id="countLoginRecord" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM operate_log
-        WHERE `type` = #{type}
+        WHERE  user_id = #{userId}
+        AND `type` = #{type}
         AND create_time &gt; #{date}
         AND deleted = 0
     </select>

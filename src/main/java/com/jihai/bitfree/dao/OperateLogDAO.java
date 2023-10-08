@@ -12,5 +12,5 @@ public interface OperateLogDAO {
 
     Integer countRecentOpenChatLog(Long userId, Integer type);
 
-    Integer countLoginRecord(Integer type, Date date);
+    Integer countLoginRecord(Long userId, Integer type, Date date);
 }

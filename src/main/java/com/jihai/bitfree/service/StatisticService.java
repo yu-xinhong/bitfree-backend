@@ -109,7 +109,7 @@ public class StatisticService {
         // 上层单机单线程不存在并发
         try {
             Date date = DateUtils.formatDay(new Date());
-            if (operateLogDAO.countLoginRecord(OperateTypeEnum.LOGIN.getCode(), date) > 0) {
+            if (operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LOGIN.getCode(), date) > 0) {
                 return ;
             }
 
