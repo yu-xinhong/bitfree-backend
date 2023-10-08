@@ -1,8 +1,11 @@
 package com.jihai.bitfree.aspect;
 
+import com.jihai.bitfree.ability.ThreadPoolAbility;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,6 +31,12 @@ public class LoggedCheckAspect {
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private StatisticService statisticService;
+
+    @Autowired
+    private ThreadPoolAbility threadPoolAbility;
+
     @Around("@annotation(com.jihai.bitfree.aspect.LoggedCheck)")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Cookie[] cookies = httpServletRequest.getCookies();
@@ -47,10 +56,14 @@ public class LoggedCheckAspect {
             log.error("The request {} try to access protected resources", ip);
             throw new BusinessException(Constants.NOT_LOGIN);
         }
-        if (userDAO.getByToken(token) == null) {
+        UserDO userDO = userDAO.getByToken(token);
+        if (userDO == null) {
             log.error("The request {} try fake token", ip);
             throw new BusinessException(Constants.NOT_LOGIN);
         }
+        threadPoolAbility.getStatisticThreadPool().submit(() -> {
+            statisticService.recordUserLog(userDO.getId());
+        });
         return proceedingJoinPoint.proceed();
     }
 }

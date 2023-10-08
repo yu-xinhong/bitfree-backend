@@ -15,6 +15,16 @@
     </resultMap>
 
     <sql id="BASE_COLUMN">id, `key`, `value`, deleted, create_time, update_time</sql>
+    <insert id="insert">
+        INSERT INTO config(`key`, `value`)
+        VALUES(#{key}, #{value})
+    </insert>
+    <update id="updateKey">
+        UPDATE config
+        SET value = #{value}
+        WHERE `key` = #{key}
+        AND deleted = 0
+    </update>
 
     <select id="getByKey" resultMap="configResultMap">
         SELECT <include refid="BASE_COLUMN"/> FROM config WHERE `key` = #{key} AND deleted = 0

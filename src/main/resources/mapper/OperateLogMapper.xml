@@ -29,4 +29,11 @@
         AND create_time &gt; DATE_SUB(CURDATE(), interval 1 day)
         AND deleted = 0
     </select>
+    <select id="countLoginRecord" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM operate_log
+        WHERE `type` = #{type}
+        AND create_time &gt; #{date}
+        AND deleted = 0
+    </select>
 </mapper>

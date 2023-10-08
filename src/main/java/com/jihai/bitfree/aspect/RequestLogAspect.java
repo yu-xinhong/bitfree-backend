@@ -2,6 +2,8 @@ package com.jihai.bitfree.aspect;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jihai.bitfree.ability.ThreadPoolAbility;
+import com.jihai.bitfree.service.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -27,6 +29,7 @@ public class RequestLogAspect {
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object process(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
+            statisticRequest();
             Signature signature = proceedingJoinPoint.getSignature();
             MethodSignature methodSignature = (MethodSignature) signature;
             Object[] args = proceedingJoinPoint.getArgs();
@@ -61,5 +64,17 @@ public class RequestLogAspect {
             // 兜底
             return proceedingJoinPoint.proceed();
         }
+    }
+
+    @Autowired
+    private ThreadPoolAbility threadPoolAbility;
+
+    @Autowired
+    private StatisticService statisticService;
+
+    private void statisticRequest() {
+        threadPoolAbility.getStatisticThreadPool().submit(() -> {
+            statisticService.recordRequest();
+        });
     }
 }
