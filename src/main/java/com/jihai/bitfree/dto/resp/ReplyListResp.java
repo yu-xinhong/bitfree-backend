@@ -23,6 +23,8 @@ public class ReplyListResp extends BaseResp {
 
     private Boolean like;
 
+    private Integer likeCount;
+
     private List<ReplyListResp> subReplyList;
 
     public Long getId() {
@@ -87,5 +89,13 @@ public class ReplyListResp extends BaseResp {
 
     public void setSubReplyList(List<ReplyListResp> subReplyList) {
         this.subReplyList = subReplyList;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 }
