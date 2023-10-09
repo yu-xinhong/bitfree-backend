@@ -237,8 +237,8 @@ public class PostService {
     }
 
     private Boolean isNew(Date createTime) {
-        // 一天内为新视频
-        return new Date().getTime() - createTime.getTime() < 1000 * 60 * 60 * 24;
+        // 3天内为新视频
+        return new Date().getTime() - createTime.getTime() < 1000 * 60 * 60 * 24 * 3;
     }
 
     public void checkIsCurUserReply(Long id, Long userId) {
