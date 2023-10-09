@@ -73,8 +73,6 @@ public class RequestLogAspect {
     private StatisticService statisticService;
 
     private void statisticRequest() {
-        threadPoolAbility.getStatisticThreadPool().submit(() -> {
-            statisticService.recordRequest();
-        });
+        statisticService.recordRequest();
     }
 }

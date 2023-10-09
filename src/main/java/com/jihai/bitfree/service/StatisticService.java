@@ -14,9 +14,9 @@ import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -67,12 +67,11 @@ public class StatisticService {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
+    @Async("statisticThreadPool")
     public void clear() {
         // 每天0点清除
         log.info("start clear web statistic {}", webStatistics());
-        threadPoolAbility.getStatisticThreadPool().submit(() -> {
-            clearStatistics();
-        });
+        clearStatistics();
     }
 
     private void clearStatistics() {
@@ -99,11 +98,13 @@ public class StatisticService {
         }
     }
 
+    @Async("statisticThreadPool")
     public void recordRequest() {
         WebStaticsResp webStaticsResp = webStatistics();
         webStaticsResp.setRequestCount(webStaticsResp.getRequestCount() + 1);
     }
 
+    @Async("statisticThreadPool")
     public void recordUserLog(Long userId) {
         // 上层单机单线程不存在并发
         try {

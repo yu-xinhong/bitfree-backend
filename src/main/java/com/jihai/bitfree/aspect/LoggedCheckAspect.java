@@ -61,9 +61,7 @@ public class LoggedCheckAspect {
             log.error("The request {} try fake token", ip);
             throw new BusinessException(Constants.NOT_LOGIN);
         }
-        threadPoolAbility.getStatisticThreadPool().submit(() -> {
-            statisticService.recordUserLog(userDO.getId());
-        });
+        statisticService.recordUserLog(userDO.getId());
         return proceedingJoinPoint.proceed();
     }
 }
