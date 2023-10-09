@@ -104,7 +104,6 @@ public class StatisticService {
         webStaticsResp.setRequestCount(webStaticsResp.getRequestCount() + 1);
     }
 
-    @Transactional
     public void recordUserLog(Long userId) {
         // 上层单机单线程不存在并发
         try {
