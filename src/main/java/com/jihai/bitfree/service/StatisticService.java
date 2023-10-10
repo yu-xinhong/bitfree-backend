@@ -41,7 +41,6 @@ public class StatisticService {
         ConfigDO config = configDAO.getByKey(Constants.WEB_STATISTICS);
         if (config == null) {
             // 第一次发布初始化代码
-
             WebStaticsResp webStaticsResp = new WebStaticsResp();
             webStaticsResp.setRequestCount(0);
             webStaticsResp.setUserLoginCount(0);
@@ -54,9 +53,9 @@ public class StatisticService {
 
         new Thread(() -> {
             while (true) {
-                // 每分钟同步一次DB即可
+                // 每5分钟同步一次DB即可
                 try {
-                    Thread.sleep(1000 * 60);
+                    Thread.sleep(1000 * 60 * 5);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -80,10 +79,11 @@ public class StatisticService {
         webStaticsResp.setUserLoginCount(0);
 
         configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
+        statisticCache.invalidate(Constants.WEB_STATISTICS);
     }
 
     // TODO 定期刷新缓存即可
-    private Cache<String, WebStaticsResp> statisticCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+    private Cache<String, WebStaticsResp> statisticCache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build();
 
     public WebStaticsResp webStatistics() {
         try {
