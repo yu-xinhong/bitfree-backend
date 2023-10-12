@@ -125,10 +125,10 @@ VALUES
 	(2, 'TOP_POST_ID', '1', 0, '2023-05-30 16:48:38', '2023-06-07 09:51:52'),
 	(3, 'MAIL_SECRET', '{\n    \"secret\":\"test\",\n    \"sendMail\":\"test@qq.com\"\n}', 0, '2023-06-08 11:14:00', '2023-06-08 11:17:54'),
 	(4, 'DEFAULT_PASSWORD', '123456', 0, '2023-06-09 19:40:07', '2023-06-09 19:40:09'),
-	(5, 'DEFAULT_POSTER', 'xxxx', 0, '2023-06-13 15:10:14', '2023-06-13 15:10:14');
+	(5, 'DEFAULT_POSTER', 'xxxx', 0, '2023-06-13 15:10:14', '2023-06-13 15:10:14'),
+    (6, 'SENSITIVE_WORDS', 'AAA', 0, '2023-10-11 15:32:06', '2023-10-11 15:32:09');
 
-
---- 签到表
+-- 签到表
 
 CREATE TABLE `check_in` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
