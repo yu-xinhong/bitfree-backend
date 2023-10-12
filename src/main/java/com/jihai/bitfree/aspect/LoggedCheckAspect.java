@@ -1,6 +1,5 @@
 package com.jihai.bitfree.aspect;
 
-import com.jihai.bitfree.ability.ThreadPoolAbility;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.UserDO;
@@ -33,9 +32,6 @@ public class LoggedCheckAspect {
 
     @Autowired
     private StatisticService statisticService;
-
-    @Autowired
-    private ThreadPoolAbility threadPoolAbility;
 
     @Around("@annotation(com.jihai.bitfree.aspect.LoggedCheck)")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {

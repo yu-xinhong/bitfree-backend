@@ -7,6 +7,7 @@ import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.*;
+import com.jihai.bitfree.service.CollectService;
 import com.jihai.bitfree.service.PostService;
 import com.jihai.bitfree.service.ReplyService;
 import com.jihai.bitfree.service.UserLikeService;
@@ -27,6 +28,9 @@ public class PostController extends BaseController {
 
     @Autowired
     private UserLikeService userLikeService;
+
+    @Autowired
+    private CollectService collectService;
 
     @GetMapping("/pageQuery")
     @ParameterCheck
@@ -151,5 +155,33 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<PageResult<VideoListResp>> pageQueryVideoList(PageQueryReq pageQueryReq) {
         return convertSuccessResult(postService.pageQueryVideoList(pageQueryReq.getPage(), pageQueryReq.getSize()));
+    }
+
+
+
+    @PostMapping("/collect")
+    @LoggedCheck
+    public Result<Boolean> collect(@RequestBody CollectReq collectReq) {
+        return convertSuccessResult(collectService.collect(collectReq.getPostId(), getCurrentUser().getId(), CollectService.CollectTypeEnum.POST.getType()));
+    }
+
+    @PostMapping("/cancelCollect")
+    @LoggedCheck
+    public Result<Boolean> cancelCollect(@RequestBody CancelCollectReq cancelCollectReq) {
+        return convertSuccessResult(collectService.cancelCollect(cancelCollectReq.getPostId(), getCurrentUser().getId(), CollectService.CollectTypeEnum.POST.getType()));
+    }
+
+    @GetMapping("/getCollectList")
+    @LoggedCheck
+    public Result<PageResult<CollectResp>> getCollectList(PageQueryReq pageQueryReq) {
+        List<CollectResp> collectRespList = collectService.getCollectList(getCurrentUser().getId(), pageQueryReq.getPage(), pageQueryReq.getSize());
+        Integer total = collectService.countTotal(getCurrentUser().getId());
+        return convertSuccessResult(new PageResult<>(collectRespList, total));
+    }
+
+    @GetMapping("/hasCollected")
+    @LoggedCheck
+    public Result<Boolean> hasCollected(HasCollectReq hasCollectReq) {
+        return convertSuccessResult(collectService.hasCollected(hasCollectReq.getPostId(), getCurrentUser().getId()));
     }
 }

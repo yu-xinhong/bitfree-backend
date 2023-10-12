@@ -1,9 +1,6 @@
 package com.jihai.bitfree.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.jihai.bitfree.ability.ThreadPoolAbility;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
@@ -20,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -32,9 +27,6 @@ public class StatisticService {
 
     @Autowired
     private OperateLogDAO operateLogDAO;
-
-    @Autowired
-    private ThreadPoolAbility threadPoolAbility;
 
     @PostConstruct
     public void init() {
@@ -50,19 +42,6 @@ public class StatisticService {
             config.setValue(JSONObject.toJSONString(webStaticsResp));
             configDAO.insert(config);
         }
-
-        new Thread(() -> {
-            while (true) {
-                // 每5分钟同步一次DB即可
-                try {
-                    Thread.sleep(1000 * 60 * 5);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                WebStaticsResp webStaticsResp = webStatistics();
-                configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
-            }
-        }).start();
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -79,29 +58,22 @@ public class StatisticService {
         webStaticsResp.setUserLoginCount(0);
 
         configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
-        statisticCache.invalidate(Constants.WEB_STATISTICS);
     }
 
-    // TODO 定期刷新缓存即可
-    private Cache<String, WebStaticsResp> statisticCache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build();
 
     public WebStaticsResp webStatistics() {
-        try {
-            return statisticCache.get(Constants.WEB_STATISTICS, () -> {
-                ConfigDO config = configDAO.getByKey(Constants.WEB_STATISTICS);
-                if (config == null) return null;
-                String value = config.getValue();
-                return JSONObject.parseObject(value, WebStaticsResp.class);
-            });
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        ConfigDO config = configDAO.getByKey(Constants.WEB_STATISTICS);
+        if (config == null) return null;
+        String value = config.getValue();
+        return JSONObject.parseObject(value, WebStaticsResp.class);
     }
 
     @Async("statisticThreadPool")
     public void recordRequest() {
         WebStaticsResp webStaticsResp = webStatistics();
         webStaticsResp.setRequestCount(webStaticsResp.getRequestCount() + 1);
+
+        configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
     }
 
     @Async("statisticThreadPool")
@@ -120,6 +92,7 @@ public class StatisticService {
 
             WebStaticsResp webStaticsResp = webStatistics();
             webStaticsResp.setUserLoginCount(webStaticsResp.getUserLoginCount() + 1);
+            configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
         } catch (Exception e) {
             log.error("record user login error", e);
         }

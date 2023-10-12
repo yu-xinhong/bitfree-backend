@@ -2,7 +2,6 @@ package com.jihai.bitfree.aspect;
 
 
 import com.alibaba.fastjson.JSON;
-import com.jihai.bitfree.ability.ThreadPoolAbility;
 import com.jihai.bitfree.service.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -65,9 +64,6 @@ public class RequestLogAspect {
             return proceedingJoinPoint.proceed();
         }
     }
-
-    @Autowired
-    private ThreadPoolAbility threadPoolAbility;
 
     @Autowired
     private StatisticService statisticService;
