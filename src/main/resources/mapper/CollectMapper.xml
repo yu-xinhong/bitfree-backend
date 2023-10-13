@@ -21,6 +21,7 @@
         SELECT COUNT(*)
         FROM collect
         WHERE user_id = #{userId}
+        AND target_id = #{postId}
         AND `type` = #{type}
         AND deleted = 0
     </select>
