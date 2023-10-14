@@ -135,6 +135,7 @@ public class UserService {
         return true;
     }
 
+    @Transactional
     public Boolean updatePassword(Long id, String oldPassword, String newPassword) {
         if (StringUtils.hasText(newPassword)) {
             UserDO userDO = userDao.getById(id);
