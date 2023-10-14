@@ -6,7 +6,6 @@ import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jihai.bitfree.constants.Constants;
-import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class MonitorAbility {
 
     private static String ROBOT_URL;
 
-    private static final int MAX_MESSAGE_LENGTH = 400;
+    private static final int MAX_MESSAGE_LENGTH = 150;
 
     @Autowired
     private ConfigService configService;
