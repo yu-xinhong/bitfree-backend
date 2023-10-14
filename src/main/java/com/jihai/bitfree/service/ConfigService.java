@@ -14,7 +14,6 @@ public class ConfigService {
     @Autowired
     private ConfigDAO configDAO;
 
-
     public String getByKey(String key) {
         ConfigDO configDO = configDAO.getByKey(key);
         if (configDO == null) {

@@ -1,15 +1,20 @@
 package com.jihai.bitfree.aspect;
 
 
+import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 @Slf4j
@@ -17,15 +22,25 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ExceptionHandlerAspect {
 
+    @Autowired
+    private MonitorAbility monitorAbility;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) {
+        String ip = httpServletRequest.getHeader("X-Real-IP");
+
         try {
             return proceedingJoinPoint.proceed();
         } catch (BusinessException businessException) {
             log.warn("BUSINESS ERROR", businessException);
+            monitorAbility.sendMsg(String.format(ip + " business error message: %s  stack : %s", businessException.getMessage(), ExceptionUtils.getStackTrace(businessException)));
             return errorResult(ReturnCodeEnum.BUSINESS_ERROR, businessException);
         } catch (Throwable e) {
             log.error("Request ERROR", e);
+            monitorAbility.sendMsg(String.format(ip + " system error message: %s  stack : %s", e.getMessage(), ExceptionUtils.getStackTrace(e)));
             return errorResult(ReturnCodeEnum.SYSTEM_ERROR, ReturnCodeEnum.SYSTEM_ERROR.getDesc());
         }
     }

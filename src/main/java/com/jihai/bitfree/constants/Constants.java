@@ -10,4 +10,5 @@ public interface Constants {
     String DEFAULT_POSTER = "DEFAULT_POSTER";
     String SENSITIVE_WORDS = "SENSITIVE_WORDS";
     String WEB_STATISTICS = "WEB_STATISTICS";
+    String ROBOT_URL = "ROBOT_URL";
 }
