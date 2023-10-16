@@ -3,9 +3,9 @@ package com.jihai.bitfree.dto.req;
 import com.jihai.bitfree.base.BaseReq;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.*;
-
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 public class PageQueryReq extends BaseReq {
 

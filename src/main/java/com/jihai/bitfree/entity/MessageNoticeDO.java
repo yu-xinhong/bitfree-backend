@@ -8,7 +8,7 @@ public class MessageNoticeDO extends BaseDO {
 
     private Long userId;
 
-    private Integer status;
+    private Integer type;
 
     public Long getMessageId() {
         return messageId;
@@ -26,11 +26,11 @@ public class MessageNoticeDO extends BaseDO {
         this.userId = userId;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getType() {
+        return type;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setType(Integer type) {
+        this.type = type;
     }
 }
