@@ -5,6 +5,7 @@ import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.StatisticService;
+import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,6 +29,9 @@ public class LoggedCheckAspect {
     private HttpServletRequest httpServletRequest;
 
     @Autowired
+    private RequestUtils requestUtils;
+
+    @Autowired
     private UserDAO userDAO;
 
     @Autowired
@@ -36,7 +40,7 @@ public class LoggedCheckAspect {
     @Around("@annotation(com.jihai.bitfree.aspect.LoggedCheck)")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Cookie[] cookies = httpServletRequest.getCookies();
-        String ip = httpServletRequest.getHeader("X-Real-IP");
+        String ip = requestUtils.getCurrentIp();
         if (cookies == null) {
             log.error("The request {} headers not exists cookies", ip);
             throw new BusinessException(Constants.NOT_LOGIN);

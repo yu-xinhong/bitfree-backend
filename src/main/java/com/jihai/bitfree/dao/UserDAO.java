@@ -10,7 +10,7 @@ public interface UserDAO {
 
     UserDO queryByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
-    void saveToken(@Param("email") String email, @Param("password") String password, @Param("token") String token);
+    void saveToken(@Param("email") String email, @Param("password") String password, @Param("token") String token,@Param("ip") String ip);
 
     void clearToken(@Param("id") Long id);
 

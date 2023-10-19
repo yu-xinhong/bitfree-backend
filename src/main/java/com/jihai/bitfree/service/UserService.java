@@ -58,9 +58,9 @@ public class UserService {
         return userDao.queryByEmailAndPassword(email, password);
     }
 
-    public String generateToken(String email, String password) {
+    public String generateToken(String email, String password, String currentIp) {
         String token = UUID.randomUUID().toString();
-        userDao.saveToken(email, password, token);
+        userDao.saveToken(email, password, token, currentIp);
         return token;
     }
 
@@ -232,6 +232,8 @@ public class UserService {
             if (LikeTypeEnum.REPLY.getType().equals(type)) {
                 // 添加一个1个币
                 ReplyDO replyDO = replyDAO.getById(id);
+                if (replyDO == null) throw new BusinessException("回复不存在");
+
                 Long sendUserId = replyDO.getSendUserId();
                 if (userId.equals(sendUserId)) throw new BusinessException("禁止给自己点赞");
 
@@ -239,6 +241,8 @@ public class UserService {
             } else if (LikeTypeEnum.POST.getType().equals(type)) {
                 // 帖子被赞增加2个币
                 PostDO postDO = postDAO.getById(id);
+                if (postDO == null) throw new BusinessException("帖子不存在");
+
                 Long creatorId = postDO.getCreatorId();
                 if (userId.equals(creatorId)) throw new BusinessException("禁止给自己点赞");
 

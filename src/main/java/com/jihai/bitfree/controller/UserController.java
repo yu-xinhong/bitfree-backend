@@ -13,6 +13,7 @@ import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.PasswordUtils;
+import com.jihai.bitfree.utils.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,9 @@ public class UserController extends BaseController {
     @Autowired
     private PasswordUtils passwordUtils;
 
+    @Autowired
+    private RequestUtils requestUtils;
+
     @PostMapping("/login")
     @ParameterCheck
     public Result<String> login(@RequestBody LoginReq loginReq) {
@@ -39,7 +43,7 @@ public class UserController extends BaseController {
         if (Objects.isNull(userDO)) {
             return convertFailResult(null, "邮箱或密码错误");
         }
-        return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword()));
+        return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword(), requestUtils.getCurrentIp()));
     }
 
 
