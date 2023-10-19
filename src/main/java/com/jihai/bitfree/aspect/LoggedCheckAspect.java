@@ -7,6 +7,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.StatisticService;
 import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -61,7 +62,17 @@ public class LoggedCheckAspect {
             log.error("The request {} try fake token", ip);
             throw new BusinessException(Constants.NOT_LOGIN);
         }
+
+        // 最新的请求ip更新
+        updateIp(userDO, ip);
         statisticService.recordUserLog(userDO.getId());
         return proceedingJoinPoint.proceed();
+    }
+
+    private void updateIp(UserDO userDO, String ip) {
+        // 当前与请求的ip一致，不更新
+        if (StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
+
+        userDAO.updateIp(userDO.getId(), ip);
     }
 }

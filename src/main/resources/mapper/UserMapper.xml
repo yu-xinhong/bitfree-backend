@@ -65,6 +65,12 @@
         SET coins = coins + #{coins}
         WHERE id = #{userId} AND deleted = 0 AND (coins + #{coins}) >= 0
     </update>
+    <update id="updateIp">
+        UPDATE user
+        SET ip = #{ip}
+        WHERE id = #{userId}
+        AND deleted = 0
+    </update>
 
     <select id="batchQueryByIdList" resultMap="userResultMap">
         SELECT <include refid="BASE_COLUMN"/> FROM user WHERE id IN
