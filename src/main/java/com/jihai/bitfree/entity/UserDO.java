@@ -26,6 +26,8 @@ public class UserDO extends BaseDO {
 
     private String email;
 
+    private String ip;
+
     private String password;
 
     private String contact;
@@ -108,6 +110,14 @@ public class UserDO extends BaseDO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public String getPassword() {

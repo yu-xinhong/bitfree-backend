@@ -5,6 +5,7 @@ import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,8 +14,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Component
 @Slf4j
@@ -26,11 +25,11 @@ public class ExceptionHandlerAspect {
     private MonitorAbility monitorAbility;
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private RequestUtils requestUtils;
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) {
-        String ip = httpServletRequest.getHeader("X-Real-IP");
+        String ip = requestUtils.getCurrentIp();
 
         try {
             return proceedingJoinPoint.proceed();
