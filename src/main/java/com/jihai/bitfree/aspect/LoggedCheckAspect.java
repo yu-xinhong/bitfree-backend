@@ -1,10 +1,12 @@
 package com.jihai.bitfree.aspect;
 
 import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.StatisticService;
+import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +16,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.interceptor.TransactionalProxy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +37,13 @@ public class LoggedCheckAspect {
     private RequestUtils requestUtils;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private OperateLogDAO operateLogDAO;
 
     @Autowired
     private StatisticService statisticService;
@@ -64,15 +74,9 @@ public class LoggedCheckAspect {
         }
 
         // 最新的请求ip更新
-        updateIp(userDO, ip);
+        userService.updateIp(userDO.getId(), ip);
         statisticService.recordUserLog(userDO.getId());
         return proceedingJoinPoint.proceed();
     }
 
-    private void updateIp(UserDO userDO, String ip) {
-        // 当前与请求的ip一致，不更新
-        if (StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
-
-        userDAO.updateIp(userDO.getId(), ip);
-    }
 }
