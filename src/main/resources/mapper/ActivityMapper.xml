@@ -15,10 +15,9 @@
     <select id="getRecent" resultType="com.jihai.bitfree.entity.ActivityDO">
         SELECT <include refid="BASE_COLUMN"/>
         FROM activity
-        WHERE NOW() &gt; start_time
-        AND NOW() &lt; end_time
-        AND deleted = 0
-        ORDER BY start_time ASC LIMIT 1
+        WHERE
+        deleted = 0
+        ORDER BY start_time DESC LIMIT 1
     </select>
     <select id="queryActivity" resultType="com.jihai.bitfree.entity.ActivityDO">
         SELECT <include refid="BASE_COLUMN"/>
