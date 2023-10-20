@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
@@ -18,6 +19,7 @@ import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,7 +36,7 @@ public class UserService {
 
     private static final String DEFAULT_AVATAR = "DEFAULT_AVATAR";
     @Autowired
-    private UserDAO userDao;
+    private UserDAO userDAO;
 
     @Autowired
     private ConfigDAO configDAO;
@@ -55,28 +57,28 @@ public class UserService {
     private PostDAO postDAO;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
-        return userDao.queryByEmailAndPassword(email, password);
+        return userDAO.queryByEmailAndPassword(email, password);
     }
 
     public String generateToken(String email, String password, String currentIp) {
         String token = UUID.randomUUID().toString();
-        userDao.saveToken(email, password, token, currentIp);
+        userDAO.saveToken(email, password, token, currentIp);
         return token;
     }
 
     public void logout(Long id) {
-        userDao.clearToken(id);
+        userDAO.clearToken(id);
     }
 
     public UserDO getUser(Long id) {
-        return userDao.getById(id);
+        return userDAO.getById(id);
     }
 
     public String addUser(String email, Integer level, String secret) {
 
         checkSecret(secret);
         // 校验
-        if (userDao.queryByEmail(email) != null) {
+        if (userDAO.queryByEmail(email) != null) {
             log.error("email {} is duplicated", email);
             throw new RuntimeException("邮箱重复创建");
         }
@@ -90,7 +92,7 @@ public class UserService {
 
         userDO.setLevel(level);
 
-        userDao.insert(userDO);
+        userDAO.insert(userDO);
 
         OperateLogDO operateLogDO = new OperateLogDO();
         operateLogDO.setUserId(userDO.getId());
@@ -110,14 +112,14 @@ public class UserService {
     }
 
     public UserResp getByToken(String token) {
-        return DO2DTOConvert.convertUser(userDao.getByToken(token));
+        return DO2DTOConvert.convertUser(userDAO.getByToken(token));
     }
 
     @Transactional
     public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId) {
         if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
         if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
-        userDao.save(userId, avatar, name, city, position, seniority);
+        userDAO.save(userId, avatar, name, city, position, seniority);
         return true;
     }
 
@@ -126,19 +128,19 @@ public class UserService {
     }
 
     public List<ActivityUserResp> getActivityList() {
-        return userDao.ActivityUserResp();
+        return userDAO.ActivityUserResp();
     }
 
     public Boolean resetPassword(Long id, String secret, String defaultPassword) {
         checkSecret(secret);
-        userDao.updatePasswordAndClearToken(id, defaultPassword);
+        userDAO.updatePasswordAndClearToken(id, defaultPassword);
         return true;
     }
 
     @Transactional
     public Boolean updatePassword(Long id, String oldPassword, String newPassword) {
         if (StringUtils.hasText(newPassword)) {
-            UserDO userDO = userDao.getById(id);
+            UserDO userDO = userDAO.getById(id);
             if (! userDO.getPassword().equalsIgnoreCase(oldPassword)) {
                 log.warn("some one password new and old not equals");
                 throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
@@ -148,7 +150,7 @@ public class UserService {
                 throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
             }
         }
-        userDao.updatePasswordAndClearToken(id, newPassword);
+        userDAO.updatePasswordAndClearToken(id, newPassword);
 
         OperateLogDO operateLogDO = new OperateLogDO();
         operateLogDO.setUserId(id);
@@ -170,7 +172,7 @@ public class UserService {
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
 
         Integer incrementCoins = getIncrementCoins(userId);
-        userDao.incrementCoins(userId, incrementCoins);
+        userDAO.incrementCoins(userId, incrementCoins);
         return true;
     }
 
@@ -194,12 +196,12 @@ public class UserService {
     }
 
     public void checkCoins(Long userId, int coins) {
-        UserDO userDO = userDao.getById(userId);
+        UserDO userDO = userDAO.getById(userId);
         if (userDO.getCoins() < coins) throw new BusinessException("需要" + coins + "个硬币才能此操作");
     }
 
     public void consumeCoins(Long userId, int coins) {
-        userDao.incrementCoins(userId, - coins);
+        userDAO.incrementCoins(userId, - coins);
     }
 
     private static final String LIKE_LOCK_PREFIX = "like_lock_";
@@ -237,7 +239,7 @@ public class UserService {
                 Long sendUserId = replyDO.getSendUserId();
                 if (userId.equals(sendUserId)) throw new BusinessException("禁止给自己点赞");
 
-                userDao.incrementCoins(sendUserId, 1);
+                userDAO.incrementCoins(sendUserId, 1);
             } else if (LikeTypeEnum.POST.getType().equals(type)) {
                 // 帖子被赞增加2个币
                 PostDO postDO = postDAO.getById(id);
@@ -246,11 +248,36 @@ public class UserService {
                 Long creatorId = postDO.getCreatorId();
                 if (userId.equals(creatorId)) throw new BusinessException("禁止给自己点赞");
 
-                userDao.incrementCoins(creatorId, 2);
+                userDAO.incrementCoins(creatorId, 2);
             }
         } finally {
             distributedLock.unlock(key);
         }
         return true;
+    }
+
+    @Transactional
+    @Async("statisticThreadPool")
+    public void updateIp(Long userId, String ip) {
+        String lockKey = userId.toString() + "_" + ip;
+        Boolean lock = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
+        try {
+            if (! lock) return ;
+            UserDO userDO = userDAO.getById(userId);
+            // 当前与请求的ip一致，不更新
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
+
+            log.warn("{} change ip from {} to {}", JSONObject.toJSON(userDO), userDO.getIp(), ip);
+            OperateLogDO operateLogDO = new OperateLogDO();
+            operateLogDO.setType(OperateTypeEnum.CHANGE_IP.getCode());
+            operateLogDO.setUserId(userDO.getId());
+            operateLogDAO.insert(operateLogDO);
+
+            userDAO.updateIp(userDO.getId(), ip);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            distributedLock.unlock(lockKey);
+        }
     }
 }
