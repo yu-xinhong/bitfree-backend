@@ -10,12 +10,15 @@ import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 
 @Component
 @Slf4j
 public class MonitorAbility {
+
+    private static final String SKIP_MONITOR_MESSAGE = "SKIP_MONITOR_MESSAGE";
 
     private static String ROBOT_URL;
 
@@ -31,6 +34,9 @@ public class MonitorAbility {
 
     public void sendMsg(String message) {
         try {
+            if (isSkipMonitor(message)) {
+                return ;
+            }
             JSONObject postBodyJson = new JSONObject()
                     .fluentPut("msgtype", "text")
                     .fluentPut("text", new JSONObject().fluentPut("content", message.length() > MAX_MESSAGE_LENGTH ? message.substring(0, MAX_MESSAGE_LENGTH) + "......" : message));
@@ -43,5 +49,21 @@ public class MonitorAbility {
         } catch (Exception e) {
             log.error("发送告警信息异常", e);
         }
+    }
+
+    private boolean isSkipMonitor(String message) {
+        String value = configService.getByKey(SKIP_MONITOR_MESSAGE);
+        if (StringUtils.isEmpty(value)) return false;
+
+        try {
+            String[] skipMessageArray = value.split(",");
+            for (String skipMessage : skipMessageArray) {
+                if (message.contains(skipMessage)) return true;
+            }
+        } catch (Exception e) {
+            log.error("跳过报警配置错误", e);
+            this.sendMsg("跳过报警配置错误  " + value);
+        }
+        return false;
     }
 }
