@@ -108,6 +108,11 @@ public class ActivityService {
     }
 
     public Boolean getRight(Long userId, Long activityId) {
+        ActivityDO activityDO = activityDAO.queryActivity(activityId);
+        // 不在活动时间范围内
+        if (activityDO.getStartTime().after(new Date()) || activityDO.getEndTime().before(new Date())) return false;
+        // 库存为0
+        if (activityDO.getStock() <= 0) return false;
         return orderDAO.getUserActivity(userId, activityId) == null;
     }
 }
