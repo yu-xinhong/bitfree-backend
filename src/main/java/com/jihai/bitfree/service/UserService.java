@@ -109,9 +109,9 @@ public class UserService {
     private void checkSecret(String secret) {
         ConfigDO configDO = configDAO.getByKey(Constants.SECRET);
         if (! configDO.getValue().equals(secret)) {
-            log.error("warn ! addUser is only allow administrator jihai!");
+            log.error("warn ! this operation only be allowed to administrator jihai!");
             // send alert
-            throw new RuntimeException(Constants.NOT_LOGIN);
+            throw new RuntimeException(ReturnCodeEnum.SECRET_ERROR.getDesc());
         }
     }
 
