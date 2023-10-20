@@ -8,6 +8,8 @@ public class NotificationDO extends BaseDO {
 
     private String content;
 
+    private String userList;
+
     public String getTitle() {
         return title;
     }
@@ -22,5 +24,13 @@ public class NotificationDO extends BaseDO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getUserList() {
+        return userList;
+    }
+
+    public void setUserList(String userList) {
+        this.userList = userList;
     }
 }

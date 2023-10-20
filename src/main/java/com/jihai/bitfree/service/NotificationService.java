@@ -1,5 +1,8 @@
 package com.jihai.bitfree.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
 import com.jihai.bitfree.dao.NotificationDAO;
@@ -13,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -29,8 +34,19 @@ public class NotificationService {
     @Autowired
     private MessageNoticeDAO messageNoticeDAO;
 
+    @Autowired
+    private MonitorAbility monitorAbility;
+
     public List<NotificationResp> pageQuery(int start, Integer size, Long userId) {
         List<NotificationDO> notificationDOList = notificationDAO.pageQuery(start, size, MessageTypeEnum.NOTIFICATION.getType());
+
+        // FIXME 这里在过滤情况下，分页显示条数与页面条数不一致
+        notificationDOList.removeIf(e -> {
+            // 自己不在被通知范围内
+            List<Long> needNotificationUserList = getNeedNotificationUserList(e);
+            return ! CollectionUtils.isEmpty(needNotificationUserList) && ! needNotificationUserList.contains(userId);
+        });
+
         if (CollectionUtils.isEmpty(notificationDOList)) return Collections.emptyList();
 
         List<MessageNoticeDO> messageNoticeDOS = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.NOTIFICATION.getType(), notificationDOList.stream().map(e -> e.getId()).collect(Collectors.toList()), userId);
@@ -66,8 +82,30 @@ public class NotificationService {
         if (CollectionUtils.isEmpty(messageNoticeDOS)) return notificationDOList.size();
 
         Set<Long> readMessageIdSet = messageNoticeDOS.stream().map(e -> e.getMessageId()).collect(Collectors.toSet());
-        notificationDOList.removeIf(e -> readMessageIdSet.contains(e.getId()));
+
+        notificationDOList.removeIf(e -> {
+            // 已经通知过
+            if (readMessageIdSet.contains(e.getId())) return true;
+            // 自己不在被通知范围内
+            List<Long> needNotificationUserList = getNeedNotificationUserList(e);
+            return ! CollectionUtils.isEmpty(needNotificationUserList) && ! needNotificationUserList.contains(userId);
+        });
+
         return notificationDOList.size();
+    }
+
+    private List<Long> getNeedNotificationUserList(NotificationDO notificationDO) {
+        if (StringUtils.isEmpty(notificationDO.getUserList())) return Collections.emptyList();
+
+        try {
+            String[] userListStrArr = notificationDO.getUserList().split(",");
+            return Arrays.stream(userListStrArr).map(Long::valueOf).distinct().collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("获取用户配置配置异常", e);
+            monitorAbility.sendMsg("用户通知配置错误: " + JSONObject.toJSONString(notificationDO));
+            // 避免错发，直接限制成一个不存在的id
+            return Lists.newArrayList(-1L);
+        }
     }
 
     @Transactional
