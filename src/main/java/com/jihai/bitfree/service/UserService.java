@@ -3,6 +3,7 @@ package com.jihai.bitfree.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
@@ -55,6 +56,9 @@ public class UserService {
 
     @Autowired
     private PostDAO postDAO;
+
+    @Autowired
+    private MonitorAbility monitorAbility;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDAO.queryByEmailAndPassword(email, password);
@@ -272,8 +276,9 @@ public class UserService {
             operateLogDO.setType(OperateTypeEnum.CHANGE_IP.getCode());
             operateLogDO.setUserId(userDO.getId());
             operateLogDAO.insert(operateLogDO);
-
             userDAO.updateIp(userDO.getId(), ip);
+
+            monitorAbility.sendMsg(userDO.getName() + " 切换ip " + userDO.getIp() + " -> " + ip);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
