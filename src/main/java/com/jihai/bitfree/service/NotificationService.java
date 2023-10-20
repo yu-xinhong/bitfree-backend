@@ -79,17 +79,17 @@ public class NotificationService {
         if (CollectionUtils.isEmpty(notificationDOList)) return 0;
         List<MessageNoticeDO> messageNoticeDOS = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.NOTIFICATION.getType(), notificationDOList.stream().map(e -> e.getId()).distinct().collect(Collectors.toList()), userId);
 
+        notificationDOList.removeIf(e -> {
+            // 过滤自己不在被通知范围内
+            List<Long> needNotificationUserList = getNeedNotificationUserList(e);
+            return ! CollectionUtils.isEmpty(needNotificationUserList) && ! needNotificationUserList.contains(userId);
+        });
         if (CollectionUtils.isEmpty(messageNoticeDOS)) return notificationDOList.size();
 
         Set<Long> readMessageIdSet = messageNoticeDOS.stream().map(e -> e.getMessageId()).collect(Collectors.toSet());
 
-        notificationDOList.removeIf(e -> {
-            // 已经通知过
-            if (readMessageIdSet.contains(e.getId())) return true;
-            // 自己不在被通知范围内
-            List<Long> needNotificationUserList = getNeedNotificationUserList(e);
-            return ! CollectionUtils.isEmpty(needNotificationUserList) && ! needNotificationUserList.contains(userId);
-        });
+        // 过滤已经通知过
+        notificationDOList.removeIf(e -> readMessageIdSet.contains(e.getId()));
 
         return notificationDOList.size();
     }
