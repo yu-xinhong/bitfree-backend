@@ -9,6 +9,7 @@ import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +33,7 @@ public class MonitorAbility {
         ROBOT_URL = configService.getByKey(Constants.ROBOT_URL);
     }
 
+    @Async("statisticThreadPool")
     public void sendMsg(String message) {
         try {
             if (isSkipMonitor(message)) {

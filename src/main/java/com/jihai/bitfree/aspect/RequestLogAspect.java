@@ -2,6 +2,7 @@ package com.jihai.bitfree.aspect;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.service.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,6 +25,9 @@ public class RequestLogAspect {
 
     @Autowired
     private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private MonitorAbility monitorAbility;
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object process(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -51,10 +55,15 @@ public class RequestLogAspect {
             }
 
             // 理论上，这是最外层的切面，不可能抛异常
+            long startTimestamp = System.currentTimeMillis();
             Object returnObj = proceedingJoinPoint.proceed();
 
+            long costTime = System.currentTimeMillis() - startTimestamp;
             if (returnObj != null) {
-                requestLog.append("\n result -> " + JSON.toJSONString(returnObj));
+                requestLog.append("\n result -> " + JSON.toJSONString(returnObj) + " cost:" + costTime + "ms");
+            }
+            if (costTime > 200) {
+                monitorAbility.sendMsg("耗时接口->" + requestLog);
             }
             log.info(requestLog.toString());
             return returnObj;
