@@ -15,7 +15,7 @@ public class PageQueryReq extends BaseReq {
     private Integer page = 1;
 
     @Min(0)
-    @Max(100)
+    @Max(400)
     @NotNull(message = "每页size不传的吗")
     private Integer size = 20;
 
