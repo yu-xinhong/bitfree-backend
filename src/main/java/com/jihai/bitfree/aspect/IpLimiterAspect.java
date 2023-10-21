@@ -59,7 +59,7 @@ public class IpLimiterAspect {
         RateLimiter rateLimiter = limiterCache.get(recordKey, () -> RateLimiter.create(DEFAULT_LIMITER_COUNT_PER_SECOND));
 
         if (! rateLimiter.tryAcquire()) {
-            log.error("ip -> method {} 单位请求次数过多", recordKey);
+            log.warn("ip -> method {} 单位请求次数过多", recordKey);
             throw new BusinessException("操作太快");
         }
         return proceedingJoinPoint.proceed();
