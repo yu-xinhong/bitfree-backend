@@ -18,10 +18,10 @@ public class OrderDetailReq extends BaseReq {
     @Length(max = 200)
     private String address;
 
-    @NotNull
+//    @NotNull
     private String size;
 
-    @NotNull
+//    @NotNull
     private String color;
 
     @NotNull
