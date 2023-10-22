@@ -260,13 +260,32 @@ public class UserService {
         return true;
     }
 
-    @Transactional
+    /**
+     * 第一个问题：
+     * 这里如果有事务，会存在并发问题
+     * T1 获取分布式锁，正常处理，发送通知
+     * T1 释放分布式锁，未提交事务.
+     * T2 获取到分布式锁
+     * T2 userDAO.getById(userId)查出来仍旧是老ip的，开始通知并更新user
+     * T1 提交事务
+     *
+     * 因此此处移除@Transactional注解, 保证T2释放锁，一定能读到已经更新的ip
+     * 但是也存在风险，没保证insert和update的原子性, 考虑到本身记录IP不是核心链路，因此不做事务保证了
+     * 如果你来优化，你会怎么做呢
+     *
+     *
+     * 第二个问题：
+     * if (! lock) return ; 这一行代码应该移动到try 之前。
+     * 因为没获取到锁仍会执行finally 释放另一个线程的分布式锁，这会导致分布式锁形同虚设。
+     * @param userId
+     * @param ip
+     */
     @Async("commonAsyncThreadPool")
     public void updateIp(Long userId, String ip) {
         String lockKey = userId.toString() + "_" + ip;
         Boolean lock = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
+        if (! lock) return ;
         try {
-            if (! lock) return ;
             UserDO userDO = userDAO.getById(userId);
             // 当前与请求的ip一致，不更新
             if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
