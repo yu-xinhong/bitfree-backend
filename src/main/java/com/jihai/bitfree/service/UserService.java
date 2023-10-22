@@ -261,7 +261,7 @@ public class UserService {
     }
 
     @Transactional
-    @Async("statisticThreadPool")
+    @Async("commonAsyncThreadPool")
     public void updateIp(Long userId, String ip) {
         String lockKey = userId.toString() + "_" + ip;
         Boolean lock = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);

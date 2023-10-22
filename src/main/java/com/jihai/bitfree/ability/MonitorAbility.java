@@ -33,15 +33,22 @@ public class MonitorAbility {
         ROBOT_URL = configService.getByKey(Constants.ROBOT_URL);
     }
 
-    @Async("statisticThreadPool")
-    public void sendMsg(String message) {
+    @Async("commonAsyncThreadPool")
+    public void sendMsg(String msg) {
+        this.sendMsg(msg, MAX_MESSAGE_LENGTH);
+    }
+
+    @Async("commonAsyncThreadPool")
+    public void sendMsg(String message, Integer messageLength) {
         try {
             if (isSkipMonitor(message)) {
                 return ;
             }
+            log.warn("send monitor msg {}", message);
+
             JSONObject postBodyJson = new JSONObject()
                     .fluentPut("msgtype", "text")
-                    .fluentPut("text", new JSONObject().fluentPut("content", message.length() > MAX_MESSAGE_LENGTH ? message.substring(0, MAX_MESSAGE_LENGTH) + "......" : message));
+                    .fluentPut("text", new JSONObject().fluentPut("content", message.length() > messageLength ? message.substring(0, MAX_MESSAGE_LENGTH) + "......" : message));
 
             HttpResponse resp = new HttpRequest(ROBOT_URL).method(Method.POST).header("Content-Type", "application/json").timeout(1000).body(postBodyJson.toString()).execute();
             JSONObject response = JSON.parseObject(resp.body());
