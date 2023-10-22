@@ -11,4 +11,5 @@ public interface Constants {
     String SENSITIVE_WORDS = "SENSITIVE_WORDS";
     String WEB_STATISTICS = "WEB_STATISTICS";
     String ROBOT_URL = "ROBOT_URL";
+    Long SYSTEM_DEFAULT_USER_ID = -1L;
 }

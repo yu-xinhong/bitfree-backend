@@ -5,7 +5,8 @@ public enum OperateTypeEnum {
     UPDATE_PASSWORD(2, "修改密码"),
     CHAT(3, "聊天室"),
     LOGIN(4, "登录"),
-    CHANGE_IP(5, "切换IP");
+    CHANGE_IP(5, "切换IP"),
+    SHORT_LIN(6, "短链跳转");
 
     OperateTypeEnum(Integer code, String desc) {
         this.code = code;
