@@ -46,7 +46,7 @@ public class StatisticService {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
-    @Async("statisticThreadPool")
+    @Async("commonAsyncThreadPool")
     public void clear() {
         // 每天0点清除
         log.info("start clear web statistic {}", webStatistics());
@@ -69,7 +69,7 @@ public class StatisticService {
         return JSONObject.parseObject(value, WebStaticsResp.class);
     }
 
-    @Async("statisticThreadPool")
+    @Async("commonAsyncThreadPool")
     public void recordRequest() {
         WebStaticsResp webStaticsResp = webStatistics();
         webStaticsResp.setRequestCount(webStaticsResp.getRequestCount() + 1);
@@ -77,7 +77,7 @@ public class StatisticService {
         configDAO.updateKey(Constants.WEB_STATISTICS, JSONObject.toJSONString(webStaticsResp));
     }
 
-    @Async("statisticThreadPool")
+    @Async("commonAsyncThreadPool")
     @Transactional
     public void recordUserLog(Long userId) {
         // 上层单机单线程不存在并发

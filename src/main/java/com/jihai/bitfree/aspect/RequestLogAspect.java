@@ -59,11 +59,12 @@ public class RequestLogAspect {
             Object returnObj = proceedingJoinPoint.proceed();
 
             long costTime = System.currentTimeMillis() - startTimestamp;
+            if (costTime > 200) {
+                monitorAbility.sendMsg("耗时接口-> " + costTime + "ms, requestLog " + requestLog, Integer.MAX_VALUE);
+            }
+
             if (returnObj != null) {
                 requestLog.append("\n result -> " + JSON.toJSONString(returnObj) + " cost:" + costTime + "ms");
-            }
-            if (costTime > 200) {
-                monitorAbility.sendMsg("耗时接口->" + requestLog);
             }
             log.info(requestLog.toString());
             return returnObj;
