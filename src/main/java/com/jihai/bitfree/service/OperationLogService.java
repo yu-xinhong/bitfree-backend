@@ -1,7 +1,6 @@
 package com.jihai.bitfree.service;
 
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
-import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +14,10 @@ public class OperationLogService {
     private OperateLogDAO operateLogDAO;
 
     @Async("commonAsyncThreadPool")
-    public void toShortLink() {
+    public void saveOperateLog(Long userId, OperateTypeEnum operateTypeEnum) {
         OperateLogDO operateLogDO = new OperateLogDO();
-        operateLogDO.setUserId(Constants.SYSTEM_DEFAULT_USER_ID);
-        operateLogDO.setType(OperateTypeEnum.SHORT_LIN.getCode());
+        operateLogDO.setUserId(userId);
+        operateLogDO.setType(operateTypeEnum.getCode());
         operateLogDAO.insert(operateLogDO);
     }
 }
