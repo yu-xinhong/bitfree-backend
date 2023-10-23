@@ -5,13 +5,13 @@ public class UserRemarkBO {
     /**
      * 已读消息偏移量
      */
-    private Long readMessageId;
+    private Long msgOffsetId;
 
-    public Long getReadMessageId() {
-        return readMessageId;
+    public Long getMsgOffsetId() {
+        return msgOffsetId;
     }
 
-    public void setReadMessageId(Long readMessageId) {
-        this.readMessageId = readMessageId;
+    public void setMsgOffsetId(Long msgOffsetId) {
+        this.msgOffsetId = msgOffsetId;
     }
 }

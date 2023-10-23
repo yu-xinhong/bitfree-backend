@@ -125,7 +125,7 @@ public class MessageService {
             return messageDAO.getRecentMessageCount();
         }
         UserRemarkBO userRemarkBO = JSON.parseObject(remark, UserRemarkBO.class);
-        return messageDAO.countAfterId(userRemarkBO.getReadMessageId());
+        return messageDAO.countAfterId(userId, userRemarkBO.getMsgOffsetId());
     }
 
 
@@ -146,7 +146,7 @@ public class MessageService {
             operateLogDO.setUserId(id);
             String remark = userDO.getRemark();
             UserRemarkBO userRemarkBO = StringUtils.isEmpty(remark) ? new UserRemarkBO() : JSON.parseObject(remark, UserRemarkBO.class);
-            userRemarkBO.setReadMessageId(messageId);
+            userRemarkBO.setMsgOffsetId(messageId);
             return transactionTemplate.execute((status) -> {
                 operateLogDAO.insert(operateLogDO);
                 userDAO.updateRemark(id, JSON.toJSONString(userRemarkBO));

@@ -39,6 +39,7 @@
         SELECT COUNT(*)
         FROM message
         WHERE id > #{id}
+        AND send_user_id != #{userId}
         AND deleted = 0
     </select>
     <select id="getRecentMessageId" resultType="java.lang.Long">
