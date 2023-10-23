@@ -32,6 +32,8 @@ public class UserDO extends BaseDO {
 
     private String contact;
 
+    private String remark;
+
     public String getName() {
         return name;
     }
@@ -134,5 +136,13 @@ public class UserDO extends BaseDO {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }
