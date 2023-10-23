@@ -35,5 +35,16 @@
         WHERE create_time &gt; DATE_SUB(CURDATE(), interval 1 day)
         AND deleted = 0
     </select>
+    <select id="countAfterId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM message
+        WHERE id > #{id}
+        AND deleted = 0
+    </select>
+    <select id="getRecentMessageId" resultType="java.lang.Long">
+        SELECT id
+        FROM message
+        ORDER BY id DESC LIMIT 1
+    </select>
 
 </mapper>

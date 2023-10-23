@@ -35,4 +35,6 @@ public interface UserDAO {
     List<Long> listAllUserId();
 
     int updateIp(Long userId, String ip);
+
+    void updateRemark(Long id, String remark);
 }

@@ -19,12 +19,13 @@
         <result column="password" property="password" />
         <result column="contact" property="contact" />
         <result column="ip" property="ip" />
+        <result column="remark" property="remark" />
         <result column="deleted" property="deleted" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, ip, password, contact, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, ip, password, contact, remark, deleted, create_time, update_time</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`avatar`, `email`, `password`, `level`)
         VALUE(#{avatar}, #{email}, #{password}, #{level})
@@ -69,6 +70,12 @@
         UPDATE user
         SET ip = #{ip}
         WHERE id = #{userId}
+        AND deleted = 0
+    </update>
+    <update id="updateRemark">
+        UPDATE user
+        SET remark = #{remark}
+        WHERE id = #{id}
         AND deleted = 0
     </update>
 
