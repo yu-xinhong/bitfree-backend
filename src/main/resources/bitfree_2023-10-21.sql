@@ -304,6 +304,7 @@ CREATE TABLE `user` (
   `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `contact` varchar(128) DEFAULT NULL,
   `ip` varchar(64) DEFAULT NULL,
+  `remark` text,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` int NOT NULL DEFAULT '0',
@@ -311,7 +312,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_name` (`name`),
   KEY `idx_token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=246 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 
 
