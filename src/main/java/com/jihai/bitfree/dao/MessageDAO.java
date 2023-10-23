@@ -14,7 +14,7 @@ public interface MessageDAO {
 
     Integer getRecentMessageCount();
 
-    Integer countAfterId(Long id);
+    Integer countAfterId(Long userId, Long id);
 
     Long getRecentMessageId();
 }
