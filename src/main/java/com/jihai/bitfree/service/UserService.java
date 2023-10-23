@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -280,6 +281,10 @@ public class UserService {
      * @param userId
      * @param ip
      */
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
     @Async("commonAsyncThreadPool")
     public void updateIp(Long userId, String ip) {
         String lockKey = userId.toString() + "_" + ip;
@@ -289,19 +294,20 @@ public class UserService {
             UserDO userDO = userDAO.getById(userId);
             // 当前与请求的ip一致，不更新
             if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
-
             log.warn("{} change ip from {} to {}", JSONObject.toJSON(userDO), userDO.getIp(), ip);
             OperateLogDO operateLogDO = new OperateLogDO();
             operateLogDO.setType(OperateTypeEnum.CHANGE_IP.getCode());
             operateLogDO.setUserId(userDO.getId());
-            operateLogDAO.insert(operateLogDO);
-            userDAO.updateIp(userDO.getId(), ip);
 
+            transactionTemplate.execute((status) -> {
+                operateLogDAO.insert(operateLogDO);
+                userDAO.updateIp(userDO.getId(), ip);
+                return null;
+            });
             monitorAbility.sendMsg(userDO.getName() + " 切换ip " + userDO.getIp() + " -> " + ip);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         } finally {
             distributedLock.unlock(lockKey);
         }
+
     }
 }
