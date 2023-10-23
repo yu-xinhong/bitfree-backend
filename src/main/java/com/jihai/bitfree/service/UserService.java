@@ -270,10 +270,7 @@ public class UserService {
      * T2 userDAO.getById(userId)查出来仍旧是老ip的，开始通知并更新user
      * T1 提交事务
      *
-     * 因此此处移除@Transactional注解, 保证T2释放锁，一定能读到已经更新的ip
-     * 但是也存在风险，没保证insert和update的原子性, 考虑到本身记录IP不是核心链路，因此不做事务保证了
-     * 如果你来优化，你会怎么做呢
-     *
+     * 引入编程式事务，优化为先加锁再执行事务，并且保证事务尽量小
      *
      * 第二个问题：
      * if (! lock) return ; 这一行代码应该移动到try 之前。
