@@ -86,7 +86,17 @@ public class MessageService {
         return new PageResult<>(messageRespList, total);
     }
 
-    // 这里存在并发，但对业务无太多影响，不需要过多控制
+    // 这里存在并发
+    /**
+     * 例如：当前偏移量为1
+     * T1 读取偏移量1，更新为2，sleep 未获取分布式锁
+     * T2 读取便宜量1，更新为3，更新为3。
+     *
+     * T1 notified 获取分布式锁，更新为2。
+     *
+     * 影响：预期为3，实际为2.
+     * 所以这里使用Double Check
+     */
     private void refreshReadMsgOffset(UserDO userDO, long msgId) {
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
         if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
