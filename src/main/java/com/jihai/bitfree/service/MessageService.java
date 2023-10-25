@@ -100,6 +100,7 @@ public class MessageService {
      */
 
     private void refreshReadMsgOffset(UserDO userDO, long msgId) {
+        if (StringUtils.isEmpty(userDO.getRemark())) return ;
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
         if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
 
