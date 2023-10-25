@@ -16,7 +16,8 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM activity
         WHERE
-        deleted = 0
+        end_time &gt; NOW()
+        AND deleted = 0
         ORDER BY start_time DESC LIMIT 1
     </select>
     <select id="queryActivity" resultType="com.jihai.bitfree.entity.ActivityDO">
