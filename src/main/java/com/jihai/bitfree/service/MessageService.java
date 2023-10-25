@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
+import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;
@@ -91,17 +92,19 @@ public class MessageService {
      * 例如：当前偏移量为1
      * T1 读取偏移量1，更新为2，sleep 未获取分布式锁
      * T2 读取便宜量1，更新为3，更新为3。
-     *
+     * <p>
      * T1 notified 获取分布式锁，更新为2。
-     *
+     * <p>
      * 影响：预期为3，实际为2.
      * 所以这里使用Double Check
      */
+
     private void refreshReadMsgOffset(UserDO userDO, long msgId) {
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
         if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
 
-        Boolean locked = distributedLock.lock(userDO.getId().toString(), 10, TimeUnit.SECONDS);
+        String key = LockKeyConstants.UPDATE_MSG_OFFSET_PREFIX + userDO.getId();
+        Boolean locked = distributedLock.lock(key, 10, TimeUnit.SECONDS);
         if (! locked) return ;
         try {
             // double check
@@ -111,7 +114,7 @@ public class MessageService {
             userRemarkBO.setMsgOffsetId(msgId);
             userDAO.updateRemark(userDO.getId(), JSON.toJSONString(userRemarkBO));
         } finally {
-            distributedLock.unlock(userDO.getId().toString());
+            distributedLock.unlock(key);
         }
     }
 
@@ -167,7 +170,8 @@ public class MessageService {
     private TransactionTemplate transactionTemplate;
 
     public Boolean openChat(Long id) {
-        Boolean lock = distributedLock.lock(String.valueOf(id), 10, TimeUnit.SECONDS);
+        String key = LockKeyConstants.OPEN_CHAT + id;
+        Boolean lock = distributedLock.lock(key, 10, TimeUnit.SECONDS);
         if (! lock) {
             log.warn("{} 并发Chat日志写入", id);
             return false;
@@ -187,7 +191,7 @@ public class MessageService {
                 return true;
             });
         } finally {
-            distributedLock.unlock(String.valueOf(id));
+            distributedLock.unlock(key);
         }
     }
 }
