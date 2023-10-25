@@ -9,6 +9,7 @@ import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
@@ -209,14 +210,12 @@ public class UserService {
         userDAO.incrementCoins(userId, - coins);
     }
 
-    private static final String LIKE_LOCK_PREFIX = "like_lock_";
-
     @Autowired
     private DistributedLock distributedLock;
 
     public Boolean like(Long id, Integer type, Boolean like, Long userId) {
         // 这里控制幂等, 现在单实例防并发，后面集群模式需要切换为分布式锁
-        String key = LIKE_LOCK_PREFIX + "|" + id + "|" + userId;
+        String key = LockKeyConstants.LIKE + "|" + id + "|" + userId;
 
         if (! distributedLock.lock(key, 1, TimeUnit.MINUTES)) {
             throw new BusinessException("请稍后操作");
@@ -284,7 +283,7 @@ public class UserService {
 
     @Async("commonAsyncThreadPool")
     public void updateIp(Long userId, String ip) {
-        String lockKey = userId.toString() + "_" + ip;
+        String lockKey = LockKeyConstants.UPDATE_IP + userId.toString() + "_" + ip;
         Boolean lock = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
         if (! lock) return ;
         try {
