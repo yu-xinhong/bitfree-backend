@@ -5,9 +5,9 @@
 # https://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 127.0.0.1 (MySQL 8.0.33)
+# Host: 124.222.49.162 (MySQL 8.0.33)
 # Database: bitfree
-# Generation Time: 2023-10-20 16:13:10 +0000
+# Generation Time: 2023-10-25 12:10:50 +0000
 # ************************************************************
 
 
@@ -90,25 +90,6 @@ CREATE TABLE `config` (
   UNIQUE KEY `unique_key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `config` WRITE;
-/*!40000 ALTER TABLE `config` DISABLE KEYS */;
-
-INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
-VALUES
-	(1,'SECRET','2ds9@5',0,'2023-05-30 16:19:03','2023-06-26 20:59:07'),
-	(2,'TOP_POST_ID','2',0,'2023-05-30 16:48:38','2023-10-04 15:01:54'),
-	(3,'MAIL_SECRET','{\n    \"secret\":\"***\",\n    \"sendMail\":\"3***@qq.com\"\n}',0,'2023-06-08 11:14:00','2023-06-08 11:17:54'),
-	(4,'DEFAULT_PASSWORD','123456',0,'2023-06-09 19:38:06','2023-06-09 19:38:06'),
-	(5,'DEFAULT_POSTER','https://bitfree-prod-1318561655.cos.ap-shanghai.myqcloud.com/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade',0,'2023-06-13 15:10:14','2023-06-13 15:10:14'),
-	(6,'SENSITIVE_WORDS','',0,'2023-06-15 12:55:09','2023-06-15 12:55:38'),
-	(7,'LIMIT_COUNT_PER_SECOND','2',0,'2023-06-16 15:33:10','2023-06-16 16:37:10'),
-	(8,'DEFAULT_AVATAR','static/avatars/6.png',0,'2023-06-30 12:34:41','2023-06-30 12:34:41'),
-	(9,'WEB_STATISTICS','{\"requestCount\":0,\"userLoginCount\":0}',0,'2023-10-08 15:47:38','2023-10-21 00:00:00'),
-	(10,'ROBOT_URL','https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=0ad5212f-b0b4-43ee-93c8-673e11f6f150',0,'2023-10-14 18:08:05','2023-10-14 18:08:05'),
-	(11,'SKIP_MONITOR_MESSAGE','操作太快,重新登录',0,'2023-10-20 15:01:31','2023-10-20 15:05:46');
-
-/*!40000 ALTER TABLE `config` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table file
@@ -152,7 +133,7 @@ CREATE TABLE `message_notice` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `message_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
-  `type` int DEFAULT NULL,
+  `type` int NOT NULL DEFAULT '0',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -312,7 +293,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_name` (`name`),
   KEY `idx_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=246 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
@@ -334,6 +315,20 @@ CREATE TABLE `user_like` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+
+INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
+VALUES
+	(1, 'SECRET', 'xxxx', 0, '2023-05-30 16:19:03', '2023-10-22 19:01:46'),
+	(2, 'TOP_POST_ID', '2', 0, '2023-05-30 16:48:38', '2023-10-04 15:01:54'),
+	(3, 'MAIL_SECRET', '{\n    \"secret\":\"xxx\",\n    \"sendMail\":\"xxxx@qq.com\"\n}', 0, '2023-06-08 11:14:00', '2023-06-08 11:17:54'),
+	(4, 'DEFAULT_PASSWORD', '123456', 0, '2023-06-09 19:38:06', '2023-06-09 19:38:06'),
+	(5, 'DEFAULT_POSTER', 'https://bitfree-prod-1318561655.cos.ap-shanghai.myqcloud.com/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade', 0, '2023-06-13 15:10:14', '2023-06-13 15:10:14'),
+	(6, 'SENSITIVE_WORDS', '', 0, '2023-06-15 12:55:09', '2023-06-15 12:55:38'),
+	(7, 'LIMIT_COUNT_PER_SECOND', '2', 0, '2023-06-16 15:33:10', '2023-06-16 16:37:10'),
+	(8, 'DEFAULT_AVATAR', 'static/avatars/6.png', 0, '2023-06-30 12:34:41', '2023-06-30 12:34:41'),
+	(9, 'WEB_STATISTICS', '{\"requestCount\":40305,\"userLoginCount\":67}', 0, '2023-10-08 15:47:38', '2023-10-25 20:12:06'),
+	(10, 'ROBOT_URL', 'xxxxx', 0, '2023-10-14 18:08:05', '2023-10-24 00:21:03'),
+	(11, 'SKIP_MONITOR_MESSAGE', '操作太快,请重新登录', 0, '2023-10-20 15:01:31', '2023-10-25 17:23:44');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
