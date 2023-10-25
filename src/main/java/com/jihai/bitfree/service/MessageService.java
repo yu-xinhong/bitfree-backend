@@ -61,6 +61,8 @@ public class MessageService {
         if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
         Set<Long> userIdSet = messageDOList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
+        // 后面刷新偏移量需要依赖当前用户id的remark字段，这里一并查出来，避免DB再查一次当前用户
+        userIdSet.add(currentUser.getId());
         List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(userIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
@@ -78,9 +80,31 @@ public class MessageService {
         Integer total = messageDAO.count();
 
         refreshLiveUser(currentUser);
+        // 刷新已读最新消息的偏移量
+        refreshReadMsgOffset(userIdMap.get(currentUser.getId()), CollectionUtils.isEmpty(messageDOList) ? 0 : messageRespList.get(0).getId());
 
         return new PageResult<>(messageRespList, total);
     }
+
+    // 这里存在并发，但对业务无太多影响，不需要过多控制
+    private void refreshReadMsgOffset(UserDO userDO, long msgId) {
+        UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
+        if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
+
+        Boolean locked = distributedLock.lock(userDO.getId().toString(), 10, TimeUnit.SECONDS);
+        if (! locked) return ;
+        try {
+            // double check
+            userDO = userDAO.getById(userDO.getId());
+            userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
+            if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
+            userRemarkBO.setMsgOffsetId(msgId);
+            userDAO.updateRemark(userDO.getId(), JSON.toJSONString(userRemarkBO));
+        } finally {
+            distributedLock.unlock(userDO.getId().toString());
+        }
+    }
+
 
     private void refreshLiveUser(UserResp currentUser) {
         liveUserCache.put(currentUser.getId(), currentUser);
