@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
+import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.LockKeyConstants;
@@ -59,7 +61,7 @@ public class MessageService {
 
     public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size, UserResp currentUser) {
         List<MessageDO> messageDOList = messageDAO.pageQueryRecentList((page - 1) * size, size);
-        if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
+            if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
         Set<Long> userIdSet = messageDOList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
         // 后面刷新偏移量需要依赖当前用户id的remark字段，这里一并查出来，避免DB再查一次当前用户
@@ -67,6 +69,10 @@ public class MessageService {
         List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(userIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
+        Set<Long> relayUserId = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
+        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType(), Lists.newArrayList(relayUserId), currentUser.getId());
+        ImmutableMap<Long, MessageNoticeDO> relayUserIdMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
+        ImmutableSet<Long> relayUserIdSet = relayUserIdMap.keySet();
         List<MessageResp> messageRespList = messageDOList.stream().map(messageDO -> {
             MessageResp messageResp = new MessageResp();
             messageResp.setId(messageDO.getId());
@@ -75,6 +81,9 @@ public class MessageService {
             messageResp.setUserName(userIdMap.get(messageDO.getSendUserId()).getName());
             messageResp.setAvatar(userIdMap.get(messageDO.getSendUserId()).getAvatar());
             messageResp.setUserId(userIdMap.get(messageDO.getSendUserId()).getId());
+            if (relayUserIdSet.contains(messageDO.getId())) {
+                messageResp.setReplyType(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType());
+            }
             return messageResp;
         }).collect(Collectors.toList());
 
@@ -125,7 +134,7 @@ public class MessageService {
     }
 
     @Transactional
-    public Boolean sendMessage(String content, Long userId) {
+    public Boolean sendMessage(String content, Long messageId, Long userId) {
         MessageDO messageDO = new MessageDO();
         messageDO.setContent(content);
         messageDO.setSendUserId(userId);
@@ -134,6 +143,18 @@ public class MessageService {
 
         // 通知所有用户，类似写扩散，这里可能存在性能瓶颈，现在用户量不大，暂时这样处理
 //        notifyAllUser(messageDO.getId());
+
+        //@消息通知
+        if (messageId != null) {
+            MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
+
+            //messageDO.getId()获取刚插入的id
+            messageNoticeDO.setMessageId(messageDO.getId());
+            Long relayUserId = messageDAO.getByMessageId(messageId);
+            messageNoticeDO.setUserId(relayUserId);
+            messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType());
+            messageNoticeDAO.insert(messageNoticeDO);
+        }
         return true;
     }
 
