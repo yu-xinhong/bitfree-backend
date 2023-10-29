@@ -10,11 +10,13 @@ public interface MessageDAO {
 
     Integer count();
 
-    void insert(MessageDO messageDO);
+    Long insert(MessageDO messageDO);
 
     Integer getRecentMessageCount();
 
     Integer countAfterId(Long userId, Long id);
 
     Long getRecentMessageId();
+
+    Long getByMessageId(Long id);
 }

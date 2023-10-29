@@ -18,6 +18,8 @@ public class MessageResp extends BaseResp {
 
     private Date createTime;
 
+    private Integer replyType;
+
     public Long getId() {
         return id;
     }
@@ -64,5 +66,13 @@ public class MessageResp extends BaseResp {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getReplyType() {
+        return replyType;
+    }
+
+    public void setReplyType(Integer replyType) {
+        this.replyType = replyType;
     }
 }

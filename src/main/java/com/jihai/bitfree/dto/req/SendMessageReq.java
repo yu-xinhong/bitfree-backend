@@ -10,11 +10,21 @@ public class SendMessageReq extends BaseReq {
     @SensitiveText
     private String content;
 
+    private Long messageId;
+
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Long getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(Long messageId) {
+        this.messageId = messageId;
     }
 }

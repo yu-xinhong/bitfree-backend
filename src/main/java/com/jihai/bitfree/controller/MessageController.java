@@ -30,7 +30,7 @@ public class MessageController extends BaseController {
     @PostMapping("/sendMessage")
     @LoggedCheck
     public Result<Boolean> sendMessage(@RequestBody SendMessageReq sendMessageReq) {
-        return convertSuccessResult(messageService.sendMessage(sendMessageReq.getContent(), getCurrentUser().getId()));
+        return convertSuccessResult(messageService.sendMessage(sendMessageReq.getContent(), sendMessageReq.getMessageId(),getCurrentUser().getId()));
     }
 
     @GetMapping("/getLiveUserList")
