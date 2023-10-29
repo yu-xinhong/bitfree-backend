@@ -47,5 +47,11 @@
         FROM message
         ORDER BY id DESC LIMIT 1
     </select>
+    <select id="getByMessageId" resultType="java.lang.Long">
+        SELECT send_user_id
+        FROM message
+        WHERE id = #{id}
+        AND deleted = 0
+    </select>
 
 </mapper>
