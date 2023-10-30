@@ -10,7 +10,7 @@ public class SendMessageReq extends BaseReq {
     @SensitiveText
     private String content;
 
-    private Long messageId;
+    private Long replyMessageId;
 
     public String getContent() {
         return content;
@@ -20,11 +20,11 @@ public class SendMessageReq extends BaseReq {
         this.content = content;
     }
 
-    public Long getMessageId() {
-        return messageId;
+    public Long getReplyMessageId() {
+        return replyMessageId;
     }
 
-    public void setMessageId(Long messageId) {
-        this.messageId = messageId;
+    public void setReplyMessageId(Long replyMessageId) {
+        this.replyMessageId = replyMessageId;
     }
 }

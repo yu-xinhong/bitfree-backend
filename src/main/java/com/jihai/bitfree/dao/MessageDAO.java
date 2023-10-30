@@ -10,7 +10,7 @@ public interface MessageDAO {
 
     Integer count();
 
-    Long insert(MessageDO messageDO);
+    Integer insert(MessageDO messageDO);
 
     Integer getRecentMessageCount();
 
