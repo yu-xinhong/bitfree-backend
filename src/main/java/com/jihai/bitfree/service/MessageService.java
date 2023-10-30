@@ -134,7 +134,7 @@ public class MessageService {
     }
 
     @Transactional
-    public Boolean sendMessage(String content, Long messageId, Long userId) {
+    public Boolean sendMessage(String content, Long replyMessageId, Long userId) {
         MessageDO messageDO = new MessageDO();
         messageDO.setContent(content);
         messageDO.setSendUserId(userId);
@@ -145,12 +145,12 @@ public class MessageService {
 //        notifyAllUser(messageDO.getId());
 
         //@消息通知
-        if (messageId != null) {
+        if (replyMessageId != null) {
             MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
 
             //messageDO.getId()获取刚插入的id
             messageNoticeDO.setMessageId(messageDO.getId());
-            Long relayUserId = messageDAO.getByMessageId(messageId);
+            Long relayUserId = messageDAO.getByMessageId(replyMessageId);
             messageNoticeDO.setUserId(relayUserId);
             messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType());
             messageNoticeDAO.insert(messageNoticeDO);
