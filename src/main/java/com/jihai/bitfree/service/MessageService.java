@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
@@ -33,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -70,9 +70,10 @@ public class MessageService {
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
         Set<Long> relayUserId = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
-        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType(), Lists.newArrayList(relayUserId), currentUser.getId());
-        ImmutableMap<Long, MessageNoticeDO> relayUserIdMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
-        ImmutableSet<Long> relayUserIdSet = relayUserIdMap.keySet();
+        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(relayUserId), currentUser.getId());
+        // 这里暂时一条消息只支持通知一个用户
+        ImmutableMap<Long, MessageNoticeDO> messageIdNoticeMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
+
         List<MessageResp> messageRespList = messageDOList.stream().map(messageDO -> {
             MessageResp messageResp = new MessageResp();
             messageResp.setId(messageDO.getId());
@@ -81,8 +82,10 @@ public class MessageService {
             messageResp.setUserName(userIdMap.get(messageDO.getSendUserId()).getName());
             messageResp.setAvatar(userIdMap.get(messageDO.getSendUserId()).getAvatar());
             messageResp.setUserId(userIdMap.get(messageDO.getSendUserId()).getId());
-            if (relayUserIdSet.contains(messageDO.getId())) {
-                messageResp.setReplyType(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType());
+
+            MessageNoticeDO messageNoticeDO = messageIdNoticeMap.get(messageDO.getId());
+            if (Objects.nonNull(messageNoticeDO)) {
+                messageResp.setMentionedUserId(messageNoticeDO.getUserId());
             }
             return messageResp;
         }).collect(Collectors.toList());
@@ -145,16 +148,15 @@ public class MessageService {
 //        notifyAllUser(messageDO.getId());
 
         //@消息通知
-        if (replyMessageId != null) {
-            MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
+        if (Objects.isNull(replyMessageId)) return true;
+        MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
 
-            //messageDO.getId()获取刚插入的id
-            messageNoticeDO.setMessageId(messageDO.getId());
-            Long relayUserId = messageDAO.getByMessageId(replyMessageId);
-            messageNoticeDO.setUserId(relayUserId);
-            messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION_UNREAD.getType());
-            messageNoticeDAO.insert(messageNoticeDO);
-        }
+        //messageDO.getId()获取刚插入的id
+        messageNoticeDO.setMessageId(messageDO.getId());
+        Long relayUserId = messageDAO.getSendUserIdByMessageId(replyMessageId);
+        messageNoticeDO.setUserId(relayUserId);
+        messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION.getType());
+        messageNoticeDAO.insert(messageNoticeDO);
         return true;
     }
 

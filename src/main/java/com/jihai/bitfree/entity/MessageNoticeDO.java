@@ -6,6 +6,9 @@ public class MessageNoticeDO extends BaseDO {
 
     private Long messageId;
 
+    /**
+     * 被通知人
+     */
     private Long userId;
 
     private Integer type;
