@@ -4,7 +4,7 @@ public enum MessageTypeEnum {
 
     MESSAGE(0, "聊天消息"),
     NOTIFICATION(1, "站内通知"),
-    MESSAGE_MENTION_UNREAD(2, "聊天消息被@");
+    MESSAGE_MENTION(2, "聊天消息被@");
 
     private Integer type;
 

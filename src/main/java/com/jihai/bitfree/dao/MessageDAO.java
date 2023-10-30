@@ -18,5 +18,5 @@ public interface MessageDAO {
 
     Long getRecentMessageId();
 
-    Long getByMessageId(Long id);
+    Long getSendUserIdByMessageId(Long id);
 }

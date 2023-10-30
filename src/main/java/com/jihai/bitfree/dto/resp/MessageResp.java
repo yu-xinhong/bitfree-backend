@@ -18,7 +18,7 @@ public class MessageResp extends BaseResp {
 
     private Date createTime;
 
-    private Integer replyType;
+    private Long mentionedUserId;
 
     public Long getId() {
         return id;
@@ -68,11 +68,11 @@ public class MessageResp extends BaseResp {
         this.createTime = createTime;
     }
 
-    public Integer getReplyType() {
-        return replyType;
+    public Long getMentionedUserId() {
+        return mentionedUserId;
     }
 
-    public void setReplyType(Integer replyType) {
-        this.replyType = replyType;
+    public void setMentionedUserId(Long mentionedUserId) {
+        this.mentionedUserId = mentionedUserId;
     }
 }
