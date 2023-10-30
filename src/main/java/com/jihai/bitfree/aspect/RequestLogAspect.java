@@ -4,6 +4,7 @@ package com.jihai.bitfree.aspect;
 import com.alibaba.fastjson.JSON;
 import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.service.StatisticService;
+import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -15,8 +16,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Aspect
 @Component
 @Order(0)
@@ -24,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestLogAspect {
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private RequestUtils requestUtils;
 
     @Autowired
     private MonitorAbility monitorAbility;
@@ -39,7 +38,7 @@ public class RequestLogAspect {
             String methodName = proceedingJoinPoint.getTarget().getClass().getName() + "." + methodSignature.getName();
 
             StringBuffer requestLog = new StringBuffer();
-            requestLog.append(String.format("\n %s request to %s", httpServletRequest.getHeader("X-Real-IP"), methodName));
+            requestLog.append(String.format("\n %s request to %s", requestUtils.getCurrentIp(), methodName));
 
             if (args.length > 0) {
                 StringBuffer paramsBuffer = new StringBuffer();

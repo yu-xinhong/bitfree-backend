@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;
+import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -17,7 +18,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +34,7 @@ public class IpLimiterAspect {
     Cache<String, RateLimiter> limiterCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private RequestUtils requestUtils;
 
     @Autowired
     private ConfigService configService;
@@ -44,7 +44,7 @@ public class IpLimiterAspect {
 
     @Around("execution(* com.jihai.bitfree.controller..*.*(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        String ip = httpServletRequest.getHeader("X-Real-IP");
+        String ip = requestUtils.getCurrentIp();
 
         Signature signature = proceedingJoinPoint.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
