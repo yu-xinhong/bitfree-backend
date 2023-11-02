@@ -91,11 +91,11 @@
     </select>
     <select id="queryVideoList" resultType="com.jihai.bitfree.entity.PostDO">
         SELECT <include refid="BASE_COLUMN"/>
-        FROM post WHERE type = 1
+        FROM post WHERE type = 1 AND deleted = 0
         ORDER BY create_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="countVideo" resultType="java.lang.Integer">
         SELECT COUNT(*)
-        FROM post WHERE type = 1
+        FROM post WHERE type = 1 AND deleted = 0
     </select>
 </mapper>
