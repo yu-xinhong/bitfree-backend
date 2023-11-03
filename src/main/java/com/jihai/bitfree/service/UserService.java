@@ -20,7 +20,6 @@ import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -99,7 +97,7 @@ public class UserService {
         userDO.setPassword(PasswordUtils.md5(password));
 
         userDO.setLevel(level);
-        userDO.setName(this.getRandomName());
+        userDO.setName("用户" + System.currentTimeMillis());
 
         userDAO.insert(userDO);
 
@@ -119,15 +117,6 @@ public class UserService {
             // send alert
             throw new RuntimeException(ReturnCodeEnum.SECRET_ERROR.getDesc());
         }
-    }
-
-    private String getRandomName(){
-        String prefix = "用户";
-        int random = RandomUtils.nextInt(10, 100);;
-        String timestamp = String.valueOf(new Date().getTime());
-        timestamp = timestamp.substring(5);
-
-        return prefix + random + timestamp;
     }
 
     public UserResp getByToken(String token) {
