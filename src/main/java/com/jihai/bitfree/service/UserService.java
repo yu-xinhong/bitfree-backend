@@ -20,6 +20,7 @@ import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -97,7 +98,7 @@ public class UserService {
         userDO.setPassword(PasswordUtils.md5(password));
 
         userDO.setLevel(level);
-        userDO.setName("用户" + System.currentTimeMillis());
+        userDO.setName("用户" + RandomUtils.nextInt(10, 10000));
 
         userDAO.insert(userDO);
 
