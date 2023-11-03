@@ -81,6 +81,7 @@ public class UserService {
         return userDAO.getById(id);
     }
 
+    @Transactional
     public String addUser(String email, Integer level, String secret) {
 
         checkSecret(secret);
