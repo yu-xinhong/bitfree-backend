@@ -16,6 +16,8 @@ import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
+import com.jihai.bitfree.support.Observable;
+import com.jihai.bitfree.support.ReadNotificationEvent;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
@@ -63,6 +65,15 @@ public class UserService {
     @Autowired
     private MonitorAbility monitorAbility;
 
+    @Autowired
+    private DistributedLock distributedLock;
+
+    @Autowired
+    private NotificationDAO notificationDAO;
+
+    @Autowired
+    private Observable observable;
+
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDAO.queryByEmailAndPassword(email, password);
     }
@@ -99,7 +110,6 @@ public class UserService {
         userDO.setPassword(PasswordUtils.md5(password));
 
         userDO.setLevel(level);
-        userDO.setName("用户" + RandomUtils.nextInt(10, 10000));
 
         userDAO.insert(userDO);
 
@@ -108,7 +118,25 @@ public class UserService {
         operateLogDO.setType(OperateTypeEnum.INIT_USER.getCode());
 
         operateLogDAO.insert(operateLogDO);
+
+        // 给用户发送私信通知
+        sendNotification(userDO.getId());
         return password;
+    }
+
+    private void sendNotification(Long userId) {
+        Boolean locked = distributedLock.lock(LockKeyConstants.SEND_NOTIFICATION, 1, TimeUnit.MINUTES);
+        if (! locked) return ;
+
+        try {
+            ConfigDO configKey = configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID);
+            NotificationDO notificationDO = notificationDAO.getById(Long.valueOf(configKey.getValue()));
+
+            notificationDAO.updateUserIdListById(notificationDO.getId(), notificationDO.getUserList() + "," + userId);
+        } finally {
+            distributedLock.unlock(LockKeyConstants.SEND_NOTIFICATION);
+        }
+
     }
 
 
@@ -126,9 +154,13 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId) {
+    public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId, String currentName) {
         if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
         if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
+        if (! name.equals(currentName)) {
+            // 修改名字，不会再提示通知
+            observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
+        }
         userDAO.save(userId, avatar, name, city, position, seniority);
         return true;
     }
@@ -213,9 +245,6 @@ public class UserService {
     public void consumeCoins(Long userId, int coins) {
         userDAO.incrementCoins(userId, - coins);
     }
-
-    @Autowired
-    private DistributedLock distributedLock;
 
     public Boolean like(Long id, Integer type, Boolean like, Long userId) {
         // 这里控制幂等, 现在单实例防并发，后面集群模式需要切换为分布式锁
