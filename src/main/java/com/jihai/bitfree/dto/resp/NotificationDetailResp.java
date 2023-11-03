@@ -14,6 +14,8 @@ public class NotificationDetailResp extends BaseResp {
 
     private Date createTime;
 
+    private Boolean canRead;
+
     public Long getId() {
         return id;
     }
@@ -44,5 +46,13 @@ public class NotificationDetailResp extends BaseResp {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getCanRead() {
+        return canRead;
+    }
+
+    public void setCanRead(Boolean canRead) {
+        this.canRead = canRead;
     }
 }

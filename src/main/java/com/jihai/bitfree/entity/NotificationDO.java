@@ -10,6 +10,8 @@ public class NotificationDO extends BaseDO {
 
     private String userList;
 
+    private Integer canRead;
+
     public String getTitle() {
         return title;
     }
@@ -32,5 +34,13 @@ public class NotificationDO extends BaseDO {
 
     public void setUserList(String userList) {
         this.userList = userList;
+    }
+
+    public Integer getCanRead() {
+        return canRead;
+    }
+
+    public void setCanRead(Integer canRead) {
+        this.canRead = canRead;
     }
 }

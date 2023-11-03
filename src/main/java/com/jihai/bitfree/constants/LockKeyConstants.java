@@ -5,4 +5,5 @@ public interface LockKeyConstants {
     String OPEN_CHAT = "OPEN_CHAT_";
     String UPDATE_IP = "UPDATE_IP_";
     String LIKE = "LIKE_";
+    String SEND_NOTIFICATION = "SEND_NOTIFICATION_";
 }

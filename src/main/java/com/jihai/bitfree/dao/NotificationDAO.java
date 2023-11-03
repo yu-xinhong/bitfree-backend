@@ -13,4 +13,8 @@ public interface NotificationDAO {
     NotificationDO detail(Long id);
 
     List<NotificationDO> getAll();
+
+    NotificationDO getById(Long id);
+
+    int updateUserIdListById(Long id, String userList);
 }

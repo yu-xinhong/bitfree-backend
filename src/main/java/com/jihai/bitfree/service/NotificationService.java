@@ -3,6 +3,7 @@ package com.jihai.bitfree.service;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.ability.MonitorAbility;
+import com.jihai.bitfree.base.enums.CanReadEnum;
 import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
 import com.jihai.bitfree.dao.NotificationDAO;
@@ -10,6 +11,8 @@ import com.jihai.bitfree.dto.req.NotificationResp;
 import com.jihai.bitfree.dto.resp.NotificationDetailResp;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.NotificationDO;
+import com.jihai.bitfree.support.Observable;
+import com.jihai.bitfree.support.ReadNotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +55,14 @@ public class NotificationService {
         List<MessageNoticeDO> messageNoticeDOS = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.NOTIFICATION.getType(), notificationDOList.stream().map(e -> e.getId()).collect(Collectors.toList()), userId);
 
         return notificationDOList.stream().map(notificationDO -> {
-            boolean isRead = messageNoticeDOS.stream().noneMatch(e -> e.getMessageId().equals(notificationDO.getId()) && userId.equals(e.getUserId()));
-
             NotificationResp notificationResp = new NotificationResp();
+            boolean canRead = CanReadEnum.YES.getValue().equals(notificationDO.getCanRead());
+            notificationResp.setCanRead(canRead);
+            if (canRead) {
+                boolean isRead = messageNoticeDOS.stream().noneMatch(e -> e.getMessageId().equals(notificationDO.getId()) && userId.equals(e.getUserId()));
+                notificationResp.setUnRead(isRead);
+            }
             BeanUtils.copyProperties(notificationDO, notificationResp);
-            notificationResp.setUnRead(isRead);
             return notificationResp;
         }).collect(Collectors.toList());
     }
@@ -70,6 +76,7 @@ public class NotificationService {
 
         NotificationDetailResp notificationDetailResp = new NotificationDetailResp();
         BeanUtils.copyProperties(notificationDO, notificationDetailResp);
+        notificationDetailResp.setCanRead(CanReadEnum.YES.getValue().equals(notificationDO.getCanRead()));
 
         return notificationDetailResp;
     }
@@ -107,6 +114,9 @@ public class NotificationService {
             return Lists.newArrayList(-1L);
         }
     }
+
+    @Autowired
+    private Observable observable;
 
     @Transactional
     public Boolean read(Long id, Long userId) {

@@ -14,6 +14,8 @@ public class NotificationResp extends BaseResp {
 
     private Boolean unRead;
 
+    private Boolean canRead;
+
     public Long getId() {
         return id;
     }
@@ -44,5 +46,13 @@ public class NotificationResp extends BaseResp {
 
     public void setUnRead(Boolean unRead) {
         this.unRead = unRead;
+    }
+
+    public Boolean getCanRead() {
+        return canRead;
+    }
+
+    public void setCanRead(Boolean canRead) {
+        this.canRead = canRead;
     }
 }
