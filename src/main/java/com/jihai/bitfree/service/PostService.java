@@ -108,7 +108,7 @@ public class PostService {
                 // 获取最新回复的人的名字
             if (replyCount > 0) {
                 List<ReplyDO> curPostReplyList = replyDOList.stream().filter(replyDO -> replyDO.getPostId().equals(postDO.getId())).collect(Collectors.toList());
-                curPostReplyList.sort((r1, r2) -> (int) (r2.getCreateTime().getTime() - r1.getCreateTime().getTime()));
+                curPostReplyList.sort((r1, r2) -> (int) (r2.getId() - r1.getId()));
                 postItemResp.setUpdateUserName(replyUserIdMap.get(curPostReplyList.get(0).getSendUserId()).getName());
             }
             if (replyCount != null) postItemResp.setReplyCount(replyCount.intValue());
