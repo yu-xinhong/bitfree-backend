@@ -40,7 +40,7 @@ public class NotificationController extends BaseController {
     @GetMapping("detail")
     @LoggedCheck
     public Result<NotificationDetailResp> detail(NotificationDetailReq notificationDetailReq) {
-        return convertSuccessResult(notificationService.detail(notificationDetailReq.getId(), getCurrentUser().getId()));
+        return convertSuccessResult(notificationService.detail(notificationDetailReq.getId()));
     }
 
     @PostMapping("read")

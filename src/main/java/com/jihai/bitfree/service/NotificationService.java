@@ -12,7 +12,6 @@ import com.jihai.bitfree.dto.resp.NotificationDetailResp;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.NotificationDO;
 import com.jihai.bitfree.support.Observable;
-import com.jihai.bitfree.support.ReadNotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +58,8 @@ public class NotificationService {
             boolean canRead = CanReadEnum.YES.getValue().equals(notificationDO.getCanRead());
             notificationResp.setCanRead(canRead);
             if (canRead) {
-                boolean isRead = messageNoticeDOS.stream().noneMatch(e -> e.getMessageId().equals(notificationDO.getId()) && userId.equals(e.getUserId()));
-                notificationResp.setUnRead(isRead);
+                boolean unRead = messageNoticeDOS.stream().noneMatch(e -> e.getMessageId().equals(notificationDO.getId()) && userId.equals(e.getUserId()));
+                notificationResp.setUnRead(unRead);
             }
             BeanUtils.copyProperties(notificationDO, notificationResp);
             return notificationResp;
@@ -71,7 +70,7 @@ public class NotificationService {
         return notificationDAO.total();
     }
 
-    public NotificationDetailResp detail(Long id, Long userId) {
+    public NotificationDetailResp detail(Long id) {
         NotificationDO notificationDO = notificationDAO.detail(id);
 
         NotificationDetailResp notificationDetailResp = new NotificationDetailResp();
