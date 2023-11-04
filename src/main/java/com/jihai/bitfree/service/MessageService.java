@@ -61,10 +61,10 @@ public class MessageService {
 
     public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size, UserResp currentUser) {
         List<MessageDO> messageDOList = messageDAO.pageQueryRecentList((page - 1) * size, size);
-            if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
+        if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
         Set<Long> targetMessageIdSet = messageDOList.stream().filter(messageDO -> messageDO.getTargetMessageId() != null).map(MessageDO::getTargetMessageId).collect(Collectors.toSet());
-        List<MessageDO> targetMessageIdList = messageDAO.queryByTargetMessageIdList(Lists.newArrayList(targetMessageIdSet));
+        List<MessageDO> targetMessageIdList = CollectionUtils.isEmpty(targetMessageIdSet) ? Lists.newArrayList() : messageDAO.queryByTargetMessageIdList(Lists.newArrayList(targetMessageIdSet));
         ImmutableMap<Long, MessageDO> targetMessageIdMap = Maps.uniqueIndex(targetMessageIdList, MessageDO::getId);
         Set<Long> targetUserIdSet = targetMessageIdList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
 
@@ -75,8 +75,8 @@ public class MessageService {
         List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(userIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
-        Set<Long> relayUserId = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
-        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdListAll(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(relayUserId));
+        Set<Long> messageIdSet = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
+        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdListAll(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(messageIdSet));
         // 这里暂时一条消息只支持通知一个用户
         ImmutableMap<Long, MessageNoticeDO> messageIdNoticeMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
 
