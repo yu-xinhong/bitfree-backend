@@ -63,14 +63,20 @@ public class MessageService {
         List<MessageDO> messageDOList = messageDAO.pageQueryRecentList((page - 1) * size, size);
             if (CollectionUtils.isEmpty(messageDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
+        Set<Long> targetMessageIdSet = messageDOList.stream().filter(messageDO -> messageDO.getTargetMessageId() != null).map(MessageDO::getTargetMessageId).collect(Collectors.toSet());
+        List<MessageDO> targetMessageIdList = messageDAO.queryByTargetMessageIdList(Lists.newArrayList(targetMessageIdSet));
+        ImmutableMap<Long, MessageDO> targetMessageIdMap = Maps.uniqueIndex(targetMessageIdList, MessageDO::getId);
+        Set<Long> targetUserIdSet = targetMessageIdList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
+
         Set<Long> userIdSet = messageDOList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
         // 后面刷新偏移量需要依赖当前用户id的remark字段，这里一并查出来，避免DB再查一次当前用户
         userIdSet.add(currentUser.getId());
+        userIdSet.addAll(targetUserIdSet);
         List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(userIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
         Set<Long> relayUserId = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
-        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdList(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(relayUserId), currentUser.getId());
+        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdListAll(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(relayUserId));
         // 这里暂时一条消息只支持通知一个用户
         ImmutableMap<Long, MessageNoticeDO> messageIdNoticeMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
 
@@ -83,9 +89,15 @@ public class MessageService {
             messageResp.setAvatar(userIdMap.get(messageDO.getSendUserId()).getAvatar());
             messageResp.setUserId(userIdMap.get(messageDO.getSendUserId()).getId());
 
+            MessageDO targetMessageDO = targetMessageIdMap.get(messageDO.getTargetMessageId());
+            if(Objects.nonNull(targetMessageDO)){
+                messageResp.setMentionedContent(targetMessageDO.getContent());
+            }
+
             MessageNoticeDO messageNoticeDO = messageIdNoticeMap.get(messageDO.getId());
             if (Objects.nonNull(messageNoticeDO)) {
                 messageResp.setMentionedUserId(messageNoticeDO.getUserId());
+                messageResp.setMentionedUserName(userIdMap.get(messageNoticeDO.getUserId()).getName());
             }
             return messageResp;
         }).collect(Collectors.toList());
@@ -141,6 +153,7 @@ public class MessageService {
         MessageDO messageDO = new MessageDO();
         messageDO.setContent(content);
         messageDO.setSendUserId(userId);
+        messageDO.setTargetMessageId(replyMessageId);
 
         messageDAO.insert(messageDO);
 
