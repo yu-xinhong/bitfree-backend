@@ -21,6 +21,9 @@ public class DataSourceConfigLoader implements BeanPostProcessor, EnvironmentAwa
 
     private ConfigurableEnvironment environment;
 
+    @Value("${datasource.config-path}")
+    private String configPath;
+
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = (ConfigurableEnvironment) environment;
@@ -54,8 +57,7 @@ public class DataSourceConfigLoader implements BeanPostProcessor, EnvironmentAwa
      * @return
      */
 
-    @Value("${datasource.config-path}")
-    private String configPath;
+
 
 
 
