@@ -17,6 +17,16 @@
             #{messageNotice.type})
         </foreach>
     </insert>
+    <select id="queryByMessageIdListAll" resultType="com.jihai.bitfree.entity.MessageNoticeDO">
+        SELECT <include refid="BASE_COLUMN" />
+        FROM message_notice
+        WHERE `type` = #{type}
+        AND message_id IN
+        <foreach collection="notificationIdList" item="notificationId" open="(" separator="," close=")">
+            #{notificationId}
+        </foreach>
+        AND deleted = 0
+    </select>
     <select id="queryByMessageIdList" resultType="com.jihai.bitfree.entity.MessageNoticeDO">
         SELECT <include refid="BASE_COLUMN" />
         FROM message_notice

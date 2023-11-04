@@ -20,6 +20,10 @@ public class MessageResp extends BaseResp {
 
     private Long mentionedUserId;
 
+    private String mentionedUserName;
+
+    private String mentionedContent;
+
     public Long getId() {
         return id;
     }
@@ -74,5 +78,21 @@ public class MessageResp extends BaseResp {
 
     public void setMentionedUserId(Long mentionedUserId) {
         this.mentionedUserId = mentionedUserId;
+    }
+
+    public String getMentionedUserName() {
+        return mentionedUserName;
+    }
+
+    public void setMentionedUserName(String mentionedUserName) {
+        this.mentionedUserName = mentionedUserName;
+    }
+
+    public String getMentionedContent() {
+        return mentionedContent;
+    }
+
+    public void setMentionedContent(String mentionedContent) {
+        this.mentionedContent = mentionedContent;
     }
 }
