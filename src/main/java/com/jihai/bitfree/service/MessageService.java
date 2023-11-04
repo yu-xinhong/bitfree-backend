@@ -69,14 +69,15 @@ public class MessageService {
         Set<Long> targetUserIdSet = targetMessageIdList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
 
         Set<Long> userIdSet = messageDOList.stream().map(MessageDO::getSendUserId).collect(Collectors.toSet());
+        Set<Long> messageIdSet = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
+        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdListAll(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(messageIdSet));
         // 后面刷新偏移量需要依赖当前用户id的remark字段，这里一并查出来，避免DB再查一次当前用户
         userIdSet.add(currentUser.getId());
         userIdSet.addAll(targetUserIdSet);
+        userIdSet.addAll(messageNoticeList.stream().map(MessageNoticeDO::getUserId).collect(Collectors.toSet()));
         List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(userIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
-        Set<Long> messageIdSet = messageDOList.stream().map(MessageDO::getId).collect(Collectors.toSet());
-        List<MessageNoticeDO> messageNoticeList = messageNoticeDAO.queryByMessageIdListAll(MessageTypeEnum.MESSAGE_MENTION.getType(), Lists.newArrayList(messageIdSet));
         // 这里暂时一条消息只支持通知一个用户
         ImmutableMap<Long, MessageNoticeDO> messageIdNoticeMap = Maps.uniqueIndex(messageNoticeList, MessageNoticeDO::getMessageId);
 
