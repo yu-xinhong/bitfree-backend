@@ -12,11 +12,11 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, send_user_id, content, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, send_user_id, target_message_id, content, create_time, update_time, deleted</sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO message(`send_user_id`, `content`)
-        VALUE(#{sendUserId}, #{content})
+        INSERT INTO message(`send_user_id`, `target_message_id`, `content`)
+        VALUE(#{sendUserId}, #{targetMessageId}, #{content})
     </insert>
     <select id="pageQueryRecentList" resultType="com.jihai.bitfree.entity.MessageDO">
         SELECT <include refid="BASE_COLUMN"/>
@@ -51,6 +51,15 @@
         SELECT send_user_id
         FROM message
         WHERE id = #{id}
+        AND deleted = 0
+    </select>
+    <select id="queryByTargetMessageIdList" resultType="com.jihai.bitfree.entity.MessageDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM message
+        WHERE id IN
+        <foreach collection="notificationIdList" item="notificationId" open="(" separator="," close=")">
+            #{notificationId}
+        </foreach>
         AND deleted = 0
     </select>
 

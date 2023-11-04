@@ -19,4 +19,8 @@ public interface MessageDAO {
     Long getRecentMessageId();
 
     Long getSendUserIdByMessageId(Long id);
+
+    List<MessageDO> queryByTargetMessageIdList(List<Long> notificationIdList);
+
+
 }
