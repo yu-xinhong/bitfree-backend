@@ -8,7 +8,9 @@ import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
+import com.jihai.bitfree.base.BaseReq;
 import com.jihai.bitfree.base.Result;
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
@@ -64,24 +66,27 @@ public class UserController extends BaseController {
     @PostMapping("/login")
     @ParameterCheck
     public Result<String> login(@RequestBody LoginReq loginReq) {
-        loginRequestCheck();
+        requestIpFloodCheck(LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp());
         UserDO userDO = userService.queryByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword().toUpperCase());
 
         if (Objects.isNull(userDO)) {
-            String lockKey = LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp();
-            try {
-                AtomicInteger count = requestLoginCache.get(lockKey, () -> new AtomicInteger(0));
-                count.incrementAndGet();
-                requestLoginCache.put(lockKey, count);
-
-                String returnMsg = "邮箱或密码错误, 剩余次数 " + (3 - count.get()) + " 次";
-                monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(loginReq)  + " " + returnMsg);
-                return convertFailResult(null, returnMsg);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+            return failResultAndIncreRetryCount(LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp(), loginReq, "邮箱或密码错误");
         }
         return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword(), requestUtils.getCurrentIp()));
+    }
+
+    private <T> Result<T> failResultAndIncreRetryCount(String lockKey, BaseReq baseReq, String msgPrefix) {
+        try {
+            AtomicInteger count = requestLoginCache.get(lockKey, () -> new AtomicInteger(0));
+            count.incrementAndGet();
+            requestLoginCache.put(lockKey, count);
+
+            String returnMsg = msgPrefix + ", 剩余次数 " + (3 - count.get()) + " 次";
+            monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(baseReq)  + " " + returnMsg);
+            return convertFailResult(null, returnMsg, ReturnCodeEnum.MAX_LIMIT);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Cache<String, AtomicInteger> requestLoginCache = CacheBuilder.newBuilder()
@@ -91,14 +96,13 @@ public class UserController extends BaseController {
     /**
      * 撞库拦截
      */
-    private void loginRequestCheck() {
-        String lockKey = LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp();
+    private void requestIpFloodCheck(String lockKey) {
         Boolean locked = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
         if (! locked) return ;
         try {
             if (requestLoginCache.get(lockKey, () -> new AtomicInteger(0)).intValue() >= 3) {
                 monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 已触发登录限流");
-                throw new BusinessException("请稍后再重试");
+                throw new BusinessException("请稍后再重试", ReturnCodeEnum.MAX_LIMIT);
             }
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -210,5 +214,23 @@ public class UserController extends BaseController {
         return convertSuccessResult(userService.like(likeReq.getId(), likeReq.getType(), likeReq.getLike(), getCurrentUser().getId()));
     }
 
+    @PostMapping("/resetAccount")
+    public Result<Boolean> resetAccount(@RequestBody ResetAccountReq resetAccountReq) {
+        String lockKey = LockKeyConstants.RESET_PASSWORD + requestUtils.getCurrentIp();
+        requestIpFloodCheck(lockKey);
+
+        UserDO userDO = userService.getByEmail(resetAccountReq.getEmail());
+        if (Objects.isNull(userDO)) {
+            return failResultAndIncreRetryCount(lockKey, resetAccountReq, "重置邮箱不存在");
+        }
+        Boolean result = userService.resetPassword(userDO.getId(), userDO.getEmail());
+        // 重置成功清空记录
+        if (result) clearLoginRetryCount();
+        return convertSuccessResult(result);
+    }
+
+    private void clearLoginRetryCount() {
+        requestLoginCache.invalidate(LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp());
+    }
 
 }

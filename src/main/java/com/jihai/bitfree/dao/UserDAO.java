@@ -37,4 +37,6 @@ public interface UserDAO {
     int updateIp(Long userId, String ip);
 
     void updateRemark(Long id, String remark);
+
+    UserDO getByEmail(String email);
 }
