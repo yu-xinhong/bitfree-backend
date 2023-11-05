@@ -1,6 +1,7 @@
 package com.jihai.bitfree.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.jihai.bitfree.ability.MonitorAbility;
@@ -74,7 +75,7 @@ public class UserController extends BaseController {
                 requestLoginCache.put(lockKey, count);
 
                 String returnMsg = "邮箱或密码错误, 剩余次数 " + (3 - count.get()) + " 次";
-                monitorAbility.sendMsg(requestUtils.getCurrentIp() + " " + returnMsg);
+                monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(loginReq)  + " " + returnMsg);
                 return convertFailResult(null, returnMsg);
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
