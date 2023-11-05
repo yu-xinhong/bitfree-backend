@@ -97,7 +97,7 @@ public class UserController extends BaseController {
         if (! locked) return ;
         try {
             if (requestLoginCache.get(lockKey, () -> new AtomicInteger(0)).intValue() >= 3) {
-                monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 账号或密码错误, 已触发限流");
+                monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 已触发登录限流");
                 throw new BusinessException("请稍后再重试");
             }
         } catch (ExecutionException e) {
