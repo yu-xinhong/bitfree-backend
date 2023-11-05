@@ -7,6 +7,7 @@ import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.base.enums.UserLevelEnum;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
@@ -21,6 +22,7 @@ import com.jihai.bitfree.support.ReadNotificationEvent;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
+import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -72,6 +74,15 @@ public class UserService {
 
     @Autowired
     private Observable observable;
+
+    @Autowired
+    private RequestUtils requestUtils;
+
+    @Autowired
+    private NotifyService notifyService;
+
+    @Autowired
+    private PasswordUtils passwordUtils;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDAO.queryByEmailAndPassword(email, password);
@@ -337,5 +348,19 @@ public class UserService {
             distributedLock.unlock(lockKey);
         }
 
+    }
+
+    public Boolean resetPassword(Long id, String email) {
+        String password = PasswordUtils.generatePwd();
+        userDAO.updatePasswordAndClearToken(id, PasswordUtils.md5(password));
+        log.info("reset password email {} ", email);
+
+        // 这里level只是指定发送邮件的模板内容，重置密码用level为社区的模板即可
+        notifyService.sendNotice(email, password, UserLevelEnum.COMMUNITY.getLevel());
+        return true;
+    }
+
+    public UserDO getByEmail(String email) {
+        return userDAO.getByEmail(email);
     }
 }

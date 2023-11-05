@@ -56,6 +56,14 @@ public class BaseController {
         return result;
     }
 
+    protected <T> Result<T> convertFailResult(T data, String message, ReturnCodeEnum returnCodeEnum) {
+        Result<T> result = new Result<T>();
+        result.setCode(returnCodeEnum.getCode());
+        result.setData(data);
+        result.setMessage(message);
+        return result;
+    }
+
 
     @Autowired
     private ConfigDAO configDAO;

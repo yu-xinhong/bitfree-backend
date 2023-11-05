@@ -110,5 +110,11 @@
         FROM user
         WHERE deleted = 0
     </select>
+    <select id="getByEmail" resultType="com.jihai.bitfree.entity.UserDO">
+        SELECT <include refid="BASE_COLUMN" />
+        FROM user
+        WHERE email = #{email}
+        AND deleted = 0
+    </select>
 
 </mapper>

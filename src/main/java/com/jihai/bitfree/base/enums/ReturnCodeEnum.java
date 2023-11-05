@@ -7,7 +7,8 @@ public enum ReturnCodeEnum {
     SECRET_ERROR(502, "密钥错误"),
     USER_OLD_PASSWORD_ERROR(403, "原密码错误"),
     SAME_PASSWORD_ERROR(405, "不能与原密码一样"),
-    SEND_MAIL_ERROR(406, "调用邮件服务器错误");
+    SEND_MAIL_ERROR(406, "调用邮件服务器错误"),
+    MAX_LIMIT(503, "登录失败次数超过上线阈值");
 
     ReturnCodeEnum(Integer code, String desc) {
         this.code = code;

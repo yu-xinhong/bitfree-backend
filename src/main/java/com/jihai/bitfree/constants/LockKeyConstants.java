@@ -7,4 +7,5 @@ public interface LockKeyConstants {
     String LIKE = "LIKE_";
     String SEND_NOTIFICATION = "SEND_NOTIFICATION_";
     String IP_REQUEST = "IP_REQUEST_";
+    String RESET_PASSWORD = "IP_RESET_";
 }

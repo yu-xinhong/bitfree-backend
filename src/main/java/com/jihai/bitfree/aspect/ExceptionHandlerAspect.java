@@ -36,7 +36,7 @@ public class ExceptionHandlerAspect {
         } catch (BusinessException businessException) {
             log.warn("BUSINESS ERROR", businessException);
             monitorAbility.sendMsg(String.format(ip + " business error message: %s  stack : %s", businessException.getMessage(), ExceptionUtils.getStackTrace(businessException)));
-            return errorResult(ReturnCodeEnum.BUSINESS_ERROR, businessException);
+            return errorResult(businessException.getReturnCodeEnum() == null ? ReturnCodeEnum.BUSINESS_ERROR : businessException.getReturnCodeEnum(), businessException);
         } catch (Throwable e) {
             log.error("Request ERROR", e);
             monitorAbility.sendMsg(String.format(ip + " system error message: %s  stack : %s", e.getMessage(), ExceptionUtils.getStackTrace(e)));

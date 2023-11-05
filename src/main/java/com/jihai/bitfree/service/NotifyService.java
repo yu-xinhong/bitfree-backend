@@ -23,7 +23,6 @@ public class NotifyService {
     @Autowired
     private ConfigDAO configDAO;
 
-
     public void sendNotice(String email, String password, Integer level) {
         ConfigDO emailConfig = configDAO.getByKey(Constants.EMAIL_SECRET);
         JSONObject configJson = JSON.parseObject(emailConfig.getValue());
