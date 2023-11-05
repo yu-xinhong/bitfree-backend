@@ -1,14 +1,20 @@
 package com.jihai.bitfree.controller;
 
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.aspect.ParameterCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
+import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.service.NotifyService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.DO2DTOConvert;
@@ -19,6 +25,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/user")
@@ -36,14 +45,62 @@ public class UserController extends BaseController {
     @Autowired
     private RequestUtils requestUtils;
 
+    @Autowired
+    private MonitorAbility monitorAbility;
+
+    @Autowired
+    private DistributedLock distributedLock;
+
+
+    /**
+     * 唯一不需要登录可以直接调用的接口
+     * 2023/11/5遭遇撞库攻击
+     * 已封禁IP:123.123.30.95
+     * 添加重试次数拦截，1分钟内超过3次错误，直接封禁5分钟
+     * @param loginReq
+     * @return
+     */
     @PostMapping("/login")
     @ParameterCheck
     public Result<String> login(@RequestBody LoginReq loginReq) {
+        loginRequestCheck();
         UserDO userDO = userService.queryByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword().toUpperCase());
         if (Objects.isNull(userDO)) {
+            String lockKey = LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp();
+            try {
+                AtomicInteger count = requestLoginCache.get(lockKey, () -> new AtomicInteger(0));
+                count.incrementAndGet();
+                requestLoginCache.put(lockKey, count);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+            monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 账号或密码错误");
             return convertFailResult(null, "邮箱或密码错误");
         }
         return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword(), requestUtils.getCurrentIp()));
+    }
+
+    private Cache<String, AtomicInteger> requestLoginCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .maximumSize(1000).build();
+
+    /**
+     * 撞库拦截
+     */
+    private void loginRequestCheck() {
+        String lockKey = LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp();
+        Boolean locked = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
+        if (! locked) return ;
+        try {
+            if (requestLoginCache.get(lockKey, () -> new AtomicInteger(0)).intValue() >= 3) {
+                monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 账号或密码错误, 已触发限流");
+                throw new BusinessException("请稍后再重试");
+            }
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } finally {
+            distributedLock.unlock(lockKey);
+        }
     }
 
 
@@ -125,6 +182,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/updatePassword")
     @ParameterCheck
+    @LoggedCheck
     public Result<Boolean> updatePassword(@RequestBody UpdatePasswordReq updatePasswordReq) {
         return convertSuccessResult(userService.updatePassword(getCurrentUser().getId(), updatePasswordReq.getOldPwd(), updatePasswordReq.getPwd()));
     }

@@ -6,4 +6,5 @@ public interface LockKeyConstants {
     String UPDATE_IP = "UPDATE_IP_";
     String LIKE = "LIKE_";
     String SEND_NOTIFICATION = "SEND_NOTIFICATION_";
+    String IP_REQUEST = "IP_REQUEST_";
 }
