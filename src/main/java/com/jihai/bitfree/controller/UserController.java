@@ -55,7 +55,7 @@ public class UserController extends BaseController {
     /**
      * 唯一不需要登录可以直接调用的接口
      * 2023/11/5遭遇撞库攻击
-     * 已封禁IP:123.123.30.95
+     * 已封禁IP:123.xxx.30.95
      * 添加重试次数拦截，1分钟内超过3次错误，直接封禁5分钟
      * @param loginReq
      * @return
@@ -65,17 +65,20 @@ public class UserController extends BaseController {
     public Result<String> login(@RequestBody LoginReq loginReq) {
         loginRequestCheck();
         UserDO userDO = userService.queryByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword().toUpperCase());
+
         if (Objects.isNull(userDO)) {
             String lockKey = LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp();
             try {
                 AtomicInteger count = requestLoginCache.get(lockKey, () -> new AtomicInteger(0));
                 count.incrementAndGet();
                 requestLoginCache.put(lockKey, count);
+
+                String returnMsg = "邮箱或密码错误, 剩余次数 " + (3 - count.get()) + " 次";
+                monitorAbility.sendMsg(requestUtils.getCurrentIp() + " " + returnMsg);
+                return convertFailResult(null, returnMsg);
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
-            monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 账号或密码错误");
-            return convertFailResult(null, "邮箱或密码错误");
         }
         return convertSuccessResult(userService.generateToken(loginReq.getEmail(), loginReq.getPassword(), requestUtils.getCurrentIp()));
     }
