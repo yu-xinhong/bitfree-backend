@@ -14,6 +14,7 @@ import com.jihai.bitfree.entity.UserDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +76,7 @@ public class ReplyService {
         return replyListResp;
     }
 
+    @Transactional
     public Boolean reply(Long postId, Long replyId, Long userId, String replyContent) {
         PostDO postDO = postDAO.getById(postId);
         if (postDO == null) {
@@ -166,6 +168,18 @@ public class ReplyService {
 
             userReplyResp.setId(replyDO.getId());
             if (replyDO.getTargetReplyId() != null) {
+                /*
+                 * 2023/11/06 发生业务并发问题导致NPE, timeline如下:
+                 * 1. colry发布了评论 (2098)
+                 * 2. Rin-JSR303 回复 1 (2099)
+                 * 3. 这个时候colry正在输入回复2
+                 * 4. colry删除了评论 1 (2098 + 2099删除)
+                 * 4. colry写入回复评论 (2100) 其实被回复的2099已被删除。
+                 *
+                 * 解决方案:
+                 * 临时解决：订正colry写入回复评论 (2100)为删除状态。
+                 * 永久方案：写入评论的时候需要Double Check目标评论是否已被删除，写入子评论事务需要加目标评论排它锁（SELECT * FROM reply WHERE target_reply_id FOR UPDATE）避免被并发删除。
+                 */
                 userReplyResp.setContent(hadRepliedMap.get(replyDO.getTargetReplyId()).getReplyContent());
             } else {
                 userReplyResp.setContent(haveRepliedPostMap.get(replyDO.getPostId()).getContent());

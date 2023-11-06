@@ -350,14 +350,24 @@ public class UserService {
 
     }
 
+
     public Boolean resetPassword(Long id, String email) {
         String password = PasswordUtils.generatePwd();
-        userDAO.updatePasswordAndClearToken(id, PasswordUtils.md5(password));
-        log.info("reset password email {} ", email);
 
-        // 这里level只是指定发送邮件的模板内容，重置密码用level为社区的模板即可
-        notifyService.sendNotice(email, password, UserLevelEnum.COMMUNITY.getLevel());
-        return true;
+        OperateLogDO operateLogDO = new OperateLogDO();
+        operateLogDO.setType(OperateTypeEnum.RESET_PASSWORD.getCode());
+        operateLogDO.setUserId(id);
+
+        return transactionTemplate.execute((action) -> {
+            operateLogDAO.insert(operateLogDO);
+            userDAO.updatePasswordAndClearToken(id, PasswordUtils.md5(password));
+            if (action.isCompleted() && this.tr) {
+                // 这里level只是指定发送邮件的模板内容，重置密码用level为社区的模板即可
+                notifyService.sendNotice(email, password, UserLevelEnum.COMMUNITY.getLevel());
+                log.info("reset password email {} ", email);
+            }
+            return true;
+        });
     }
 
     public UserDO getByEmail(String email) {

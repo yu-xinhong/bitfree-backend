@@ -6,7 +6,8 @@ public enum OperateTypeEnum {
     CHAT(3, "聊天室"),
     LOGIN(4, "登录"),
     CHANGE_IP(5, "切换IP"),
-    SHORT_LINK(6, "短链跳转");
+    SHORT_LINK(6, "短链跳转"),
+    RESET_PASSWORD(7, "重置密码");
 
     OperateTypeEnum(Integer code, String desc) {
         this.code = code;
