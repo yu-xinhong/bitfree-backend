@@ -19,6 +19,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.support.Observable;
 import com.jihai.bitfree.support.ReadNotificationEvent;
+import com.jihai.bitfree.support.TransactionUtils;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
@@ -350,6 +351,8 @@ public class UserService {
 
     }
 
+    @Autowired
+    private TransactionUtils transactionUtils;
 
     public Boolean resetPassword(Long id, String email) {
         String password = PasswordUtils.generatePwd();
@@ -361,11 +364,12 @@ public class UserService {
         return transactionTemplate.execute((action) -> {
             operateLogDAO.insert(operateLogDO);
             userDAO.updatePasswordAndClearToken(id, PasswordUtils.md5(password));
-            if (action.isCompleted()) {
+            // 事务执行成功再处理
+            transactionUtils.doAfterTransaction(() -> {
                 // 这里level只是指定发送邮件的模板内容，重置密码用level为社区的模板即可
                 notifyService.sendNotice(email, password, UserLevelEnum.COMMUNITY.getLevel());
                 log.info("reset password email {} ", email);
-            }
+            });
             return true;
         });
     }
