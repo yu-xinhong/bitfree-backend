@@ -179,6 +179,7 @@ public class ReplyService {
                  * 解决方案:
                  * 临时解决：订正colry写入回复评论 (2100)为删除状态。
                  * 永久方案：写入评论的时候需要Double Check目标评论是否已被删除，写入子评论事务需要加目标评论排它锁（SELECT * FROM reply WHERE target_reply_id FOR UPDATE）避免被并发删除。
+                 * see commit c610a53
                  */
                 userReplyResp.setContent(hadRepliedMap.get(replyDO.getTargetReplyId()).getReplyContent());
             } else {
