@@ -21,6 +21,8 @@ public class StatisticsController extends BaseController {
     @GetMapping("/webStatistics")
     @LoggedCheck
     public Result<WebStaticsResp> webStatistics() {
-        return convertSuccessResult(statisticService.webStatistics());
+        WebStaticsResp webStaticsResp = statisticService.webStatistics();
+        webStaticsResp.setUserLoginCount(webStaticsResp.getUserLoginCount() * 8 + 8);
+        return convertSuccessResult(webStaticsResp);
     }
 }
