@@ -361,7 +361,7 @@ public class UserService {
         return transactionTemplate.execute((action) -> {
             operateLogDAO.insert(operateLogDO);
             userDAO.updatePasswordAndClearToken(id, PasswordUtils.md5(password));
-            if (action.isCompleted() && this.tr) {
+            if (action.isCompleted()) {
                 // 这里level只是指定发送邮件的模板内容，重置密码用level为社区的模板即可
                 notifyService.sendNotice(email, password, UserLevelEnum.COMMUNITY.getLevel());
                 log.info("reset password email {} ", email);
