@@ -7,7 +7,7 @@
 #
 # Host: 124.222.49.162 (MySQL 8.0.33)
 # Database: bitfree
-# Generation Time: 2023-10-25 12:10:50 +0000
+# Generation Time: 2023-11-06 14:25:38 +0000
 # ************************************************************
 
 
@@ -77,8 +77,6 @@ CREATE TABLE `collect` (
 # Dump of table config
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `config`;
-
 CREATE TABLE `config` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
@@ -90,6 +88,26 @@ CREATE TABLE `config` (
   UNIQUE KEY `unique_key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+LOCK TABLES `config` WRITE;
+/*!40000 ALTER TABLE `config` DISABLE KEYS */;
+
+INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
+VALUES
+	(1,'SECRET','xxx',0,'2023-05-30 16:19:03','2023-10-22 19:01:46'),
+	(2,'TOP_POST_ID','2,280',0,'2023-05-30 16:48:38','2023-10-26 11:57:25'),
+	(3,'MAIL_SECRET','{\n    \"secret\":\"xxxx\",\n    \"sendMail\":\"xxxx@qq.com\"\n}',0,'2023-06-08 11:14:00','2023-06-08 11:17:54'),
+	(4,'DEFAULT_PASSWORD','123456',0,'2023-06-09 19:38:06','2023-06-09 19:38:06'),
+	(5,'DEFAULT_POSTER','https://xxx/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade',0,'2023-06-13 15:10:14','2023-06-13 15:10:14'),
+	(6,'SENSITIVE_WORDS','',0,'2023-06-15 12:55:09','2023-06-15 12:55:38'),
+	(7,'LIMIT_COUNT_PER_SECOND','2',0,'2023-06-16 15:33:10','2023-06-16 16:37:10'),
+	(8,'DEFAULT_AVATAR','static/avatars/6.png',0,'2023-06-30 12:34:41','2023-06-30 12:34:41'),
+	(9,'WEB_STATISTICS','{\"requestCount\":83990,\"userLoginCount\":82}',0,'2023-10-08 15:47:38','2023-11-06 22:25:39'),
+	(10,'ROBOT_URL','https://xxxxx/cgi-bin/webhook/send?key=1c54e8c7-5dae-4ddb-a6e9-f8aee9465fe8',0,'2023-10-14 18:08:05','2023-10-24 00:21:03'),
+	(11,'SKIP_MONITOR_MESSAGE','操作太快,请重新登录,短链跳转,切换ip',0,'2023-10-20 15:01:31','2023-10-30 18:10:14'),
+	(12,'MODIFY_SETTINGS_NOTIFICATION_ID','10',0,'2023-11-03 15:02:35','2023-11-03 15:02:35');
+
+/*!40000 ALTER TABLE `config` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table file
@@ -118,6 +136,7 @@ CREATE TABLE `message` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `send_user_id` bigint NOT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `target_message_id` bigint DEFAULT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -150,6 +169,7 @@ CREATE TABLE `notification` (
   `title` text,
   `content` text,
   `user_list` text,
+  `can_read` tinyint DEFAULT '1',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -315,20 +335,6 @@ CREATE TABLE `user_like` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-
-INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
-VALUES
-	(1, 'SECRET', 'xxxx', 0, '2023-05-30 16:19:03', '2023-10-22 19:01:46'),
-	(2, 'TOP_POST_ID', '2', 0, '2023-05-30 16:48:38', '2023-10-04 15:01:54'),
-	(3, 'MAIL_SECRET', '{\n    \"secret\":\"xxx\",\n    \"sendMail\":\"xxxx@qq.com\"\n}', 0, '2023-06-08 11:14:00', '2023-06-08 11:17:54'),
-	(4, 'DEFAULT_PASSWORD', '123456', 0, '2023-06-09 19:38:06', '2023-06-09 19:38:06'),
-	(5, 'DEFAULT_POSTER', 'https://bitfree-prod-1318561655.cos.ap-shanghai.myqcloud.com/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade', 0, '2023-06-13 15:10:14', '2023-06-13 15:10:14'),
-	(6, 'SENSITIVE_WORDS', '', 0, '2023-06-15 12:55:09', '2023-06-15 12:55:38'),
-	(7, 'LIMIT_COUNT_PER_SECOND', '2', 0, '2023-06-16 15:33:10', '2023-06-16 16:37:10'),
-	(8, 'DEFAULT_AVATAR', 'static/avatars/6.png', 0, '2023-06-30 12:34:41', '2023-06-30 12:34:41'),
-	(9, 'WEB_STATISTICS', '{\"requestCount\":40305,\"userLoginCount\":67}', 0, '2023-10-08 15:47:38', '2023-10-25 20:12:06'),
-	(10, 'ROBOT_URL', 'xxxxx', 0, '2023-10-14 18:08:05', '2023-10-24 00:21:03'),
-	(11, 'SKIP_MONITOR_MESSAGE', '操作太快,请重新登录', 0, '2023-10-20 15:01:31', '2023-10-25 17:23:44');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
