@@ -24,8 +24,6 @@ public class UserResp extends BaseResp {
 
     private Integer status;
 
-    private String email;
-
     private String contact;
 
     public Long getId() {
@@ -106,14 +104,6 @@ public class UserResp extends BaseResp {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getContact() {

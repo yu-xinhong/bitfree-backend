@@ -74,7 +74,7 @@
         SELECT <include refid="BASE_COLUMN"/>
         FROM reply
         WHERE id = #{id}
-        AND deleted = 0
+        AND deleted = 0 FOR UPDATE
     </select>
     <select id="pageQueryByReceiverId" resultMap="replyResultMap">
         SELECT <include refid="BASE_COLUMN"/>
