@@ -83,7 +83,7 @@ public class UserController extends BaseController {
 
             String returnMsg = msgPrefix + ", 剩余次数 " + (3 - count.get()) + " 次";
             monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(baseReq)  + " " + returnMsg);
-            return convertFailResult(null, returnMsg, ReturnCodeEnum.MAX_LIMIT);
+            return convertFailResult(null, returnMsg, ReturnCodeEnum.LOGIN_ACCOUNT_ERROR);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
