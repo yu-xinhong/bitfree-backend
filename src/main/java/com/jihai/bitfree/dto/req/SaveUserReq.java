@@ -2,6 +2,7 @@ package com.jihai.bitfree.dto.req;
 
 import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public class SaveUserReq extends BaseReq {
 
     @SensitiveText
     @NotNull(message = "昵称不能为空")
+    @Length(min = 1, max = 10, message = "昵称长度不在限制内")
     private String name;
 
     @SensitiveText
