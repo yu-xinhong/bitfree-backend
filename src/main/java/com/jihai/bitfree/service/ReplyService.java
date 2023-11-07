@@ -89,6 +89,7 @@ public class ReplyService {
 
         ReplyDO targetReply = null;
         if (replyId != null) {
+            // 这里添加FOR UPDATE排它锁，避免其它事务并发删除这个评论
             targetReply = replyDAO.getById(replyId);
             replyDO.setReceiverId(targetReply.getSendUserId());
         } else {
