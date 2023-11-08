@@ -29,12 +29,11 @@ public class TaskBoardService {
     private UserDAO userDAO;
 
     public PageResult<TaskBoardResp> pageQueryTaskBoardList(Integer status, Integer page, Integer size){
-        System.out.println(1);
         List<TaskBoardDO> taskBoardDOList = taskBoardDAO.pageQueryTaskBoardListByStatus(status, (page - 1) * size, size);
         if (CollectionUtils.isEmpty(taskBoardDOList)) return new PageResult<>(Collections.emptyList(), 0);
 
         Set<Long> taskBoardUserIdSet = taskBoardDOList.stream().filter(taskBoardDO -> taskBoardDO.getUserId() != null).map(TaskBoardDO::getUserId).collect(Collectors.toSet());
-        List<UserDO> userDOList = userDAO.batchQueryByIdList(Lists.newArrayList(taskBoardUserIdSet));
+        List<UserDO> userDOList = CollectionUtils.isEmpty(taskBoardUserIdSet) ? Lists.newArrayList() : userDAO.batchQueryByIdList(Lists.newArrayList(taskBoardUserIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
         List<TaskBoardResp> taskBoardRespList = taskBoardDOList.stream().map(taskBoardDO -> {
