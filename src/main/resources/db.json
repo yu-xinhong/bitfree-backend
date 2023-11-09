@@ -1,0 +1,5 @@
+{
+    "url": "jdbc:mysql://rm-wz99hc7z0q2izxu5jto.mysql.rds.aliyuncs.com:3306/bitfree_dev?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true",
+    "username": "bitfree",
+    "password": "123456"
+}
