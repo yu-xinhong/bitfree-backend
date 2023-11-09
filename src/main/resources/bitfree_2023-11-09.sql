@@ -5,9 +5,9 @@
 # https://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 124.222.49.162 (MySQL 8.0.33)
+# Host: 127.0.0.1 (MySQL 8.0.33)
 # Database: bitfree
-# Generation Time: 2023-11-06 14:25:38 +0000
+# Generation Time: 2023-11-09 06:49:29 +0000
 # ************************************************************
 
 
@@ -93,17 +93,17 @@ LOCK TABLES `config` WRITE;
 
 INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
 VALUES
-	(1,'SECRET','xxx',0,'2023-05-30 16:19:03','2023-10-22 19:01:46'),
-	(2,'TOP_POST_ID','2,280',0,'2023-05-30 16:48:38','2023-10-26 11:57:25'),
-	(3,'MAIL_SECRET','{\n    \"secret\":\"xxxx\",\n    \"sendMail\":\"xxxx@qq.com\"\n}',0,'2023-06-08 11:14:00','2023-06-08 11:17:54'),
+	(1,'SECRET','xxx',0,'2023-05-30 16:19:03','2023-10-30 13:01:44'),
+	(2,'TOP_POST_ID','2',0,'2023-05-30 16:48:38','2023-10-04 15:01:54'),
+	(3,'MAIL_SECRET','{\n    \"secret\":\"xxx\",\n    \"sendMail\":\"xx@qq.com\"\n}',0,'2023-06-08 11:14:00','2023-06-08 11:17:54'),
 	(4,'DEFAULT_PASSWORD','123456',0,'2023-06-09 19:38:06','2023-06-09 19:38:06'),
-	(5,'DEFAULT_POSTER','https://xxx/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade',0,'2023-06-13 15:10:14','2023-06-13 15:10:14'),
+	(5,'DEFAULT_POSTER','https://bitfree-prod-1318561655.cos.ap-shanghai.myqcloud.com/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade',0,'2023-06-13 15:10:14','2023-06-13 15:10:14'),
 	(6,'SENSITIVE_WORDS','',0,'2023-06-15 12:55:09','2023-06-15 12:55:38'),
 	(7,'LIMIT_COUNT_PER_SECOND','2',0,'2023-06-16 15:33:10','2023-06-16 16:37:10'),
 	(8,'DEFAULT_AVATAR','static/avatars/6.png',0,'2023-06-30 12:34:41','2023-06-30 12:34:41'),
-	(9,'WEB_STATISTICS','{\"requestCount\":83990,\"userLoginCount\":82}',0,'2023-10-08 15:47:38','2023-11-06 22:25:39'),
-	(10,'ROBOT_URL','https://xxxxx/cgi-bin/webhook/send?key=1c54e8c7-5dae-4ddb-a6e9-f8aee9465fe8',0,'2023-10-14 18:08:05','2023-10-24 00:21:03'),
-	(11,'SKIP_MONITOR_MESSAGE','操作太快,请重新登录,短链跳转,切换ip',0,'2023-10-20 15:01:31','2023-10-30 18:10:14'),
+	(9,'WEB_STATISTICS','{\"requestCount\":688,\"userLoginCount\":1}',0,'2023-10-08 15:47:38','2023-11-09 14:16:08'),
+	(10,'ROBOT_URL','https://xxxx/cgi-bin/webhook/send?key=0ad5212f-b0b4-43ee-93c8-673e11f6f150',0,'2023-10-14 18:08:05','2023-10-14 18:08:05'),
+	(11,'SKIP_MONITOR_MESSAGE','操作太快,请重新登录,Leexdao',0,'2023-10-20 15:01:31','2023-10-22 02:44:59'),
 	(12,'MODIFY_SETTINGS_NOTIFICATION_ID','10',0,'2023-11-03 15:02:35','2023-11-03 15:02:35');
 
 /*!40000 ALTER TABLE `config` ENABLE KEYS */;
@@ -135,8 +135,8 @@ CREATE TABLE `file` (
 CREATE TABLE `message` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `send_user_id` bigint NOT NULL,
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `target_message_id` bigint DEFAULT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -152,7 +152,7 @@ CREATE TABLE `message_notice` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `message_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
-  `type` int NOT NULL DEFAULT '0',
+  `type` int DEFAULT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -235,6 +235,23 @@ CREATE TABLE `post` (
 
 
 
+# Dump of table question
+# ------------------------------------------------------------
+
+CREATE TABLE `question` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `content` text,
+  `parent_id` bigint DEFAULT NULL,
+  `level` int DEFAULT NULL,
+  `ref` text,
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted` tinyint DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
 # Dump of table reply
 # ------------------------------------------------------------
 
@@ -270,6 +287,23 @@ CREATE TABLE `reply_notice` (
   PRIMARY KEY (`id`),
   KEY `idx_notify_user_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+# Dump of table task_board
+# ------------------------------------------------------------
+
+CREATE TABLE `task_board` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `coins` int NOT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `status` tinyint NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 
 
