@@ -31,7 +31,6 @@ public class QuestionService {
         // 构造树结构
         Integer maxLevel = questionDOList.stream().mapToInt(QuestionDO::getLevel).max().getAsInt();
 
-        // 按照level排序
         Map<Integer, List<QuestionDO>> levelQuestionMap = questionDOList.stream().collect(Collectors.groupingBy(QuestionDO::getLevel));
         List<QuestionNodeResp> resultList = Lists.newArrayList();
         Map<Long, QuestionNodeResp> idQuestionNodeMap = Maps.newHashMap();
