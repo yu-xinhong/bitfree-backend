@@ -187,9 +187,9 @@ public class ReplyService {
                 userReplyResp.setContent(haveRepliedPostMap.get(replyDO.getPostId()).getContent());
             }
 
-            userReplyResp.setContent(compressContent(userReplyResp.getContent(), 10));
+            userReplyResp.setContent(com.jihai.bitfree.utils.StringUtils.compressContent(userReplyResp.getContent(), 10));
 
-            userReplyResp.setReply(compressContent(replyDO.getReplyContent(), 20));
+            userReplyResp.setReply(com.jihai.bitfree.utils.StringUtils.compressContent(replyDO.getReplyContent(), 20));
             userReplyResp.setCreateTime(replyDO.getCreateTime());
             userReplyResp.setSendUserName(idUserMap.get(replyDO.getSendUserId()).getName());
             userReplyResp.setPostId(replyDO.getPostId());
@@ -197,14 +197,6 @@ public class ReplyService {
         }).collect(Collectors.toList());
 
         return new PageResult<>(resultList, count);
-    }
-
-    private String compressContent(String content, int compress2Len) {
-        if (! StringUtils.hasText(content)) {
-            return "";
-        }
-
-        return content.length() > compress2Len ? content.substring(0, compress2Len) + "..." : content;
     }
 
     public PageResult<UserReplyResp> pageQueryUserReplyByReceiverId(Integer page, Integer size, Long userId) {
