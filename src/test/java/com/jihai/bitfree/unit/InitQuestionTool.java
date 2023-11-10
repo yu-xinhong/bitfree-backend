@@ -30,17 +30,17 @@ public class InitQuestionTool extends AppTest {
         String localMarkDownPath = configService.getByKey("localMarkDownPath");
         String questionMarkDown = FileUtils.readFileToString(new File(localMarkDownPath));
 
-        // 栈顶获取出第一个比当前大的为parentId
-        ArrayList<Node> stack = new ArrayList<>();
-        dfs(questionMarkDown.split("\n"), 0, stack);
+        // 为了往前遍历，获取到第一个比当前等级高的节点即为父节点
+        ArrayList<Node> nodeList = new ArrayList<>();
+        readLine(questionMarkDown.split("\n"), 0, nodeList);
     }
 
-    private void dfs(String[] questionMarkDownArray, int line, ArrayList<Node> nodeList) {
+    private void readLine(String[] questionMarkDownArray, int line, ArrayList<Node> nodeList) {
         if (questionMarkDownArray.length < line + 1) return ;
         String currentQuestion = questionMarkDownArray[line];
         String question = currentQuestion.replace(" ", "");
         if (StringUtils.isEmpty(question)) {
-            dfs(questionMarkDownArray, line + 1, nodeList);
+            readLine(questionMarkDownArray, line + 1, nodeList);
             return ;
         }
         int level = StringUtils.countOccurrencesOf(currentQuestion, "#");
@@ -62,7 +62,7 @@ public class InitQuestionTool extends AppTest {
         questionDAO.insert(questionDO);
 
         nodeList.add(new Node(questionDO.getId(), level));
-        dfs(questionMarkDownArray, line + 1, nodeList);
+        readLine(questionMarkDownArray, line + 1, nodeList);
 
     }
 
