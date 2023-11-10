@@ -174,6 +174,12 @@ public class MessageService {
         return true;
     }
 
+    @Transactional
+    public Boolean deleteMessage(Long messageId) {
+        messageDAO.delete(messageId);
+        return true;
+    }
+
     private void notifyAllUser(Long messageId) {
         List<Long> userDOList = userDAO.listAllUserId();
 
