@@ -7,6 +7,7 @@ public enum TaskBoardStatusEnum {
     DOING(1, "在办事项"),
 
     DONE(2, "已办事项");
+
     private Integer status;
 
     private String desc;
