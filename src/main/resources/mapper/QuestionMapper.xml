@@ -9,4 +9,10 @@
     <select id="getAll" resultType="com.jihai.bitfree.entity.QuestionDO">
         SELECT * FROM question WHERE deleted = 0
     </select>
+
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO question(`content`,`parent_id`,`level`,`remark`)
+        VALUE(#{content}, #{parentId}, #{level}, #{remark})
+    </insert>
 </mapper>
