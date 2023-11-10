@@ -11,6 +11,7 @@ import com.jihai.bitfree.entity.PostDO;
 import com.jihai.bitfree.entity.ReplyDO;
 import com.jihai.bitfree.entity.ReplyNoticeDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,8 @@ public class ReplyService {
         if (replyId != null) {
             // 这里添加FOR UPDATE排它锁，避免其它事务并发删除这个评论
             targetReply = replyDAO.getById(replyId);
+            // DLC 业务并发
+            if (targetReply == null) throw new BusinessException("目标评论不存在");
             replyDO.setReceiverId(targetReply.getSendUserId());
         } else {
             replyDO.setReceiverId(postDO.getCreatorId());
