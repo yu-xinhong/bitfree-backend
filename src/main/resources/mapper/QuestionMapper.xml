@@ -5,6 +5,9 @@
 <mapper namespace="com.jihai.bitfree.dao.QuestionDAO">
 
     <sql id="BASE_COLUMN">id, content, parent_id, level, remark, deleted, create_time, update_time</sql>
+    <delete id="deleteAll">
+        DELETE FROM question
+    </delete>
 
     <select id="getAll" resultType="com.jihai.bitfree.entity.QuestionDO">
         SELECT * FROM question WHERE deleted = 0

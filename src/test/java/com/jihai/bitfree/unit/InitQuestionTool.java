@@ -27,6 +27,8 @@ public class InitQuestionTool extends AppTest {
 
     @Test
     public void initQuestion() throws IOException {
+        questionDAO.deleteAll();
+
         String localMarkDownPath = configService.getByKey("localMarkDownPath");
         String questionMarkDown = FileUtils.readFileToString(new File(localMarkDownPath));
 
@@ -34,6 +36,7 @@ public class InitQuestionTool extends AppTest {
         ArrayList<Node> nodeList = new ArrayList<>();
         readLine(questionMarkDown.split("\n"), 0, nodeList);
     }
+
 
     private void readLine(String[] questionMarkDownArray, int line, ArrayList<Node> nodeList) {
         if (questionMarkDownArray.length < line + 1) return ;
