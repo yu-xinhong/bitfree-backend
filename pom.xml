@@ -32,7 +32,8 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.75</version>
+            <!--开源依赖漏洞-->
+            <version>1.2.83</version>
         </dependency>
 
         <dependency>
@@ -75,7 +76,8 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>22.0</version>
+            <!--开源依赖漏洞-->
+            <version>30.0-android</version>
         </dependency>
 
         <dependency>
@@ -110,7 +112,8 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <!--开源依赖漏洞-->
+            <version>2.7</version>
         </dependency>
 
         <dependency>
