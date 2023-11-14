@@ -27,6 +27,12 @@ public class MessageController extends BaseController {
         return convertSuccessResult(messageService.pageQueryMessageList(messageReq.getPage(), messageReq.getSize(), getCurrentUser()));
     }
 
+    @PostMapping("/deleteMessage")
+    @LoggedCheck
+    public Result<Boolean> deleteMessage(@RequestParam("id") Long id) {
+        return convertSuccessResult(messageService.deleteMessage(id));
+    }
+
     @PostMapping("/sendMessage")
     @LoggedCheck
     public Result<Boolean> sendMessage(@RequestBody SendMessageReq sendMessageReq) {

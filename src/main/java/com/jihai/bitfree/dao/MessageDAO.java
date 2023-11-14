@@ -1,6 +1,7 @@
 package com.jihai.bitfree.dao;
 
 import com.jihai.bitfree.entity.MessageDO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ public interface MessageDAO {
     Integer count();
 
     Integer insert(MessageDO messageDO);
+
+    Integer delete(@Param("id") Long id);
 
     Integer getRecentMessageCount();
 

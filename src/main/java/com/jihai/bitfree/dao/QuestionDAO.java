@@ -7,4 +7,8 @@ import java.util.List;
 public interface QuestionDAO {
 
     List<QuestionDO> getAll();
+
+    void insert(QuestionDO questionDO);
+
+    void deleteAll();
 }
