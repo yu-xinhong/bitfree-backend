@@ -161,13 +161,28 @@ public class MessageService {
         // 通知所有用户，类似写扩散，这里可能存在性能瓶颈，现在用户量不大，暂时这样处理
 //        notifyAllUser(messageDO.getId());
 
-        //@消息通知
-        if (Objects.isNull(replyMessageId)) return true;
+        //  @消息通知
+
+        /*
+         * 存在删除消息与回复消息的并发问题, timeline:
+         * 1. A发送回复评论ID.1的ID.2消息
+         * 2. B删除评论ID.1(在A执行#messageDAO.getSendUserIdByMessageId前)
+         * OR
+         * 1. B删除评论ID.1
+         * 2. A在获取最新消息前发送回复评论ID.1的ID.2消息
+         *
+         * GAP:
+         * 回复消息: 在删除消息前到删除成功消息后的第一次获取最新消息时
+         * #messageDAO.getSendUserIdByMessageId : 在删除消息成功后
+         *
+         * @note: 成功获取relayUserId后删除消息不用做处理, 在查消息时查不到对应的message时不会显示被回复消息
+         */
+        Long relayUserId = messageDAO.getSendUserIdByMessageId(replyMessageId);
+        if (Objects.isNull(replyMessageId) || relayUserId == null) return true;
         MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
 
         //messageDO.getId()获取刚插入的id
         messageNoticeDO.setMessageId(messageDO.getId());
-        Long relayUserId = messageDAO.getSendUserIdByMessageId(replyMessageId);
         messageNoticeDO.setUserId(relayUserId);
         messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION.getType());
         messageNoticeDAO.insert(messageNoticeDO);
