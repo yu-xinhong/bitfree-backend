@@ -4,6 +4,8 @@ import com.jihai.bitfree.aspect.SensitiveText;
 import com.jihai.bitfree.base.BaseReq;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class SaveUserReq extends BaseReq {
@@ -14,7 +16,7 @@ public class SaveUserReq extends BaseReq {
     private String avatar;
 
     @SensitiveText
-    @NotNull(message = "昵称不能为空")
+    @NotBlank(message = "昵称不能为空")
     @Length(min = 1, max = 10, message = "昵称长度不在限制内")
     private String name;
 
