@@ -116,5 +116,18 @@
         WHERE email = #{email}
         AND deleted = 0
     </select>
+    <select id="getUserRankByCoins" resultType="com.jihai.bitfree.dto.resp.UserResp">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM user
+        WHERE deleted = 0
+        ORDER BY coins DESC
+        LIMIT 10
+    </select>
+    <select id="rankCount" resultType="java.lang.Long">
+        SELECT COUNT(*) + 1
+        FROM user a
+        WHERE a.coins > (SELECT coins FROM user WHERE id = #{userId} AND deleted = 0) AND a.deleted = 0
+
+    </select>
 
 </mapper>

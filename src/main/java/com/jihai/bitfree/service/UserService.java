@@ -13,6 +13,7 @@ import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
+import com.jihai.bitfree.dto.resp.UserRankResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
@@ -137,7 +138,7 @@ public class UserService {
 
     private void sendNotification(Long userId) {
         Boolean locked = distributedLock.lock(LockKeyConstants.SEND_NOTIFICATION, 1, TimeUnit.MINUTES);
-        if (! locked) return ;
+        if (!locked) return;
 
         try {
             ConfigDO configKey = configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID);
@@ -153,7 +154,7 @@ public class UserService {
 
     private void checkSecret(String secret) {
         ConfigDO configDO = configDAO.getByKey(Constants.SECRET);
-        if (! configDO.getValue().equals(secret)) {
+        if (!configDO.getValue().equals(secret)) {
             log.error("warn ! this operation only be allowed to administrator jihai!");
             // send alert
             throw new RuntimeException(ReturnCodeEnum.SECRET_ERROR.getDesc());
@@ -166,9 +167,9 @@ public class UserService {
 
     @Transactional
     public Boolean save(String avatar, String name, String city, String position, Integer seniority, Long userId, String currentName) {
-        if (! StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
-        if (! StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
-        if (! name.equals(currentName)) {
+        if (!StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
+        if (!StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
+        if (!name.equals(currentName)) {
             // 修改名字，不会再提示通知
             observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
         }
@@ -194,7 +195,7 @@ public class UserService {
     public Boolean updatePassword(Long id, String oldPassword, String newPassword) {
         if (StringUtils.hasText(newPassword)) {
             UserDO userDO = userDAO.getById(id);
-            if (! userDO.getPassword().equalsIgnoreCase(oldPassword)) {
+            if (!userDO.getPassword().equalsIgnoreCase(oldPassword)) {
                 log.warn("some one password new and old not equals");
                 throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
             }
@@ -236,7 +237,7 @@ public class UserService {
 
         int coins = CoinsDefinitions.CHECK_IN;
         for (int i = 1; i < 7; i++) {
-            if (! hasCheckIn(checkInDOList, i)) {
+            if (!hasCheckIn(checkInDOList, i)) {
                 break;
             }
             coins += 1;
@@ -254,14 +255,14 @@ public class UserService {
     }
 
     public void consumeCoins(Long userId, int coins) {
-        userDAO.incrementCoins(userId, - coins);
+        userDAO.incrementCoins(userId, -coins);
     }
 
     public Boolean like(Long id, Integer type, Boolean like, Long userId) {
         // 这里控制幂等, 现在单实例防并发，后面集群模式需要切换为分布式锁
         String key = LockKeyConstants.LIKE + "|" + id + "|" + userId;
 
-        if (! distributedLock.lock(key, 1, TimeUnit.MINUTES)) {
+        if (!distributedLock.lock(key, 1, TimeUnit.MINUTES)) {
             throw new BusinessException("请稍后操作");
         }
         try {
@@ -312,12 +313,13 @@ public class UserService {
      * T2 获取到分布式锁
      * T2 userDAO.getById(userId)查出来仍旧是老ip的，开始通知并更新user
      * T1 提交事务
-     *
+     * <p>
      * 引入编程式事务，优化为先加锁再执行事务，并且保证事务尽量小
-     *
+     * <p>
      * 第二个问题：
      * if (! lock) return ; 这一行代码应该移动到try 之前。
      * 因为没获取到锁仍会执行finally 释放另一个线程的分布式锁，这会导致分布式锁形同虚设。
+     *
      * @param userId
      * @param ip
      */
@@ -329,11 +331,11 @@ public class UserService {
     public void updateIp(Long userId, String ip) {
         String lockKey = LockKeyConstants.UPDATE_IP + userId.toString() + "_" + ip;
         Boolean lock = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
-        if (! lock) return ;
+        if (!lock) return;
         try {
             UserDO userDO = userDAO.getById(userId);
             // 当前与请求的ip一致，不更新
-            if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return ;
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDO.getIp()) && userDO.getIp().equals(ip)) return;
             log.warn("{} change ip from {} to {}", JSONObject.toJSON(userDO), userDO.getIp(), ip);
             OperateLogDO operateLogDO = new OperateLogDO();
             operateLogDO.setType(OperateTypeEnum.CHANGE_IP.getCode());
@@ -376,5 +378,13 @@ public class UserService {
 
     public UserDO getByEmail(String email) {
         return userDAO.getByEmail(email);
+    }
+
+
+    public UserRankResp getUserRankByCoins(Long userId) {
+        UserRankResp userRankResp = new UserRankResp();
+        userRankResp.setList(userDAO.getUserRankByCoins());
+        userRankResp.setRank(userDAO.rankCount(userId));
+        return userRankResp;
     }
 }
