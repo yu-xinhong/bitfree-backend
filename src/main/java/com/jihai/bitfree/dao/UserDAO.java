@@ -1,6 +1,7 @@
 package com.jihai.bitfree.dao;
 
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
+import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,4 +40,8 @@ public interface UserDAO {
     void updateRemark(Long id, String remark);
 
     UserDO getByEmail(String email);
+
+    List<UserResp> getUserRankByCoins();
+
+    Long rankCount(@Param("userId") Long userId);
 }

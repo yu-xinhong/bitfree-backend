@@ -14,6 +14,7 @@ import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
+import com.jihai.bitfree.dto.resp.UserRankResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
@@ -60,6 +61,7 @@ public class UserController extends BaseController {
      * 2023/11/5遭遇撞库攻击
      * 已封禁IP:123.xxx.30.95
      * 添加重试次数拦截，1分钟内超过3次错误，直接封禁5分钟
+     *
      * @param loginReq
      * @return
      */
@@ -82,7 +84,7 @@ public class UserController extends BaseController {
             requestLoginCache.put(lockKey, count);
 
             String returnMsg = msgPrefix + ", 剩余次数 " + (3 - count.get()) + " 次";
-            monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(baseReq)  + " " + returnMsg);
+            monitorAbility.sendMsg(requestUtils.getCurrentIp() + ":" + JSON.toJSONString(baseReq) + " " + returnMsg);
             return convertFailResult(null, returnMsg, ReturnCodeEnum.LOGIN_ACCOUNT_ERROR);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -98,7 +100,7 @@ public class UserController extends BaseController {
      */
     private void requestIpFloodCheck(String lockKey) {
         Boolean locked = distributedLock.lock(lockKey, 10, TimeUnit.SECONDS);
-        if (! locked) return ;
+        if (!locked) return;
         try {
             if (requestLoginCache.get(lockKey, () -> new AtomicInteger(0)).intValue() >= 3) {
                 monitorAbility.sendMsg(requestUtils.getCurrentIp() + " 已触发登录限流");
@@ -184,7 +186,7 @@ public class UserController extends BaseController {
     @PostMapping("/resetPassword")
     @ParameterCheck
     public Result<Boolean> resetPassword(@RequestBody ResetPasswordReq resetPasswordReq) {
-        return convertSuccessResult(userService.resetPassword(resetPasswordReq.getId() , resetPasswordReq.getSecret(), passwordUtils.defaultPassword()));
+        return convertSuccessResult(userService.resetPassword(resetPasswordReq.getId(), resetPasswordReq.getSecret(), passwordUtils.defaultPassword()));
     }
 
 
@@ -233,4 +235,9 @@ public class UserController extends BaseController {
         requestLoginCache.invalidate(LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp());
     }
 
+    @GetMapping("/rank")
+    @LoggedCheck
+    public Result<UserRankResp> getRank() {
+        return convertSuccessResult(userService.getUserRankByCoins(getCurrentUser().getId()));
+    }
 }
