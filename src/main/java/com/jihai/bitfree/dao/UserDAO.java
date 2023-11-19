@@ -41,7 +41,7 @@ public interface UserDAO {
 
     UserDO getByEmail(String email);
 
-    List<UserResp> getUserRankByCoins();
+    List<UserDO> getRanksByCoins();
 
-    Long rankCount(@Param("userId") Long userId);
+    int getUserRank(@Param("userId") Long userId);
 }
