@@ -1,0 +1,10 @@
+logging:
+  # Set the log level of the package where the mapper interface is located to DEBUG, so that you can see more detailed SQL execution logs.
+  level:
+    "io.springcloud.mybatis.mapper": "DEBUG"
+    com.jihai.bitfree: debug
+
+LOG_PATH: ./test-log
+
+datasource:
+  config-path: ./src/test/resources/test
