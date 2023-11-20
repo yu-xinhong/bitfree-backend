@@ -26,6 +26,7 @@ import com.jihai.bitfree.utils.DateUtils;
 import com.jihai.bitfree.utils.PasswordUtils;
 import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -122,6 +124,7 @@ public class UserService {
         userDO.setPassword(PasswordUtils.md5(password));
 
         userDO.setLevel(level);
+        userDO.setName("bit" + RandomUtils.nextInt(0, 9999));
 
         userDAO.insert(userDO);
 
