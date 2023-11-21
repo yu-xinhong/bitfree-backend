@@ -384,10 +384,12 @@ public class UserService {
     }
 
 
-    public UserRankResp getUserRankByCoins(Long userId) {
-        UserRankResp userRankResp = new UserRankResp();
-        userRankResp.setList(userDAO.getUserRankByCoins());
-        userRankResp.setRank(userDAO.rankCount(userId));
-        return userRankResp;
+    public List<UserDO> getRanksByCoins() {
+        List<UserDO> userRankByCoins = userDAO.getRanksByCoins();
+        return userRankByCoins;
+    }
+
+    public int getUserRank(Long userId) {
+        return userDAO.getUserRank(userId);
     }
 }

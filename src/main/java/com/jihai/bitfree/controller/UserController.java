@@ -235,9 +235,15 @@ public class UserController extends BaseController {
         requestLoginCache.invalidate(LockKeyConstants.IP_REQUEST + requestUtils.getCurrentIp());
     }
 
+    @GetMapping("/ranks")
+    @LoggedCheck
+    public Result<List<UserResp>> getRanks() {
+        return convertSuccessResult(DO2DTOConvert.convertUsers(userService.getRanksByCoins()));
+    }
+
     @GetMapping("/rank")
     @LoggedCheck
-    public Result<UserRankResp> getRank() {
-        return convertSuccessResult(userService.getUserRankByCoins(getCurrentUser().getId()));
+    public Result<Integer> getRank() {
+        return convertSuccessResult(userService.getUserRank(getCurrentUser().getId()));
     }
 }
