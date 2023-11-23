@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -52,9 +53,10 @@ public class XssAndSqlFilter implements Filter {
         } catch (Exception e) {
             log.error("XSS过滤时捕获异常,转通用错误响应");
             Result<Boolean> result = new Result<>();
-            if (e instanceof BusinessException) {
-                result.setCode(((BusinessException) e).getReturnCodeEnum().getCode());
-                result.setMessage(((BusinessException) e).getReturnCodeEnum().getDesc());
+            //  Spring内部会在FrameworkServlet#processRequest处封装为嵌套异常, 需要以内部实际异常为准
+            if (e instanceof NestedServletException && e.getCause() instanceof  BusinessException) {
+                result.setCode(((BusinessException) e.getCause()).getReturnCodeEnum().getCode());
+                result.setMessage(((BusinessException) e.getCause()).getReturnCodeEnum().getDesc());
             } else {
                 result.setCode(ReturnCodeEnum.SYSTEM_ERROR.getCode());
                 result.setMessage(e.getMessage());

@@ -49,7 +49,7 @@ public class SecurityUtils {
             log.error("xss攻击检查：参数含有非法攻击字符，已禁止继续访问！！");
             log.error("原始输入信息-->" + src);
             log.error("[debug]过滤后信息-->" + temp);
-            throw new BusinessException(ReturnCodeEnum.BUSINESS_ERROR.getDesc(), ReturnCodeEnum.BUSINESS_ERROR);
+            throw new BusinessException(ReturnCodeEnum.ILLEGAL_CHARACTERS_ERROR);
         }
 
         return src;
@@ -66,7 +66,7 @@ public class SecurityUtils {
         Pattern sqlPattern = Pattern.compile(badStrReg, Pattern.CASE_INSENSITIVE);
         if (sqlPattern.matcher(src.toLowerCase()).find()) {
             log.error("sql注入检查：输入信息存在SQL攻击！");
-            throw new BusinessException(ReturnCodeEnum.BUSINESS_ERROR.getDesc(), ReturnCodeEnum.BUSINESS_ERROR);
+            throw new BusinessException(ReturnCodeEnum.ILLEGAL_CHARACTERS_ERROR);
         }
         return src;
     }
