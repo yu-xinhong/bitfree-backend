@@ -322,6 +322,6 @@ public class MessageService {
     }
 
     private boolean isOverUp(Long userId) {
-        return operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LIVE_COINS.getCode(), DateUtils.formatDay(new Date())) < Constants.LIVE_DAY_OVER_COINS;
+        return operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LIVE_COINS.getCode(), DateUtils.formatDay(new Date())) >= Constants.LIVE_DAY_OVER_COINS;
     }
 }
