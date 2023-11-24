@@ -63,7 +63,7 @@ public class MessageService {
     private Cache<Long, UserResp> liveUserCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
 
     // 这里前端js 1分钟发起一次心跳，但是这里5秒考虑到网络波动
-    private Cache<Long, Heartbeat> heartbeatCache = CacheBuilder.newBuilder().expireAfterWrite(65, TimeUnit.SECONDS).build();
+    private Cache<Long, Heartbeat> heartbeatCache = CacheBuilder.newBuilder().expireAfterAccess(65, TimeUnit.SECONDS).build();
 
     class Heartbeat {
         private Integer count;
@@ -295,7 +295,7 @@ public class MessageService {
         }
         // 这里可能存在并发，暂不考虑
         long currentSystemTimestamp = System.currentTimeMillis();
-        if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() <= 60 * 1000) {
+        if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() < 59 * 1000) {
             heartbeatCache.invalidate(userId);
             throw new BusinessException("无效心跳");
         }
@@ -311,6 +311,7 @@ public class MessageService {
 
         if (heartbeat.getCount() < Constants.LIVE_APPRAISE_MINUTES_COUNT) return true;
 
+        log.info("userId {} live appraise coins ", userId);
         heartbeatCache.invalidate(userId);
         transactionTemplate.execute((status) -> {
             userDAO.incrementCoins(userId, 1);
