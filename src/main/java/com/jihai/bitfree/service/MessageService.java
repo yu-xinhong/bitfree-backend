@@ -10,6 +10,7 @@ import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
@@ -21,7 +22,9 @@ import com.jihai.bitfree.entity.MessageDO;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
+import com.jihai.bitfree.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +33,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,8 +57,39 @@ public class MessageService {
     @Autowired
     private DistributedLock distributedLock;
 
+    @Autowired
+    private OperationLogService operationLogService;
+
     private Cache<Long, UserResp> liveUserCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
 
+    // 这里前端js 1分钟发起一次心跳，但是这里5秒考虑到网络波动
+    private Cache<Long, Heartbeat> heartbeatCache = CacheBuilder.newBuilder().expireAfterWrite(65, TimeUnit.SECONDS).build();
+
+    class Heartbeat {
+        private Integer count;
+        private Long timestamp;
+
+        public Heartbeat(Integer count, Long timestamp) {
+            this.count = count;
+            this.timestamp = timestamp;
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
+        public void setCount(Integer count) {
+            this.count = count;
+        }
+
+        public Long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(Long timestamp) {
+            this.timestamp = timestamp;
+        }
+    }
 
     public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size, UserResp currentUser) {
         List<MessageDO> messageDOList = messageDAO.pageQueryRecentList((page - 1) * size, size);
@@ -252,5 +284,44 @@ public class MessageService {
         } finally {
             distributedLock.unlock(key);
         }
+    }
+
+    public Boolean heartbeat(Long userId) {
+        Heartbeat heartbeat;
+        try {
+            heartbeat = heartbeatCache.get(userId, () -> new Heartbeat(0, null));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        // 这里可能存在并发，暂不考虑
+        long currentSystemTimestamp = System.currentTimeMillis();
+        if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() <= 60 * 1000) {
+            heartbeatCache.invalidate(userId);
+            throw new BusinessException("无效心跳");
+        }
+
+        heartbeat.setCount(heartbeat.getCount() + 1);
+        heartbeat.setTimestamp(currentSystemTimestamp);
+
+        // 超过每日上限
+        if (isOverUp(userId)) {
+            heartbeatCache.invalidate(userId);
+            return true;
+        }
+
+        if (heartbeat.getCount() < Constants.LIVE_APPRAISE_MINUTES_COUNT) return true;
+
+        heartbeatCache.invalidate(userId);
+        transactionTemplate.execute((status) -> {
+            userDAO.incrementCoins(userId, 1);
+            operationLogService.saveOperateLog(userId, OperateTypeEnum.LIVE_COINS);
+            return null;
+        });
+
+        return true;
+    }
+
+    private boolean isOverUp(Long userId) {
+        return operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LIVE_COINS.getCode(), DateUtils.formatDay(new Date())) < Constants.LIVE_DAY_OVER_COINS;
     }
 }

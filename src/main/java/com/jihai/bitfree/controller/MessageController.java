@@ -56,4 +56,10 @@ public class MessageController extends BaseController {
     public Result<Boolean> openChat() {
         return convertSuccessResult(messageService.openChat(getCurrentUser().getId()));
     }
+
+    @GetMapping("/heartbeat")
+    @LoggedCheck
+    public Result<Boolean> heartbeat() {
+        return convertSuccessResult(messageService.heartbeat(getCurrentUser().getId()));
+    }
 }
