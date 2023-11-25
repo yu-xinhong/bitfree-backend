@@ -19,11 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -46,18 +44,37 @@ public class ReplyService {
 
     public List<ReplyListResp> getReplyList(Long id, String order) {
         List<ReplyListResp> replyListResps = Lists.newArrayList();
-        List<ReplyDO> rootReplyDOList = replyDAO.getRootReplyByPostId(id);
-        if (CollectionUtils.isEmpty(rootReplyDOList)) {
+        List<ReplyDO> allReplyDOList = replyDAO.getByPostId(id);
+        if (CollectionUtils.isEmpty(allReplyDOList)) {
             return replyListResps;
         }
-        // 查询所有根评论的子评论
-        List<Long> rootReplyIdList = rootReplyDOList.stream().map(ReplyDO::getId).collect(Collectors.toList());
-        List<ReplyDO> subReplyList = replyDAO.getByReplyRootId(rootReplyIdList);
+        Map<Long, ReplyDO> allReplyMap = allReplyDOList.stream().collect(Collectors.toMap(ReplyDO::getId, Function.identity()));
+        // 所有根评论
+        List<ReplyDO> rootReplyDOList = allReplyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() == null).collect(Collectors.toList());
+        // 子评论与根评论的关联关系
+        Map<Long, Long> replyRootMap = new HashMap<>(allReplyDOList.size());
+
+        allReplyDOList.stream().filter(replyDO -> replyDO.getTargetReplyId() != null)
+                .sorted(Comparator.comparing(ReplyDO::getId))
+                .forEach(replyDO -> {
+                    Long targetReplyId = replyDO.getTargetReplyId();
+                    replyRootMap.put(replyDO.getId(), replyRootMap.getOrDefault(targetReplyId, targetReplyId));
+        });
 
         // 按根评论分组的子评论集合
-        Map<Long, List<ReplyDO>> subReplyMap = subReplyList.stream().collect(Collectors.groupingBy(ReplyDO::getTargetReplyRootId));
+        Map<Long, List<ReplyDO>> rootSubReplyMap = new HashMap<>(rootReplyDOList.size());
+        replyRootMap.forEach((key,value) -> {
+            ReplyDO subReply  = allReplyMap.get(key);
+            if (rootSubReplyMap.containsKey(value)){
+                rootSubReplyMap.get(value).add(subReply);
+            }else {
+                List<ReplyDO> subReplyList = Lists.newArrayList(subReply);
+                rootSubReplyMap.put(value, subReplyList);
+            }
+        });
 
-        List<Long> sendUserIdList = Stream.concat(rootReplyDOList.stream(), subReplyList.stream()).map(ReplyDO::getSendUserId).collect(Collectors.toList());
+
+        List<Long> sendUserIdList = allReplyDOList.stream().map(ReplyDO::getSendUserId).distinct().collect(Collectors.toList());
         List<UserDO> userDOS = userDAO.batchQueryByIdList(sendUserIdList);
 
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
@@ -65,10 +82,13 @@ public class ReplyService {
         List<ReplyListResp> resultList = rootReplyDOList.stream().map(replyDO -> {
             ReplyListResp rootReply = convertReply2DTO(replyDO, idUserMap);
             // 有子评论
-            if (subReplyMap.containsKey(rootReply.getId())) {
+            if (rootSubReplyMap.containsKey(rootReply.getId())) {
                 rootReply.setSubReplyList(
-                        subReplyMap.get(rootReply.getId()).stream()
-                                .map(subReply -> convertReply2DTO(subReply, idUserMap)).collect(Collectors.toList()));
+                        rootSubReplyMap.get(rootReply.getId()).stream()
+                                .map(subReply -> convertReply2DTO(subReply, idUserMap))
+                                // 子评论是顺序展示
+                                .sorted(Comparator.comparing(ReplyListResp::getCreateTime))
+                                .collect(Collectors.toList()));
             }
             return rootReply;
         }).sorted((reply1, reply2) -> {
@@ -116,14 +136,6 @@ public class ReplyService {
             // DLC 业务并发
             if (targetReply == null) throw new BusinessException("目标评论不存在");
             replyDO.setReceiverId(targetReply.getSendUserId());
-
-            if (targetReply.getTargetReplyRootId() == null) {
-                // 如果直接回复的根评论，则设置根id
-                replyDO.setTargetReplyRootId(replyId);
-            }else {
-                // 继承父评论的根id
-                replyDO.setTargetReplyRootId(targetReply.getTargetReplyRootId());
-            }
 
         } else {
             replyDO.setReceiverId(postDO.getCreatorId());

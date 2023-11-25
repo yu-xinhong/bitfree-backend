@@ -8,7 +8,6 @@
         <result column="send_user_id" property="sendUserId" />
         <result column="receiver_id" property="receiverId" />
         <result column="post_id" property="postId" />
-        <result column="target_reply_root_id" property="targetReplyRootId" />
         <result column="target_reply_id" property="targetReplyId" />
         <result column="reply_content" property="replyContent" />
         <result column="create_time" property="createTime" />
@@ -16,10 +15,10 @@
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, send_user_id, receiver_id, post_id, target_reply_root_id, target_reply_id, reply_content, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, send_user_id, receiver_id, post_id, target_reply_id, reply_content, create_time, update_time, deleted</sql>
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        INSERT INTO reply(`send_user_id`,`receiver_id`,`post_id`,`target_reply_root_id`,`target_reply_id`, `reply_content`)
-        VALUE(#{sendUserId}, #{receiverId}, #{postId},#{targetReplyRootId}, #{targetReplyId}, #{replyContent})
+        INSERT INTO reply(`send_user_id`,`receiver_id`,`post_id`,`target_reply_id`, `reply_content`)
+        VALUE(#{sendUserId}, #{receiverId}, #{postId}, #{targetReplyId}, #{replyContent})
     </insert>
     <update id="deleted">
         UPDATE reply
@@ -89,18 +88,5 @@
         FROM reply
         WHERE  receiver_id = #{userId}
         AND deleted = 0
-    </select>
-    <select id="getRootReplyByPostId" resultType="com.jihai.bitfree.entity.ReplyDO">
-        SELECT <include refid="BASE_COLUMN"/>
-        FROM reply
-        WHERE post_id = #{postId} and deleted = 0 and target_reply_root_id is null
-    </select>
-    <select id="getByReplyRootId" resultType="com.jihai.bitfree.entity.ReplyDO">
-        SELECT <include refid="BASE_COLUMN"/>
-        FROM reply
-        WHERE deleted = 0 AND target_reply_root_id IN
-        <foreach collection="replyIdList" item="replyId" open="(" separator="," close=")">
-            #{replyId}
-        </foreach>
     </select>
 </mapper>
