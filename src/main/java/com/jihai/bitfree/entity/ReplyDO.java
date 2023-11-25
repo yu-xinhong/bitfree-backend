@@ -12,6 +12,8 @@ public class ReplyDO extends BaseDO {
 
     private Long postId;
 
+    // 楼中楼回复的根回复id，方便构建子回复树
+    private Long targetReplyRootId;
     // 如果是回复别人，这个是目标回复id
     private Long targetReplyId;
 
@@ -39,6 +41,14 @@ public class ReplyDO extends BaseDO {
 
     public void setPostId(Long postId) {
         this.postId = postId;
+    }
+
+    public Long getTargetReplyRootId() {
+        return targetReplyRootId;
+    }
+
+    public void setTargetReplyRootId(Long targetReplyRootId) {
+        this.targetReplyRootId = targetReplyRootId;
     }
 
     public Long getTargetReplyId() {

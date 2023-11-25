@@ -11,19 +11,25 @@ public class ReplyListResp extends BaseResp {
 
     private Long id;
 
-    private String avatar;
+//    private String avatar;
 
     private String replyContent;
 
-    private String name;
+//    private String name;
 
-    private Long creatorId;
+//    private Long creatorId;
 
     private Date createTime;
 
     private Boolean like;
 
     private Integer likeCount;
+
+    private Long targetReplyId;
+
+    private UserResp sendUser;
+
+    private UserResp receiveUser;
 
     private List<ReplyListResp> subReplyList;
 
@@ -35,12 +41,20 @@ public class ReplyListResp extends BaseResp {
         this.id = id;
     }
 
-    public String getAvatar() {
-        return avatar;
+//    public String getAvatar() {
+//        return avatar;
+//    }
+//
+//    public void setAvatar(String avatar) {
+//        this.avatar = avatar;
+//    }
+
+    public Long getTargetReplyId() {
+        return targetReplyId;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setTargetReplyId(Long targetReplyId) {
+        this.targetReplyId = targetReplyId;
     }
 
     public String getReplyContent() {
@@ -51,24 +65,40 @@ public class ReplyListResp extends BaseResp {
         this.replyContent = replyContent;
     }
 
-    public String getName() {
-        return name;
-    }
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
+//    public Long getCreatorId() {
+//        return creatorId;
+//    }
+//
+//    public void setCreatorId(Long creatorId) {
+//        this.creatorId = creatorId;
+//    }
 
     public Date getCreateTime() {
         return createTime;
+    }
+
+    public UserResp getSendUser() {
+        return sendUser;
+    }
+
+    public void setSendUser(UserResp sendUser) {
+        this.sendUser = sendUser;
+    }
+
+    public UserResp getReceiveUser() {
+        return receiveUser;
+    }
+
+    public void setReceiveUser(UserResp receiveUser) {
+        this.receiveUser = receiveUser;
     }
 
     public void setCreateTime(Date createTime) {
