@@ -51,7 +51,7 @@ public class TaskBoardService {
             return taskBoardResp;
         }).collect(Collectors.toList());
 
-        Integer total = taskBoardDAO.count();
+        Integer total = taskBoardDAO.countByStatus(status);
 
         return new PageResult<>(taskBoardRespList, total);
     }

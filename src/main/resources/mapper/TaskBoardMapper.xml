@@ -28,6 +28,11 @@
         FROM task_board
         WHERE deleted = 0
     </select>
+    <select id="countByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM task_board
+        WHERE status = #{status} AND deleted = 0
+    </select>
     <insert id="insert">
         INSERT INTO task_board(`content`, `coins`, `user_id`, `status`)
         VALUE(#{content}, #{coins}, #{userId}, #{status})

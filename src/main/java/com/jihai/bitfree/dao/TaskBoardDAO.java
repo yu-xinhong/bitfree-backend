@@ -11,6 +11,8 @@ public interface TaskBoardDAO {
 
     Integer count();
 
+    Integer countByStatus(Integer status);
+
     void insert(TaskBoardDO taskBoardDO);
 
     void updateTime(@Param("id") Long id);
