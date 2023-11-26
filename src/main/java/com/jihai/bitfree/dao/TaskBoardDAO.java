@@ -19,4 +19,9 @@ public interface TaskBoardDAO {
 
     void deleted(@Param("id") Long id);
 
+    TaskBoardDO getTaskByTaskId(Integer id,Integer status);
+
+    List<TaskBoardDO> getTaskByTaskUserId(Long userId,Integer status);
+
+    Integer updateTaskBoard(TaskBoardDO taskBoardDO);
 }
