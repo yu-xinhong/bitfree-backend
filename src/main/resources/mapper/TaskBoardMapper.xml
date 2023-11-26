@@ -46,4 +46,27 @@
         WHERE id = #{id}
     </update>
 
+    <select id="getTaskByTaskId" resultType="com.jihai.bitfree.entity.TaskBoardDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM task_board
+        WHERE id = #{id} ANd status = #{status}
+        AND deleted = 0
+    </select>
+
+    <update id="updateTaskBoard">
+        UPDATE task_board
+        <set>
+            <if test="status != null">status = #{status},</if>
+            user_id = #{userId},
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <select id="getTaskByTaskUserId" resultType="com.jihai.bitfree.entity.TaskBoardDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM task_board
+        WHERE user_id = #{userId} ANd status = #{status}
+        AND deleted = 0
+    </select>
 </mapper>
