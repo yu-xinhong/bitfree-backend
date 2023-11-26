@@ -26,6 +26,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -309,7 +310,7 @@ public class MessageService {
             return true;
         }
 
-        if (heartbeat.getCount() < Constants.LIVE_APPRAISE_MINUTES_COUNT) return true;
+        if (heartbeat.getCount() < RandomUtils.nextInt(5,10)) return true;
 
         log.info("userId {} live appraise coins ", userId);
         heartbeatCache.invalidate(userId);
