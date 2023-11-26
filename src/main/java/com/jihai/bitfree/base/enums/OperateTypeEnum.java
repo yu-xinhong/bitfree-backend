@@ -8,7 +8,8 @@ public enum OperateTypeEnum {
     CHANGE_IP(5, "切换IP"),
     SHORT_LINK(6, "短链跳转"),
     RESET_PASSWORD(7, "重置密码"),
-    LIVE_COINS(8, "在线获取硬币");
+    LIVE_COINS(8, "在线获取硬币"),
+    TASK_COINS(9, "完成开发任务获取激励硬币");
 
     OperateTypeEnum(Integer code, String desc) {
         this.code = code;
