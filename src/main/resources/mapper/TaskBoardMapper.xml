@@ -9,19 +9,24 @@
         <result column="content" property="content" />
         <result column="coins" property="coins" />
         <result column="user_id" property="userId" />
+        <result column="level" property="level" />
         <result column="status" property="status" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, content, coins, user_id, status, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, content, coins, user_id, level, status, create_time, update_time, deleted</sql>
 
     <select id="pageQueryTaskBoardListByStatus" resultType="com.jihai.bitfree.entity.TaskBoardDO">
         SELECT <include refid="BASE_COLUMN"/>
         FROM task_board
         WHERE status = #{status} AND deleted = 0
-        ORDER BY create_time DESC LIMIT #{start}, #{size}
+        ORDER BY
+        <if test="status == 0 or status == 1">
+            level IS NULL ASC, level ASC,
+        </if>
+        create_time DESC LIMIT #{start}, #{size}
     </select>
     <select id="count" resultType="java.lang.Integer">
         SELECT COUNT(*)

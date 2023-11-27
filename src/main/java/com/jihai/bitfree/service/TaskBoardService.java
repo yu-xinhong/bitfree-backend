@@ -19,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
-import java.text.BreakIterator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +55,7 @@ public class TaskBoardService {
             taskBoardResp.setId(taskBoardDO.getId());
             taskBoardResp.setContent(taskBoardDO.getContent());
             taskBoardResp.setCoins(taskBoardDO.getCoins());
+            taskBoardResp.setTaskLevel(taskBoardDO.getLevel());
             taskBoardResp.setStatus(taskBoardDO.getStatus());
             taskBoardResp.setCreateTime(taskBoardDO.getCreateTime());
             if(taskBoardDO.getUserId() != null){
