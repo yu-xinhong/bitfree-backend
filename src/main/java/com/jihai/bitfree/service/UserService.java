@@ -13,7 +13,6 @@ import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
-import com.jihai.bitfree.dto.resp.UserRankResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
@@ -117,7 +116,10 @@ public class UserService {
         }
 
         UserDO userDO = new UserDO();
-        userDO.setAvatar(configDAO.getByKey(DEFAULT_AVATAR).getValue());
+        // 随机设置新用户头像
+        String[] avatarList = configDAO.getByKey(DEFAULT_AVATAR).getValue().split(",");
+        Random random = new Random();
+        userDO.setAvatar(avatarList[random.nextInt(avatarList.length)]);
         userDO.setEmail(email);
 
         String password = PasswordUtils.generatePwd();
