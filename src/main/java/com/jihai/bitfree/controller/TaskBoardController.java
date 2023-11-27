@@ -29,21 +29,21 @@ public class TaskBoardController extends BaseController {
     @PostMapping("/applyForTask")
     @ParameterCheck
     @LoggedCheck
-    public Result<String> applyForTask(@RequestBody CommTaskReq commTaskReq){
+    public Result<Boolean> applyForTask(@RequestBody CommTaskReq commTaskReq){
         return convertSuccessResult(taskBoardService.applyForTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
     }
 
     @PostMapping("/completeTask")
     @ParameterCheck
     @LoggedCheck
-    public Result<String> completeTask(@RequestBody CommTaskReq commTaskReq){
+    public Result<Boolean> completeTask(@RequestBody CommTaskReq commTaskReq){
         return convertSuccessResult(taskBoardService.completeTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
     }
 
     @PostMapping("/cancelTask")
     @ParameterCheck
     @LoggedCheck
-    public Result<String> cancelTask(@RequestBody CommTaskReq commTaskReq){
+    public Result<Boolean> cancelTask(@RequestBody CommTaskReq commTaskReq){
         return convertSuccessResult(taskBoardService.cancelTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
     }
 
