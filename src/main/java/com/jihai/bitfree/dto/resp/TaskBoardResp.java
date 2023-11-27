@@ -18,6 +18,8 @@ public class TaskBoardResp extends BaseResp {
 
     private String avatar;
 
+    private Long taskLevel;
+
     private Integer status;
 
     private Date createTime;
@@ -84,5 +86,13 @@ public class TaskBoardResp extends BaseResp {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Long getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Long taskLevel) {
+        this.taskLevel = taskLevel;
     }
 }
