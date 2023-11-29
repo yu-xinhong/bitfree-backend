@@ -10,7 +10,7 @@ public class TaskBoardDO extends BaseDO {
 
     private Long userId;
 
-    private Long level;
+    private Integer level;
 
     private Integer status;
 
@@ -38,11 +38,11 @@ public class TaskBoardDO extends BaseDO {
         this.userId = userId;
     }
 
-    public Long getLevel() {
+    public Integer getLevel() {
         return level;
     }
 
-    public void setLevel(Long level) {
+    public void setLevel(Integer level) {
         this.level = level;
     }
 

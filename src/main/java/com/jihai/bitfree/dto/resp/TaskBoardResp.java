@@ -18,7 +18,7 @@ public class TaskBoardResp extends BaseResp {
 
     private String avatar;
 
-    private Long taskLevel;
+    private Integer taskLevel;
 
     private Integer status;
 
@@ -88,11 +88,11 @@ public class TaskBoardResp extends BaseResp {
         this.avatar = avatar;
     }
 
-    public Long getTaskLevel() {
+    public Integer getTaskLevel() {
         return taskLevel;
     }
 
-    public void setTaskLevel(Long taskLevel) {
+    public void setTaskLevel(Integer taskLevel) {
         this.taskLevel = taskLevel;
     }
 }
