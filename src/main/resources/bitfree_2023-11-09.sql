@@ -297,7 +297,7 @@ CREATE TABLE `task_board` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `coins` int NOT NULL,
-  `level` bigint DEFAULT NULL,
+  `level` tinyint DEFAULT NULL,
   `status` tinyint NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
