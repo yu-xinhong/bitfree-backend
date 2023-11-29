@@ -22,6 +22,8 @@ public class TaskBoardResp extends BaseResp {
 
     private Integer status;
 
+    private String remark;
+
     private Date createTime;
 
     public Long getId() {
@@ -94,5 +96,13 @@ public class TaskBoardResp extends BaseResp {
 
     public void setTaskLevel(Integer taskLevel) {
         this.taskLevel = taskLevel;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }
