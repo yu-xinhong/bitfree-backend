@@ -1,16 +1,20 @@
 package com.jihai.bitfree.exception;
 
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class BusinessException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     private ReturnCodeEnum returnCodeEnum;
 
-    public BusinessException() {
-    }
-
-    public BusinessException(String message) {
+    public BusinessException(String message){
         super(message);
+        this.returnCodeEnum = ReturnCodeEnum.SYSTEM_ERROR;
+        this.returnCodeEnum.setDesc(message);
     }
 
     public BusinessException(ReturnCodeEnum returnCodeEnum) {
@@ -20,21 +24,5 @@ public class BusinessException extends RuntimeException {
     public BusinessException(String message, ReturnCodeEnum returnCodeEnum) {
         super(message);
         this.returnCodeEnum = returnCodeEnum;
-    }
-
-    public BusinessException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public BusinessException(Throwable cause) {
-        super(cause);
-    }
-
-    public BusinessException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public ReturnCodeEnum getReturnCodeEnum() {
-        return returnCodeEnum;
     }
 }

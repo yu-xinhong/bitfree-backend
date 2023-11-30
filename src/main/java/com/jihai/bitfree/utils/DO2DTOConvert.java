@@ -1,5 +1,6 @@
 package com.jihai.bitfree.utils;
 
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class DO2DTOConvert {
     public static UserResp convertUser(UserDO user) {
-        if (user == null) throw new BusinessException("禁止注入扫描");
+        if (user == null) throw new BusinessException(ReturnCodeEnum.NOT_LOGIN);
         UserResp target = new UserResp();
         BeanUtils.copyProperties(user, target);
         return target;
