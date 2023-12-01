@@ -178,7 +178,10 @@ public class UserService {
             // 修改名字，不会再提示通知
             observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
         }
+        //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
+        if (userDAO.countByName(name) > 0 && !name.equals(currentName)) throw new BusinessException("该名称已被使用");
         userDAO.save(userId, avatar, name, city, position, seniority);
+
         return true;
     }
 
