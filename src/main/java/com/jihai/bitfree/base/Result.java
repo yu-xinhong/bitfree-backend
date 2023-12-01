@@ -1,5 +1,7 @@
 package com.jihai.bitfree.base;
 
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+
 import java.io.Serializable;
 
 public class Result<T> implements Serializable {
@@ -33,6 +35,20 @@ public class Result<T> implements Serializable {
     }
 
     public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Result() {
+    }
+
+    public Result(ReturnCodeEnum returnCodeEnum) {
+        this.data = null;
+        this.code = returnCodeEnum.getCode();
+        this.message = returnCodeEnum.getDesc();
+    }
+    public Result(ReturnCodeEnum returnCodeEnum, String message) {
+        this.data = null;
+        this.code = returnCodeEnum.getCode();
         this.message = message;
     }
 }

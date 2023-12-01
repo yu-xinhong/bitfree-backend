@@ -1,5 +1,6 @@
 package com.jihai.bitfree.aspect;
 
+import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -9,16 +10,13 @@ import com.jihai.bitfree.service.StatisticService;
 import com.jihai.bitfree.service.UserService;
 import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.interceptor.TransactionalProxy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +52,7 @@ public class LoggedCheckAspect {
         String ip = requestUtils.getCurrentIp();
         if (cookies == null) {
             log.error("The request {} headers not exists cookies", ip);
-            throw new BusinessException(Constants.NOT_LOGIN);
+            throw new BusinessException(ReturnCodeEnum.DO_NOT_INJECT);
         }
         String token = null;
         for (Cookie cookie : cookies) {
@@ -65,12 +63,12 @@ public class LoggedCheckAspect {
         }
         if (token == null) {
             log.error("The request {} try to access protected resources", ip);
-            throw new BusinessException(Constants.NOT_LOGIN);
+            throw new BusinessException(ReturnCodeEnum.NOT_LOGIN);
         }
         UserDO userDO = userDAO.getByToken(token);
         if (userDO == null) {
             log.error("The request {} try fake token", ip);
-            throw new BusinessException(Constants.NOT_LOGIN);
+            throw new BusinessException(ReturnCodeEnum.NOT_LOGIN);
         }
 
         // 最新的请求ip更新

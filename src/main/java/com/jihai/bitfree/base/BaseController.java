@@ -1,10 +1,12 @@
 package com.jihai.bitfree.base;
 
+import cn.hutool.core.util.ObjUtil;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.ConfigDO;
+import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class BaseController {
 
     protected UserResp getCurrentUser() {
         Cookie[] cookies = httpServletRequest.getCookies();
+        if (ObjUtil.isNull(cookies)){
+            throw new BusinessException(ReturnCodeEnum.DO_NOT_INJECT);
+        }
         String token = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
@@ -33,7 +38,7 @@ public class BaseController {
             }
         }
         if (! StringUtils.hasText(token)) {
-            throw new RuntimeException("token is empty");
+            throw new BusinessException("token is empty");
         }
         return userService.getByToken(token);
 
