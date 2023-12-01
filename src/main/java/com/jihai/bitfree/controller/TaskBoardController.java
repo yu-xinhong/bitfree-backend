@@ -12,8 +12,6 @@ import com.jihai.bitfree.service.TaskBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/taskBoard")
 public class TaskBoardController extends BaseController {
@@ -29,14 +27,16 @@ public class TaskBoardController extends BaseController {
     }
     
     @PostMapping("/applyForTask")
+    @ParameterCheck
     @LoggedCheck
-    public Result<Boolean> applyForTask(@RequestBody @Valid CommTaskReq commTaskReq){
+    public Result<Boolean> applyForTask(@RequestBody CommTaskReq commTaskReq){
         return convertSuccessResult(taskBoardService.applyForTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
     }
 
     @PostMapping("/completeTask")
+    @ParameterCheck
     @LoggedCheck
-    public Result<Boolean> completeTask(@RequestBody @Valid CommTaskReq commTaskReq){
+    public Result<Boolean> completeTask(@RequestBody CommTaskReq commTaskReq){
         return convertSuccessResult(taskBoardService.completeTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
     }
 
