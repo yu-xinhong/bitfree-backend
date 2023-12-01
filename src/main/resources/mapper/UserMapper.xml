@@ -130,4 +130,10 @@
 
     </select>
 
+    <select id="countByName" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user
+        WHERE name = #{name}
+    </select>
+
 </mapper>
