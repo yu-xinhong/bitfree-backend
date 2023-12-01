@@ -1,7 +1,6 @@
 package com.jihai.bitfree.dao;
 
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
-import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,6 +15,8 @@ public interface UserDAO {
     void clearToken(@Param("id") Long id);
 
     UserDO getById(@Param("id") Long id);
+
+    Integer countByName( @Param("name") String name);
 
     List<UserDO> batchQueryByIdList(@Param("idList") List<Long> idList);
 
@@ -44,4 +45,6 @@ public interface UserDAO {
     List<UserDO> getRanksByCoins();
 
     int getUserRank(@Param("userId") Long userId);
+
+    List<UserDO> searchUser(@Param("name") String name);
 }

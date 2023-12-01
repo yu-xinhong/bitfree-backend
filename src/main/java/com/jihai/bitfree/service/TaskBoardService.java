@@ -69,6 +69,7 @@ public class TaskBoardService {
             taskBoardResp.setCoins(taskBoardDO.getCoins());
             taskBoardResp.setTaskLevel(taskBoardDO.getLevel());
             taskBoardResp.setStatus(taskBoardDO.getStatus());
+            taskBoardResp.setRemark(taskBoardDO.getRemark());
             taskBoardResp.setCreateTime(taskBoardDO.getCreateTime());
             taskBoardResp.setCompleteFlag(completeUserList.contains(userIdStr));
             if(taskBoardDO.getUserId() != null){

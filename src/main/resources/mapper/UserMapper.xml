@@ -130,4 +130,16 @@
 
     </select>
 
+    <select id="countByName" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user
+        WHERE name = #{name}
+    </select>
+    <select id="searchUser" resultType="com.jihai.bitfree.entity.UserDO">
+        SELECT <include refid="BASE_COLUMN" />
+        FROM user
+        WHERE name LIKE #{name}
+        AND deleted = 0
+    </select>
+
 </mapper>

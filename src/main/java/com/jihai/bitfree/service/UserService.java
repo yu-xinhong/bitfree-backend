@@ -13,7 +13,6 @@ import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
-import com.jihai.bitfree.dto.resp.UserRankResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
@@ -117,7 +116,10 @@ public class UserService {
         }
 
         UserDO userDO = new UserDO();
-        userDO.setAvatar(configDAO.getByKey(DEFAULT_AVATAR).getValue());
+        // 随机设置新用户头像
+        String[] avatarList = configDAO.getByKey(DEFAULT_AVATAR).getValue().split(",");
+        Random random = new Random();
+        userDO.setAvatar(avatarList[random.nextInt(avatarList.length)]);
         userDO.setEmail(email);
 
         String password = PasswordUtils.generatePwd();
@@ -176,7 +178,10 @@ public class UserService {
             // 修改名字，不会再提示通知
             observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
         }
+        //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
+        if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
         userDAO.save(userId, avatar, name, city, position, seniority);
+
         return true;
     }
 
@@ -391,5 +396,10 @@ public class UserService {
 
     public int getUserRank(Long userId) {
         return userDAO.getUserRank(userId);
+    }
+
+    public List<UserResp> searchUser(String name) {
+        List<UserDO> userDOList = userDAO.searchUser("%" + name + "%");
+        return DO2DTOConvert.convertUsers(userDOList);
     }
 }

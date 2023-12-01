@@ -74,8 +74,9 @@ public class ReplyService {
         });
 
 
-        List<Long> sendUserIdList = allReplyDOList.stream().map(ReplyDO::getSendUserId).distinct().collect(Collectors.toList());
-        List<UserDO> userDOS = userDAO.batchQueryByIdList(sendUserIdList);
+        List<Long> userIdList = allReplyDOList.stream().map(ReplyDO::getSendUserId).distinct().collect(Collectors.toList());
+        userIdList.addAll(allReplyDOList.stream().map(ReplyDO::getReceiverId).distinct().collect(Collectors.toList()));
+        List<UserDO> userDOS = userDAO.batchQueryByIdList(userIdList);
 
         ImmutableMap<Long, UserDO> idUserMap = Maps.uniqueIndex(userDOS, UserDO::getId);
 
