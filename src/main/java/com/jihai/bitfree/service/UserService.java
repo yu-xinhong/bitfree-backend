@@ -397,4 +397,9 @@ public class UserService {
     public int getUserRank(Long userId) {
         return userDAO.getUserRank(userId);
     }
+
+    public List<UserResp> searchUser(String name) {
+        List<UserDO> userDOList = userDAO.searchUser("%" + name + "%");
+        return DO2DTOConvert.convertUsers(userDOList);
+    }
 }

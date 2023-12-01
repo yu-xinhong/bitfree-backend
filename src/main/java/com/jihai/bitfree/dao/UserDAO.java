@@ -45,4 +45,6 @@ public interface UserDAO {
     List<UserDO> getRanksByCoins();
 
     int getUserRank(@Param("userId") Long userId);
+
+    List<UserDO> searchUser(@Param("name") String name);
 }

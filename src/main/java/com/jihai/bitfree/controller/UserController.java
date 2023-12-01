@@ -14,7 +14,6 @@ import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dto.req.*;
 import com.jihai.bitfree.dto.resp.ActivityUserResp;
-import com.jihai.bitfree.dto.resp.UserRankResp;
 import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
@@ -245,5 +244,11 @@ public class UserController extends BaseController {
     @LoggedCheck
     public Result<Integer> getRank() {
         return convertSuccessResult(userService.getUserRank(getCurrentUser().getId()));
+    }
+
+    @GetMapping("/searchUser")
+    @LoggedCheck
+    public Result<List<UserResp>> searchUser(SearchUserReq searchUserReq) {
+        return convertSuccessResult(userService.searchUser(searchUserReq.getName()));
     }
 }

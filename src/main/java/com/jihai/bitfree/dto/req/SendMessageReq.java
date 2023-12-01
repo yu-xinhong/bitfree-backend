@@ -12,6 +12,8 @@ public class SendMessageReq extends BaseReq {
 
     private Long replyMessageId;
 
+    private Long atUser;
+
     public String getContent() {
         return content;
     }
@@ -26,5 +28,13 @@ public class SendMessageReq extends BaseReq {
 
     public void setReplyMessageId(Long replyMessageId) {
         this.replyMessageId = replyMessageId;
+    }
+
+    public Long getAtUser() {
+        return atUser;
+    }
+
+    public void setAtUser(Long atUser) {
+        this.atUser = atUser;
     }
 }

@@ -183,13 +183,22 @@ public class MessageService {
     }
 
     @Transactional
-    public Boolean sendMessage(String content, Long replyMessageId, Long userId) {
+    public Boolean sendMessage(String content, Long replyMessageId, Long userId, Long atUser) {
         MessageDO messageDO = new MessageDO();
         messageDO.setContent(content);
         messageDO.setSendUserId(userId);
         messageDO.setTargetMessageId(replyMessageId);
 
         messageDAO.insert(messageDO);
+
+        if (atUser != null) {
+            MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
+            messageNoticeDO.setType(MessageTypeEnum.MESSAGE_MENTION.getType());
+            messageNoticeDO.setUserId(atUser);
+            messageNoticeDO.setMessageId(messageDO.getId());
+            messageNoticeDAO.insert(messageNoticeDO);
+            return true;
+        }
 
         // 通知所有用户，类似写扩散，这里可能存在性能瓶颈，现在用户量不大，暂时这样处理
 //        notifyAllUser(messageDO.getId());
@@ -210,8 +219,9 @@ public class MessageService {
          *
          * @note: 成功获取relayUserId后删除消息不用做处理, 在查消息时查不到对应的message时不会显示被回复消息
          */
+        if (replyMessageId == null) return true;
         Long relayUserId = messageDAO.getSendUserIdByMessageId(replyMessageId);
-        if (Objects.isNull(replyMessageId) || relayUserId == null) return true;
+        if (relayUserId == null) return true;
         MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
 
         //messageDO.getId()获取刚插入的id
