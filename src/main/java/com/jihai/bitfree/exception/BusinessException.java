@@ -13,8 +13,6 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String message){
         super(message);
-        this.returnCodeEnum = ReturnCodeEnum.SYSTEM_ERROR;
-        this.returnCodeEnum.setDesc(message);
     }
 
     public BusinessException(ReturnCodeEnum returnCodeEnum) {

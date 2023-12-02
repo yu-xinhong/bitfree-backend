@@ -47,7 +47,7 @@ public class ExceptionHandlerAspect {
     private Object errorResult(ReturnCodeEnum returnCodeEnum, String desc) {
         Result<Boolean> result = new Result<>();
         result.setCode(returnCodeEnum.getCode());
-        result.setMessage(desc);
+        result.setMessage(returnCodeEnum.getDesc());
         return result;
     }
 
