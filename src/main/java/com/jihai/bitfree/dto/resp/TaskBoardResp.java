@@ -26,6 +26,8 @@ public class TaskBoardResp extends BaseResp {
 
     private Date createTime;
 
+    private Boolean completeFlag;
+
     public Long getId() {
         return id;
     }
@@ -104,5 +106,13 @@ public class TaskBoardResp extends BaseResp {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Boolean getCompleteFlag() {
+        return completeFlag;
+    }
+
+    public void setCompleteFlag(Boolean completeFlag) {
+        this.completeFlag = completeFlag;
     }
 }

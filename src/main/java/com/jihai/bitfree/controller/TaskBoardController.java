@@ -23,7 +23,7 @@ public class TaskBoardController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<PageResult<TaskBoardResp>> getTaskBoardList(TaskBoardReq taskBoardReq) {
-        return convertSuccessResult(taskBoardService.pageQueryTaskBoardList(taskBoardReq.getStatus(), taskBoardReq.getPage(), taskBoardReq.getSize()));
+        return convertSuccessResult(taskBoardService.pageQueryTaskBoardList(getCurrentUser().getId(),taskBoardReq));
     }
     
     @PostMapping("/applyForTask")
