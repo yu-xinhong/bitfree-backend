@@ -32,6 +32,8 @@ public class SensitiveCheckAspect {
     @Autowired
     private ConfigService configService;
 
+    Pattern pattern = Pattern.compile("(<[a-z]*\\s*/>)|(\\s*<br */?>\\s*)");
+
     @PostConstruct
     public void initLoadSensitiveWords() {
         String value = configService.getByKey(Constants.SENSITIVE_WORDS);
@@ -65,7 +67,6 @@ public class SensitiveCheckAspect {
                                     throw new BusinessException("请检查敏感词");
                                 }
                             }
-                            Pattern pattern = Pattern.compile("(<[a-z]*\\s*/>)|(\\s*<br */?>\\s*)");
                             if (org.apache.commons.lang3.StringUtils.isBlank(pattern.matcher(checkContent.toString())
                                     .replaceAll(""))) {
                                 throw new BusinessException("消息为空标签");
