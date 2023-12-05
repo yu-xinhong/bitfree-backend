@@ -49,14 +49,14 @@ public class TaskBoardService {
     @Autowired
     private ConfigService configService;
 
-    private List<Long> completeUserList = Lists.newArrayList();
+    private List<Long> taskBoardAdminUserIdList = Lists.newArrayList();
 
     @PostConstruct
     public void initCompleteUserList() {
         String userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
         if (StringUtils.isEmpty(userIdConfigVal)) return ;
         List<String> userIdStrList = Arrays.asList((userIdConfigVal.split(",")));
-        completeUserList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
+        taskBoardAdminUserIdList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
     }
 
     public PageResult<TaskBoardResp> pageQueryTaskBoardList(Long userId, TaskBoardReq taskBoardReq){
@@ -76,7 +76,7 @@ public class TaskBoardService {
             taskBoardResp.setStatus(taskBoardDO.getStatus());
             taskBoardResp.setRemark(taskBoardDO.getRemark());
             taskBoardResp.setCreateTime(taskBoardDO.getCreateTime());
-            taskBoardResp.setCompleteFlag(completeUserList.contains(userId));
+            taskBoardResp.setCompleteFlag(taskBoardAdminUserIdList.contains(userId));
             if(taskBoardDO.getUserId() != null){
                 taskBoardResp.setUserName(userIdMap.get(taskBoardDO.getUserId()).getName());
                 taskBoardResp.setAvatar(userIdMap.get(taskBoardDO.getUserId()).getAvatar());
@@ -101,8 +101,8 @@ public class TaskBoardService {
 
     @Transactional(rollbackFor = Exception.class)
     public Boolean completeTask(Long userId, Integer taskId) {
-        if (!completeUserList.contains(String.valueOf(userId))) {
-            throw new BusinessException("非法完成任务,请通过指定用户完成");
+        if (! taskBoardAdminUserIdList.contains(userId)) {
+            throw new BusinessException("指定用户才可操作完成");
         }
         TaskBoardDO taskBoardDO = this.updateTask(userId, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.DONE.getStatus());
         userDAO.incrementCoins(userId, taskBoardDO.getCoins());
@@ -134,12 +134,6 @@ public class TaskBoardService {
             taskBoardDO = taskBoardDAO.getTaskByTaskId(taskId, beforeTaskStatus);
             if (ObjUtil.isNull(taskBoardDO)) {
                 throw new BusinessException("任务不存在");
-            }
-
-            if (TaskStatusEnum.DOING.getStatus().equals(beforeTaskStatus) && TaskStatusEnum.DONE.getStatus().equals(afterTaskStatus)) {
-                if (! this.completeUserList.contains(userId)) {
-                    throw new BusinessException("请申请看板管理员权限");
-                }
             }
             // 如果是修改为待办,需要把用户重置为null
             taskBoardDO.setUserId(TaskStatusEnum.TODO.getStatus().equals(afterTaskStatus) ? null : userId);
