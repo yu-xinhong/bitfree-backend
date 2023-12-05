@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Aspect
 @Component
@@ -63,6 +64,11 @@ public class SensitiveCheckAspect {
                                     log.warn("someone input sensitive {} word {} ", checkContent, word);
                                     throw new BusinessException("请检查敏感词");
                                 }
+                            }
+                            Pattern pattern = Pattern.compile("(<[a-z]*\\s*/>)|(\\s*<br */?>\\s*)");
+                            if (org.apache.commons.lang3.StringUtils.isBlank(pattern.matcher(checkContent.toString())
+                                    .replaceAll(""))) {
+                                throw new BusinessException("消息为空标签");
                             }
                         }
                     }
