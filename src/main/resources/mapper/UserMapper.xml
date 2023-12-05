@@ -16,6 +16,7 @@
         <result column="token" property="token" />
         <result column="status" property="status" />
         <result column="email" property="email" />
+        <result column="github" property="github" />
         <result column="password" property="password" />
         <result column="contact" property="contact" />
         <result column="ip" property="ip" />
@@ -25,7 +26,7 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, ip, password, contact, remark, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip, password, contact, remark, deleted, create_time, update_time</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`avatar`,`name`, `email`, `password`, `level`)
         VALUE(#{avatar},#{name}, #{email}, #{password}, #{level})
@@ -52,7 +53,8 @@
         avatar = #{avatar},
         position = #{position},
         seniority = #{seniority},
-        city = #{city}
+        city = #{city},
+        github = #{github}
         WHERE id = #{userId}
         AND deleted = 0
     </update>
@@ -127,7 +129,6 @@
         SELECT COUNT(*) + 1
         FROM user a
         WHERE a.coins > (SELECT coins FROM user WHERE id = #{userId} AND deleted = 0) AND a.deleted = 0
-
     </select>
 
     <select id="countByName" resultType="java.lang.Integer">

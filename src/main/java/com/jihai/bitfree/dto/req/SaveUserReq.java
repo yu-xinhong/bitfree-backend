@@ -31,6 +31,8 @@ public class SaveUserReq extends BaseReq {
     @NotNull(message = "工龄不能为空")
     private Integer seniority;
 
+    private String github;
+
     public String getAvatar() {
         return avatar;
     }
@@ -69,5 +71,13 @@ public class SaveUserReq extends BaseReq {
 
     public void setSeniority(Integer seniority) {
         this.seniority = seniority;
+    }
+
+    public String getGithub() {
+        return github;
+    }
+
+    public void setGithub(String github) {
+        this.github = github;
     }
 }

@@ -26,6 +26,8 @@ public class UserDO extends BaseDO {
 
     private String email;
 
+    private String github;
+
     private String ip;
 
     private String password;
@@ -112,6 +114,14 @@ public class UserDO extends BaseDO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getGithub() {
+        return github;
+    }
+
+    public void setGithub(String github) {
+        this.github = github;
     }
 
     public String getIp() {

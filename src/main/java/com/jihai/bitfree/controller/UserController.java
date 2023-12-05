@@ -162,8 +162,8 @@ public class UserController extends BaseController {
     @LoggedCheck
     public Result<Boolean> save(@RequestBody SaveUserReq saveUserReq) {
         return convertSuccessResult(userService.save(saveUserReq.getAvatar(), saveUserReq.getName(), saveUserReq.getCity(),
-                saveUserReq.getPosition(), saveUserReq.getSeniority(),
-                getCurrentUser().getId(), getCurrentUser().getName()));
+                saveUserReq.getPosition(), saveUserReq.getSeniority(), saveUserReq.getGithub(),
+                getCurrentUser().getId(), getCurrentUser().getName(), getCurrentUser().getLevel()));
     }
 
 
