@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -47,10 +48,15 @@ public class TaskBoardService {
     private DistributedLock distributedLock;
     @Autowired
     private ConfigService configService;
-    private List<String> completeUserList;
+
+    private List<Long> completeUserList = Lists.newArrayList();
+
     @PostConstruct
     public void initCompleteUserList() {
-        completeUserList = Arrays.asList((configService.getByKey(Constants.TASK_COMPLETE_USER_LIST).split(",")));
+        String userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
+        if (StringUtils.isEmpty(userIdConfigVal)) return ;
+        List<String> userIdStrList = Arrays.asList((userIdConfigVal.split(",")));
+        completeUserList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
     }
 
     public PageResult<TaskBoardResp> pageQueryTaskBoardList(Long userId, TaskBoardReq taskBoardReq){
@@ -61,7 +67,6 @@ public class TaskBoardService {
         Set<Long> taskBoardUserIdSet = taskBoardDOList.stream().filter(taskBoardDO -> taskBoardDO.getUserId() != null).map(TaskBoardDO::getUserId).collect(Collectors.toSet());
         List<UserDO> userDOList = CollectionUtils.isEmpty(taskBoardUserIdSet) ? Lists.newArrayList() : userDAO.batchQueryByIdList(Lists.newArrayList(taskBoardUserIdSet));
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
-        String userIdStr = String.valueOf(userId);
         List<TaskBoardResp> taskBoardRespList = taskBoardDOList.stream().map(taskBoardDO -> {
             TaskBoardResp taskBoardResp = new TaskBoardResp();
             taskBoardResp.setId(taskBoardDO.getId());
@@ -71,7 +76,7 @@ public class TaskBoardService {
             taskBoardResp.setStatus(taskBoardDO.getStatus());
             taskBoardResp.setRemark(taskBoardDO.getRemark());
             taskBoardResp.setCreateTime(taskBoardDO.getCreateTime());
-            taskBoardResp.setCompleteFlag(completeUserList.contains(userIdStr));
+            taskBoardResp.setCompleteFlag(completeUserList.contains(userId));
             if(taskBoardDO.getUserId() != null){
                 taskBoardResp.setUserName(userIdMap.get(taskBoardDO.getUserId()).getName());
                 taskBoardResp.setAvatar(userIdMap.get(taskBoardDO.getUserId()).getAvatar());
@@ -121,7 +126,7 @@ public class TaskBoardService {
     private TaskBoardDO updateTask(Long userId, Integer taskId, Integer beforeTaskStatus, Integer afterTaskStatus) {
         String lockKey = LockKeyConstants.UPDATE_TASK + taskId;
         Boolean locked = distributedLock.lock(lockKey, 1, TimeUnit.MINUTES);
-        if (!locked) {
+        if (! locked) {
             throw new BusinessException("系统繁忙,请稍后再试");
         }
         TaskBoardDO taskBoardDO;
@@ -130,9 +135,11 @@ public class TaskBoardService {
             if (ObjUtil.isNull(taskBoardDO)) {
                 throw new BusinessException("任务不存在");
             }
-            // 当前不是查看待办的话，需要校验修改人和记录人是否一致
-            if (!TaskStatusEnum.TODO.getStatus().equals(beforeTaskStatus) && !userId.equals(taskBoardDO.getUserId())) {
-                throw new BusinessException("不是您的任务，非法操作将被封禁");
+
+            if (TaskStatusEnum.DOING.getStatus().equals(beforeTaskStatus) && TaskStatusEnum.DONE.getStatus().equals(afterTaskStatus)) {
+                if (! this.completeUserList.contains(userId)) {
+                    throw new BusinessException("请申请看板管理员权限");
+                }
             }
             // 如果是修改为待办,需要把用户重置为null
             taskBoardDO.setUserId(TaskStatusEnum.TODO.getStatus().equals(afterTaskStatus) ? null : userId);
