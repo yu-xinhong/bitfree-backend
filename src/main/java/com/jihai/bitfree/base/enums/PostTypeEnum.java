@@ -5,9 +5,9 @@ public enum PostTypeEnum {
     POST(0, "post"),
     VIDEO(1, "video");
 
-    private Integer type;
+    private final Integer type;
 
-    private String desc;
+    private final String desc;
 
 
     PostTypeEnum(Integer type, String desc) {
@@ -17,10 +17,6 @@ public enum PostTypeEnum {
 
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public Integer getType() {

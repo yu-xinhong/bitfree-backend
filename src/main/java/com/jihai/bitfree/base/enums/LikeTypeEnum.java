@@ -4,9 +4,9 @@ public enum LikeTypeEnum {
     POST(1, "帖子"),
     REPLY(2, "回复");
 
-    private Integer type;
+    private final Integer type;
 
-    private String desc;
+    private final String desc;
 
     LikeTypeEnum(Integer type, String desc) {
         this.type = type;
@@ -17,16 +17,8 @@ public enum LikeTypeEnum {
         return type;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
 }

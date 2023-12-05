@@ -3,9 +3,9 @@ package com.jihai.bitfree.base.enums;
 public enum MessageStatusEnum {
     NOT_READ(0, "notRead"), READ(1, "read");
 
-    private Integer status;
+    private final Integer status;
 
-    private String desc;
+    private final String desc;
 
     MessageStatusEnum(Integer status, String desc) {
         this.status = status;

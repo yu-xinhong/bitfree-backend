@@ -8,9 +8,9 @@ public enum TaskBoardStatusEnum {
 
     DONE(2, "已办事项");
 
-    private Integer status;
+    private final Integer status;
 
-    private String desc;
+    private final String desc;
 
     TaskBoardStatusEnum(Integer status, String desc) {
         this.status = status;
@@ -21,15 +21,7 @@ public enum TaskBoardStatusEnum {
         return status;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 }

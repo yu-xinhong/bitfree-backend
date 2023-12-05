@@ -6,9 +6,9 @@ public enum MessageTypeEnum {
     NOTIFICATION(1, "站内通知"),
     MESSAGE_MENTION(2, "聊天消息被@");
 
-    private Integer type;
+    private final Integer type;
 
-    private String desc;
+    private final String desc;
 
     MessageTypeEnum(Integer type, String desc) {
         this.type = type;

@@ -6,9 +6,9 @@ public enum UserLevelEnum {
 
     ULTIMATE(2, "旗舰版");
 
-    private Integer level;
+    private final Integer level;
 
-    private String desc;
+    private final String desc;
 
     UserLevelEnum(Integer level, String desc) {
         this.level = level;
@@ -19,15 +19,8 @@ public enum UserLevelEnum {
         return level;
     }
 
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
     public String getDesc() {
         return desc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
 }
