@@ -53,7 +53,11 @@ public class TaskBoardService {
 
     @PostConstruct
     public void initCompleteUserList() {
-        String userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
+        String userIdConfigVal = null;
+        try {
+            userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
+        } catch (BusinessException e) {
+        }
         if (StringUtils.isEmpty(userIdConfigVal)) return ;
         List<String> userIdStrList = Arrays.asList((userIdConfigVal.split(",")));
         taskBoardAdminUserIdList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
@@ -110,8 +114,9 @@ public class TaskBoardService {
         return true;
     }
 
-    public Boolean cancelTask(Long userId, Integer taskId) {
-        this.updateTask(userId, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.TODO.getStatus());
+    public Boolean cancelTask(Integer taskId) {
+        // 如果是取消任务,需要把申领用户重置为null
+        this.updateTask(null, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.TODO.getStatus());
         return true;
     }
 
@@ -135,8 +140,8 @@ public class TaskBoardService {
             if (ObjUtil.isNull(taskBoardDO)) {
                 throw new BusinessException("任务不存在");
             }
-            // 如果是修改为待办,需要把用户重置为null
-            taskBoardDO.setUserId(TaskStatusEnum.TODO.getStatus().equals(afterTaskStatus) ? null : userId);
+            // 如果是完成任务,则取申领人的id
+            taskBoardDO.setUserId(TaskStatusEnum.DONE.getStatus().equals(afterTaskStatus) ? taskBoardDO.getUserId() : userId);
             taskBoardDO.setStatus(afterTaskStatus);
             taskBoardDAO.updateTaskBoard(taskBoardDO);
         } finally {
