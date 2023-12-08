@@ -403,6 +403,7 @@ public class UserService {
     }
 
     public List<UserResp> searchUser(String name) {
+        name = name.replace("@", "");
         List<UserDO> userDOList = userDAO.searchUser("%" + name + "%");
         return DO2DTOConvert.convertUsers(userDOList);
     }

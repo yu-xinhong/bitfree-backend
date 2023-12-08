@@ -22,6 +22,8 @@ public class UserResp extends BaseResp {
 
 //    private String token;
 
+    private String github;
+
     private Integer status;
 
     private String contact;
@@ -112,5 +114,13 @@ public class UserResp extends BaseResp {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getGithub() {
+        return github;
+    }
+
+    public void setGithub(String github) {
+        this.github = github;
     }
 }
