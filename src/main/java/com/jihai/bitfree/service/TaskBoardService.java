@@ -53,7 +53,11 @@ public class TaskBoardService {
 
     @PostConstruct
     public void initCompleteUserList() {
-        String userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
+        String userIdConfigVal = null;
+        try {
+            userIdConfigVal = configService.getByKey(Constants.TASK_COMPLETE_USER_LIST);
+        } catch (BusinessException e) {
+        }
         if (StringUtils.isEmpty(userIdConfigVal)) return ;
         List<String> userIdStrList = Arrays.asList((userIdConfigVal.split(",")));
         taskBoardAdminUserIdList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
