@@ -44,7 +44,7 @@ public class TaskBoardController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> cancelTask(@RequestBody CommTaskReq commTaskReq){
-        return convertSuccessResult(taskBoardService.cancelTask(getCurrentUser().getId(), commTaskReq.getTaskId()));
+        return convertSuccessResult(taskBoardService.cancelTask(commTaskReq.getTaskId()));
     }
 
 }
