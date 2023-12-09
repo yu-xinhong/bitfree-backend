@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.ability.MonitorAbility;
@@ -8,6 +9,7 @@ import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.base.enums.UserLevelEnum;
+import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
@@ -409,7 +411,16 @@ public class UserService {
     }
 
     public Boolean updateVoiceState(Long userId, Integer voiceState) {
-        userDAO.updateVoiceState(userId,voiceState);
+        UserDO userDO = userDAO.getById(userId);
+        UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
+        userRemarkBO.setVoiceState(voiceState);
+        userDAO.updateRemark(userId, JSON.toJSONString(userRemarkBO));
         return true;
+    }
+
+    public Integer getVoiceState(Long userId) {
+        UserDO userDO = userDAO.getById(userId);
+        UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
+        return userRemarkBO.getVoiceState() == null ? 1 : userRemarkBO.getVoiceState();
     }
 }

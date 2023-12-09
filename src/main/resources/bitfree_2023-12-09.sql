@@ -343,7 +343,6 @@ CREATE TABLE `user` (
   `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `contact` varchar(128) DEFAULT NULL,
   `ip` varchar(64) DEFAULT NULL,
-  `voice_state` tinyint DEFAULT '1' COMMENT '通知音开关状态 1:开启 0:关闭',
   `remark` text,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

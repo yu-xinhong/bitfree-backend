@@ -27,7 +27,7 @@
     </resultMap>
 
     <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip,
-                          password, contact, remark, deleted, create_time, update_time, voice_state</sql>
+                          password, contact, remark, deleted, create_time, update_time</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`avatar`,`name`, `email`, `password`, `level`)
         VALUE(#{avatar},#{name}, #{email}, #{password}, #{level})
@@ -143,10 +143,4 @@
         WHERE name LIKE #{name}
         AND deleted = 0
     </select>
-
-    <update id="updateVoiceState">
-        UPDATE user
-        SET voice_state = #{voiceState}
-        WHERE id = #{userId} AND deleted = 0
-    </update>
 </mapper>

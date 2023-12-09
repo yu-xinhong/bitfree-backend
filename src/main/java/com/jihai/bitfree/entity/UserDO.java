@@ -36,8 +36,6 @@ public class UserDO extends BaseDO {
 
     private String remark;
 
-    private Integer voiceState;
-
     public String getName() {
         return name;
     }
@@ -156,13 +154,5 @@ public class UserDO extends BaseDO {
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public Integer getVoiceState() {
-        return voiceState;
-    }
-
-    public void setVoiceState(Integer voiceState) {
-        this.voiceState = voiceState;
     }
 }
