@@ -28,6 +28,8 @@ public class UserResp extends BaseResp {
 
     private String contact;
 
+    private Integer voiceState;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +124,13 @@ public class UserResp extends BaseResp {
 
     public void setGithub(String github) {
         this.github = github;
+    }
+
+    public Integer getVoiceState() {
+        return voiceState;
+    }
+
+    public void setVoiceState(Integer voiceState) {
+        this.voiceState = voiceState;
     }
 }

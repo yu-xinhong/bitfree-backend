@@ -26,7 +26,8 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip, password, contact, remark, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip,
+                          password, contact, remark, deleted, create_time, update_time, voice_state</sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`avatar`,`name`, `email`, `password`, `level`)
         VALUE(#{avatar},#{name}, #{email}, #{password}, #{level})
@@ -143,4 +144,9 @@
         AND deleted = 0
     </select>
 
+    <update id="updateVoiceState">
+        UPDATE user
+        SET voice_state = #{voiceState}
+        WHERE id = #{userId} AND deleted = 0
+    </update>
 </mapper>

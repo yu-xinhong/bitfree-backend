@@ -407,4 +407,9 @@ public class UserService {
         List<UserDO> userDOList = userDAO.searchUser("%" + name + "%");
         return DO2DTOConvert.convertUsers(userDOList);
     }
+
+    public Boolean updateVoiceState(Long userId, Integer voiceState) {
+        userDAO.updateVoiceState(userId,voiceState);
+        return true;
+    }
 }
