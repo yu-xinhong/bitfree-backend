@@ -34,6 +34,8 @@ public class UserDO extends BaseDO {
 
     private String contact;
 
+    private Long inviteUserId;
+
     private String remark;
 
     public String getName() {
@@ -146,6 +148,14 @@ public class UserDO extends BaseDO {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public Long getInviteUserId() {
+        return inviteUserId;
+    }
+
+    public void setInviteUserId(Long inviteUserId) {
+        this.inviteUserId = inviteUserId;
     }
 
     public String getRemark() {

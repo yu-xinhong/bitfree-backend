@@ -33,6 +33,8 @@ public class SaveUserReq extends BaseReq {
 
     private String github;
 
+    private Long inviteUserId;
+
     public String getAvatar() {
         return avatar;
     }
@@ -79,5 +81,13 @@ public class SaveUserReq extends BaseReq {
 
     public void setGithub(String github) {
         this.github = github;
+    }
+
+    public Long getInviteUserId() {
+        return inviteUserId;
+    }
+
+    public void setInviteUserId(Long inviteUserId) {
+        this.inviteUserId = inviteUserId;
     }
 }
