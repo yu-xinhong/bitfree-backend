@@ -251,4 +251,17 @@ public class UserController extends BaseController {
     public Result<List<UserResp>> searchUser(SearchUserReq searchUserReq) {
         return convertSuccessResult(userService.searchUser(searchUserReq.getName()));
     }
+
+    @GetMapping("/getVoiceState")
+    @LoggedCheck
+    public Result<Integer> getVoiceState() {
+        return convertSuccessResult(userService.getVoiceState(getCurrentUser().getId()));
+    }
+
+    @PostMapping("/updateVoiceState")
+    @LoggedCheck
+    @ParameterCheck
+    public Result<Boolean> updateVoiceState(@RequestBody UpdateVoiceReq updateVoiceReq){
+        return convertSuccessResult(userService.updateVoiceState(getCurrentUser().getId(),updateVoiceReq.getVoiceState()));
+    }
 }
