@@ -5,8 +5,10 @@ import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.ActivityKillReq;
 import com.jihai.bitfree.dto.req.ActivityRightReq;
+import com.jihai.bitfree.dto.req.GetOrderReq;
 import com.jihai.bitfree.dto.req.OrderDetailReq;
 import com.jihai.bitfree.dto.resp.ActivityResp;
+import com.jihai.bitfree.dto.resp.OrderResp;
 import com.jihai.bitfree.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +44,12 @@ public class ActivityController extends BaseController {
     @LoggedCheck
     public Result<Boolean> getRight(ActivityRightReq activityRightReq) {
         return convertSuccessResult(activityService.getRight(getCurrentUser().getId(), activityRightReq.getActivityId()));
+    }
+
+
+    @GetMapping("getOrder")
+    @LoggedCheck
+    public Result<OrderResp> getOrder(GetOrderReq getOrderReq) {
+        return convertSuccessResult(activityService.getOrder(getOrderReq.getActivityId(), getCurrentUser().getId()));
     }
 }

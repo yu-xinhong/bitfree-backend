@@ -9,4 +9,5 @@ public interface LockKeyConstants {
     String UPDATE_TASK = "UPDATE_TASK_";
     String IP_REQUEST = "IP_REQUEST_";
     String RESET_PASSWORD = "IP_RESET_";
+    String UPDATE_USER = "UPDATE_USER_";
 }

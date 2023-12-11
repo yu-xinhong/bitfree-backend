@@ -42,6 +42,10 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.jihai.bitfree.constants.CoinsDefinitions.INVITED_USER_COINS;
+import static com.jihai.bitfree.constants.CoinsDefinitions.INVITE_USER_COINS;
+import static com.jihai.bitfree.constants.LockKeyConstants.UPDATE_USER;
+
 @Service
 @Slf4j
 public class UserService {
@@ -88,6 +92,8 @@ public class UserService {
 
     @Autowired
     private PasswordUtils passwordUtils;
+    @Autowired
+    private OperationLogService operationLogService;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDAO.queryByEmailAndPassword(email, password);
@@ -173,21 +179,34 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean save(String avatar, String name, String city, String position, Integer seniority, String github, Long userId, String currentName, Integer level) {
+    public Boolean save(String avatar, String name, String city, String position, Integer seniority, String github, Long inviteUserId, Long userId, String currentName, Integer level) {
         if (!StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
         if (!StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && ! UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
-
-        if (!name.equals(currentName)) {
-            // 修改名字，不会再提示通知
-            observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
+        if (distributedLock.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS)) {
+            if (!name.equals(currentName)) {
+                // 修改名字，不会再提示通知
+                observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
+            }
+            UserDO user = userDAO.getById(userId);
+            if (user != null && user.getInviteUserId() != null) {
+                inviteUserId = null;
+            }
+            if (inviteUserId != null) {
+                UserDO inviteUser = userDAO.getById(inviteUserId);
+                if (inviteUser == null) throw new BusinessException("邀请人不存在");
+            }
+            //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
+            if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
+            userDAO.save(userId, avatar, name, city, position, seniority, github, inviteUserId);
+            // 填写邀请人后，双方添加硬币
+            if (inviteUserId != null) {
+                incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
+                incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
+            }
         }
-        //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
-        if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
-        userDAO.save(userId, avatar, name, city, position, seniority, github);
-
         return true;
     }
 
@@ -410,6 +429,7 @@ public class UserService {
         return DO2DTOConvert.convertUsers(userDOList);
     }
 
+
     public Boolean updateVoiceState(Long userId, Integer voiceState) {
         UserDO userDO = userDAO.getById(userId);
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
@@ -422,5 +442,20 @@ public class UserService {
         UserDO userDO = userDAO.getById(userId);
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
         return userRemarkBO.getVoiceState() == null ? 1 : userRemarkBO.getVoiceState();
+    }
+    /**
+     * 更新硬币数量
+     *
+     * @param userId 用户id
+     * @param coins 修改的硬币数
+     * @param operateType 操作类型
+     * @return 是否更新成功
+     */
+    public boolean incrementCoins(Long userId, int coins, OperateTypeEnum operateType) {
+        int result = userDAO.incrementCoins(userId, coins);
+        if (operateType != null) {
+            operationLogService.saveOperateLog(userId, operateType);
+        }
+        return result >= 1;
     }
 }

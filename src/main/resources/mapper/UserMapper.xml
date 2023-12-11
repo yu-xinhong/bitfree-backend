@@ -26,8 +26,9 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip,
-                          password, contact, remark, deleted, create_time, update_time</sql>
+
+    <sql id="BASE_COLUMN">id, name, avatar, position, level, city, coins, seniority, token, status, email, github, ip, invite_user_id, password, contact, remark, deleted, create_time, update_time</sql>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO user(`avatar`,`name`, `email`, `password`, `level`)
         VALUE(#{avatar},#{name}, #{email}, #{password}, #{level})
@@ -56,6 +57,9 @@
         seniority = #{seniority},
         city = #{city},
         github = #{github}
+        <if test="inviteUserId != null">
+            ,invite_user_id = #{inviteUserId}
+        </if>
         WHERE id = #{userId}
         AND deleted = 0
     </update>

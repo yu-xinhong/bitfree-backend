@@ -28,6 +28,8 @@ public class UserResp extends BaseResp {
 
     private String contact;
 
+    private Long inviteUserId;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +124,13 @@ public class UserResp extends BaseResp {
 
     public void setGithub(String github) {
         this.github = github;
+    }
+
+    public Long getInviteUserId() {
+        return inviteUserId;
+    }
+
+    public void setInviteUserId(Long inviteUserId) {
+        this.inviteUserId = inviteUserId;
     }
 }
