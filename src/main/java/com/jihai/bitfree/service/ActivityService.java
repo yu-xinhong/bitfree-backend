@@ -6,9 +6,12 @@ import com.jihai.bitfree.dao.ActivityDAO;
 import com.jihai.bitfree.dao.OrderDAO;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.dto.resp.ActivityResp;
+import com.jihai.bitfree.dto.resp.OrderResp;
 import com.jihai.bitfree.entity.ActivityDO;
 import com.jihai.bitfree.entity.OrderDO;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.strategy.Activity;
+import com.jihai.bitfree.service.strategy.BaseActivityParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -31,6 +36,9 @@ public class ActivityService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private List<Activity> activityList;
 
     private ReentrantLock reentrantLock = new ReentrantLock(true);
 
@@ -76,20 +84,22 @@ public class ActivityService {
                 throw new BusinessException("重复参与活动");
             }
 
-            OrderDO orderDO = new OrderDO();
-            orderDO.setActivityId(activityId);
-            orderDO.setUserId(userId);
-            orderDO.setCount(1);
+//            OrderDO orderDO = new OrderDO();
+//            orderDO.setActivityId(activityId);
+//            orderDO.setUserId(userId);
+//            orderDO.setCount(1);
 
-            boolean success = activityDAO.updateStock(activityId, 1) == 1;
+            /*boolean success = activityDAO.updateStock(activityId, 1) == 1;
             if (! success) {
                 return false;
             }
 
             if (userDAO.incrementCoins(userId, - activityDO.getCost()) < 1) {
                 throw new BusinessException("硬币余额不足");
-            };
-            orderDAO.insert(orderDO);
+            };*/
+
+            activityList.forEach(activity -> activity.kill(new BaseActivityParam(userId, activityId)));
+//            orderDAO.insert(orderDO);
         } finally {
             reentrantLock.unlock();
         }
@@ -114,5 +124,14 @@ public class ActivityService {
         // 库存为0
         if (activityDO.getStock() <= 0) return false;
         return orderDAO.getUserActivity(userId, activityId) == null;
+    }
+
+    public OrderResp getOrder(Long activityId, Long userId) {
+        OrderDO orderDO = orderDAO.getUserActivity(userId, activityId);
+        if (Objects.isNull(orderDO)) return null;
+
+        OrderResp orderResp = new OrderResp();
+        BeanUtils.copyProperties(orderDO, orderResp);
+        return orderResp;
     }
 }

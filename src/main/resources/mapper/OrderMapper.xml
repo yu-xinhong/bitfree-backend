@@ -6,8 +6,8 @@
 
     <sql id="BASE_COLUMN">id, user_id, activity_id, count, detail, deleted, create_time, update_time</sql>
     <insert id="insert">
-        INSERT INTO `order`(`user_id`, `activity_id`, `count`)
-        VALUE(#{userId}, #{activityId}, #{count})
+        INSERT INTO `order`(`user_id`, `activity_id`, `count`, `detail`)
+        VALUE(#{userId}, #{activityId}, #{count}, #{detail})
     </insert>
 
 
