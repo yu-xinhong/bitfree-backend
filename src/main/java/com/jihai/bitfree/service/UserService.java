@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 
+import cn.hutool.core.util.ObjUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -441,7 +442,7 @@ public class UserService {
     public Integer getVoiceState(Long userId) {
         UserDO userDO = userDAO.getById(userId);
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
-        return userRemarkBO.getVoiceState() == null ? 1 : userRemarkBO.getVoiceState();
+        return ObjUtil.isNull(userRemarkBO) || ObjUtil.isNull(userRemarkBO.getVoiceState()) ? 1 : userRemarkBO.getVoiceState();
     }
     /**
      * 更新硬币数量
