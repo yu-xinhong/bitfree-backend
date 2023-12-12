@@ -10,6 +10,7 @@ import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
+import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.MessageDAO;
@@ -334,6 +335,6 @@ public class MessageService {
     }
 
     private boolean isOverUp(Long userId) {
-        return operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LIVE_COINS.getCode(), DateUtils.formatDay(new Date())) >= Constants.LIVE_DAY_OVER_COINS;
+        return operateLogDAO.countLoginRecord(userId, OperateTypeEnum.LIVE_COINS.getCode(), DateUtils.formatDay(new Date())) >= CoinsDefinitions.LIVE_DAY_OVER_COINS;
     }
 }

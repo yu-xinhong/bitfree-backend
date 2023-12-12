@@ -15,4 +15,7 @@ public interface CoinsDefinitions {
      * 被邀请人获得硬币数量
      */
     Integer INVITED_USER_COINS = 10;
+
+
+    Integer LIVE_DAY_OVER_COINS = 6;
 }
