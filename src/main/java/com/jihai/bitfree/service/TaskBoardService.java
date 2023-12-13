@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.TaskStatusEnum;
+import com.jihai.bitfree.base.enums.UserLevelEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.TaskBoardDAO;
@@ -95,6 +96,10 @@ public class TaskBoardService {
     }
 
     public Boolean applyForTask(Long userId, Integer taskId) {
+        UserDO userDO = userDAO.getById(userId);
+        if(! UserLevelEnum.ULTIMATE.getLevel().equals(userDO.getLevel())){
+            throw new BusinessException("请升级旗舰版！");
+        }
         List<TaskBoardDO> taskByTaskUserList = taskBoardDAO.getTaskByTaskUserId(userId, TaskStatusEnum.DOING.getStatus());
         if (ObjUtil.isNotEmpty(taskByTaskUserList) && taskByTaskUserList.size() >= 3) {
             throw new BusinessException("您处理中的任务大于3个,请尽快完成后再申领噢～");
