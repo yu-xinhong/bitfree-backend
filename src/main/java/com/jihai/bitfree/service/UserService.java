@@ -179,7 +179,6 @@ public class UserService {
         return DO2DTOConvert.convertUser(userDAO.getByToken(token));
     }
 
-    @Transactional
     public Boolean save(String avatar, String name, String city, String position, Integer seniority, String github, Long inviteUserId, Long userId, String currentName, Integer level) {
         if (!StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
         if (!StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
@@ -187,26 +186,39 @@ public class UserService {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
         if (userId.equals(inviteUserId)) throw new BusinessException("禁止邀请自己");
-        if (distributedLock.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS)) {
+
+        Boolean locked = distributedLock.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS);
+        if (! locked) throw new BusinessException("请稍后再操作");
+
+        try {
             if (!name.equals(currentName)) {
                 // 修改名字，不会再提示通知，这里是DB操作，可以保证后面出异常回滚这里
                 observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
             }
-            UserDO user = userDAO.getById(userId);
-            if (inviteUserId != null) {
-                if (user.getInviteUserId() != null) throw new BusinessException("不要重复填写邀请人");
-                UserDO inviteUser = userDAO.getById(inviteUserId);
-                if (inviteUser == null) throw new BusinessException("邀请人不存在");
+            transactionTemplate.execute(action -> {
+                boolean hasInvited = true;
+                if (inviteUserId != null && checkInvited(userId)) {
+                    hasInvited = false;
+                    UserDO inviteUser = userDAO.getById(inviteUserId);
+                    if (inviteUser == null) throw new BusinessException("邀请人不存在");
 
-                // 填写邀请人后，双方添加硬币
-                incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
-                incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
-            }
-            //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
-            if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
-            userDAO.save(userId, avatar, name, city, position, seniority, github, inviteUserId);
+                    // 填写邀请人后，双方添加硬币
+                    incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
+                    incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
+                }
+                //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
+                if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
+                userDAO.save(userId, avatar, name, city, position, seniority, github, hasInvited ? null : inviteUserId);
+                return null;
+            });
+        } finally {
+            distributedLock.unlock(UPDATE_USER + userId);
         }
         return true;
+    }
+
+    private boolean checkInvited(Long userId) {
+        return operateLogDAO.queryByUserIdAndType(userId, OperateTypeEnum.INVITED_COINS.getCode()).equals(0);
     }
 
     public Boolean hadModifyPwd(Long id) {
