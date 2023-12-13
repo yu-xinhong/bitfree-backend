@@ -38,22 +38,28 @@ public class CollectService {
         if (CollectionUtils.isEmpty(collectDOList)) return Collections.emptyList();
 
         List<Long> postIdList = collectDOList.stream().map(e -> e.getTargetId()).distinct().collect(Collectors.toList());
+        //  这里获取的postDOList可能为空(postIdList中的贴子都被删除)
+        //  即使postDOList为空, Maps#uniqueIndex也不会报错
         List<PostDO> postDOList = postDAO.getByIdList(postIdList);
+        if (CollectionUtils.isEmpty(postDOList)) return Collections.emptyList();
         ImmutableMap<Long, PostDO> postIdMap = Maps.uniqueIndex(postDOList, PostDO::getId);
 
         List<Long> userIdList = postDOList.stream().map(e -> e.getCreatorId()).distinct().collect(Collectors.toList());
+        //  当postDOList为空时userIdList也为空, batchQueryByIdList调用会语法异常
         List<UserDO> userDOList = userDAO.batchQueryByIdList(userIdList);
         ImmutableMap<Long, UserDO> userIdMap = Maps.uniqueIndex(userDOList, UserDO::getId);
 
-        return collectDOList.stream().map(e -> {
-            CollectResp collectResp = new CollectResp();
-
-            collectResp.setTitle(postIdMap.get(e.getTargetId()).getTitle());
-            collectResp.setCreatorName(userIdMap.get(postIdMap.get(e.getTargetId()).getCreatorId()).getName());
-            collectResp.setCreateTime(postIdMap.get(e.getTargetId()).getCreateTime());
-            collectResp.setPostId(e.getTargetId());
-            return collectResp;
-        }).collect(Collectors.toList());
+        return collectDOList.stream()
+                //  postIdMap中不会有被删除的帖子, 而收藏栏中仍会有被删除的帖子, 需要过滤
+                .filter(collect -> postIdMap.containsKey(collect.getTargetId()))
+                .map(e -> {
+                    CollectResp collectResp = new CollectResp();
+                    collectResp.setTitle(postIdMap.get(e.getTargetId()).getTitle());
+                    collectResp.setCreatorName(userIdMap.get(postIdMap.get(e.getTargetId()).getCreatorId()).getName());
+                    collectResp.setCreateTime(postIdMap.get(e.getTargetId()).getCreateTime());
+                    collectResp.setPostId(e.getTargetId());
+                    return collectResp;
+                }).collect(Collectors.toList());
 
     }
 
