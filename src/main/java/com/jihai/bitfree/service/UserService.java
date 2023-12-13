@@ -186,27 +186,25 @@ public class UserService {
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && ! UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
+        if (userId.equals(inviteUserId)) throw new BusinessException("禁止邀请自己");
         if (distributedLock.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS)) {
             if (!name.equals(currentName)) {
-                // 修改名字，不会再提示通知
+                // 修改名字，不会再提示通知，这里是DB操作，可以保证后面出异常回滚这里
                 observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
             }
             UserDO user = userDAO.getById(userId);
-            if (user != null && user.getInviteUserId() != null) {
-                inviteUserId = null;
-            }
             if (inviteUserId != null) {
+                if (user.getInviteUserId() != null) throw new BusinessException("不要重复填写邀请人");
                 UserDO inviteUser = userDAO.getById(inviteUserId);
                 if (inviteUser == null) throw new BusinessException("邀请人不存在");
+
+                // 填写邀请人后，双方添加硬币
+                incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
+                incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
             }
             //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
             if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
             userDAO.save(userId, avatar, name, city, position, seniority, github, inviteUserId);
-            // 填写邀请人后，双方添加硬币
-            if (inviteUserId != null) {
-                incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
-                incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
-            }
         }
         return true;
     }
