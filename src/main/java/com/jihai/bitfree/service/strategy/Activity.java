@@ -1,8 +1,13 @@
 package com.jihai.bitfree.service.strategy;
 
-public interface Activity<P extends BaseActivityParam> {
+public abstract class Activity<P extends BaseActivityParam> {
 
-    boolean support(ActivityTypeEnum activityTypeEnum);
+    protected abstract boolean support(ActivityTypeEnum activityTypeEnum);
 
-    boolean kill(P param);
+    public boolean kill(P param) {
+        if (! support(ActivityTypeEnum.getByCode(param.getType()))) return true;
+        return doKill(param);
+    }
+
+    protected abstract boolean doKill(P param);
 }

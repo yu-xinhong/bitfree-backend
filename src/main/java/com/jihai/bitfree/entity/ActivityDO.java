@@ -12,6 +12,8 @@ public class ActivityDO extends BaseDO {
 
     private Integer total;
 
+    private Integer type;
+
     private Integer cost;
 
     private String detail;
@@ -46,6 +48,14 @@ public class ActivityDO extends BaseDO {
 
     public Integer getTotal() {
         return total;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getCost() {

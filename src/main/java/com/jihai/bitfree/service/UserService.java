@@ -465,7 +465,7 @@ public class UserService {
     public boolean incrementCoins(Long userId, int coins, OperateTypeEnum operateType) {
         int result = userDAO.incrementCoins(userId, coins);
         if (operateType != null) {
-            operationLogService.saveOperateLog(userId, operateType);
+            operationLogService.asynSaveOperateLog(userId, operateType);
         }
         return result >= 1;
     }

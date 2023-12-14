@@ -11,7 +11,6 @@ import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
-import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
@@ -327,7 +326,7 @@ public class MessageService {
         heartbeatCache.invalidate(userId);
         transactionTemplate.execute((status) -> {
             userDAO.incrementCoins(userId, 1);
-            operationLogService.saveOperateLog(userId, OperateTypeEnum.LIVE_COINS);
+            operationLogService.asynSaveOperateLog(userId, OperateTypeEnum.LIVE_COINS);
             return null;
         });
 

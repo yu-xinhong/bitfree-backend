@@ -14,7 +14,7 @@ public class OperationLogService {
     private OperateLogDAO operateLogDAO;
 
     @Async("commonAsyncThreadPool")
-    public void saveOperateLog(Long userId, OperateTypeEnum operateTypeEnum) {
+    public void asynSaveOperateLog(Long userId, OperateTypeEnum operateTypeEnum) {
         OperateLogDO operateLogDO = new OperateLogDO();
         operateLogDO.setUserId(userId);
         operateLogDO.setType(operateTypeEnum.getCode());

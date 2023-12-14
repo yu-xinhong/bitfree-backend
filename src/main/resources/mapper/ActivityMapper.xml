@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jihai.bitfree.dao.ActivityDAO">
 
-    <sql id="BASE_COLUMN">id, name, stock, total, cost, detail, start_time, end_time, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, name, stock, total, cost, detail, type, start_time, end_time, deleted, create_time, update_time</sql>
     <update id="updateStock">
         UPDATE activity
         SET stock = stock - #{count}

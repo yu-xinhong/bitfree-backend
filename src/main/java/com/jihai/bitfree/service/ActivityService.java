@@ -98,7 +98,7 @@ public class ActivityService {
                 throw new BusinessException("硬币余额不足");
             };*/
 
-            activityList.forEach(activity -> activity.kill(new BaseActivityParam(userId, activityId)));
+            activityList.forEach(activity -> activity.kill(new BaseActivityParam(userId, activityId, activityDO.getType())));
 //            orderDAO.insert(orderDO);
         } finally {
             reentrantLock.unlock();

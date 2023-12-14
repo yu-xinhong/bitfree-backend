@@ -6,9 +6,12 @@ public class BaseActivityParam {
 
     private Long activityId;
 
-    public BaseActivityParam(Long userId, Long activityId) {
+    private Integer type;
+
+    public BaseActivityParam(Long userId, Long activityId, Integer type) {
         this.userId = userId;
         this.activityId = activityId;
+        this.type = type;
     }
 
     public Long getUserId() {
@@ -25,5 +28,13 @@ public class BaseActivityParam {
 
     public void setActivityId(Long activityId) {
         this.activityId = activityId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

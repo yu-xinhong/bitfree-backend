@@ -8,6 +8,7 @@ import com.jihai.bitfree.entity.ActivityDO;
 import com.jihai.bitfree.entity.OrderDO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.OperationLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
-public class WeekendMeetingActivity implements Activity<BaseActivityParam> {
+public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
 
     private static final Integer TOP_USER_COINS = 32;
     private static final Integer NOT_TOP_USER_COINS = 16;
@@ -28,6 +29,9 @@ public class WeekendMeetingActivity implements Activity<BaseActivityParam> {
 
     @Autowired
     private OrderDAO orderDAO;
+
+    @Autowired
+    private OperationLogService operationLogService;
 
     @Override
     public boolean support(ActivityTypeEnum activityTypeEnum) {
@@ -42,11 +46,10 @@ public class WeekendMeetingActivity implements Activity<BaseActivityParam> {
      */
     @Override
     @Transactional
-    public boolean kill(BaseActivityParam param) {
+    public boolean doKill(BaseActivityParam param) {
         List<UserDO> userDOList = userDAO.getRanksByCoins();
         if (userDOList.stream().anyMatch(e -> e.getId().equals(param.getUserId()))) {
-            if (userDAO.incrementCoins(param.getUserId(), - TOP_USER_COINS) == 1) return true;
-            throw new BusinessException("硬币不足");
+            if (userDAO.incrementCoins(param.getUserId(), - TOP_USER_COINS) == 1) throw new BusinessException("硬币不足");
         } else {
             if (activityDAO.updateStock(param.getActivityId(), 1) == 0) {
                 throw new BusinessException("名额不足");

@@ -13,6 +13,7 @@ public enum OperateTypeEnum {
 
     INVITE_COINS(10, "邀请获取硬币"),
     INVITED_COINS(11, "被邀请获取硬币"),
+    ACTIVITY(12, "活动")
     ;
 
     OperateTypeEnum(Integer code, String desc) {

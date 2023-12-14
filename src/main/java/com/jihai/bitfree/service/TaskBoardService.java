@@ -110,7 +110,7 @@ public class TaskBoardService {
         }
         TaskBoardDO taskBoardDO = this.updateTask(userId, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.DONE.getStatus());
         userDAO.incrementCoins(userId, taskBoardDO.getCoins());
-        operationLogService.saveOperateLog(userId, OperateTypeEnum.TASK_COINS);
+        operationLogService.asynSaveOperateLog(userId, OperateTypeEnum.TASK_COINS);
         return true;
     }
 
