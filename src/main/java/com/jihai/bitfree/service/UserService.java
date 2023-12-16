@@ -6,10 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.ability.MonitorAbility;
-import com.jihai.bitfree.base.enums.LikeTypeEnum;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
-import com.jihai.bitfree.base.enums.UserLevelEnum;
+import com.jihai.bitfree.base.enums.*;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
@@ -452,7 +449,10 @@ public class UserService {
     public Integer getVoiceState(Long userId) {
         UserDO userDO = userDAO.getById(userId);
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
-        return ObjUtil.isNull(userRemarkBO) || ObjUtil.isNull(userRemarkBO.getVoiceState()) ? 1 : userRemarkBO.getVoiceState();
+        if (ObjUtil.isNull(userRemarkBO) || ObjUtil.isNull(userRemarkBO.getVoiceState())) {
+            return VoiceStateEnum.OPEN.getValue();
+        }
+        return userRemarkBO.getVoiceState();
     }
     /**
      * 更新硬币数量
