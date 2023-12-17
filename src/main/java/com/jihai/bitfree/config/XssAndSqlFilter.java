@@ -1,15 +1,20 @@
 package com.jihai.bitfree.config;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.NestedServletException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +36,24 @@ public class XssAndSqlFilter implements Filter {
 
     @Autowired
     private SecurityConfig securityConfig;
+
+    @Autowired
+    private ConfigService configService;
+
+    @PostConstruct
+    public void init() {
+        try {
+            String excludeUrls = configService.getByKey(Constants.XSS_EXCLUDE_URLS);
+            if (StringUtils.isEmpty(excludeUrls)) {
+                return;
+            }
+
+            String[] urls = excludeUrls.split(",");
+            XssConfig xss = securityConfig.getXss();
+            xss.setExcludePaths(Lists.newArrayList(urls));
+        } catch (BusinessException e) {
+        }
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
