@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.LikeTypeEnum;
 import com.jihai.bitfree.base.enums.PostTypeEnum;
+import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.*;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
@@ -168,7 +169,7 @@ public class PostService {
         postDAO.insert(postDO);
 
         // 这里会再去判断coins >= 2
-        userService.consumeCoins(userId, 2);
+        userService.consumeCoins(userId, CoinsDefinitions.ADD_POST_COINS);
     }
 
     private Integer getTypeContent(String content) {

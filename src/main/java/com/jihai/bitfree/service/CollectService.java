@@ -2,6 +2,7 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.dao.CollectDAO;
 import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -74,7 +75,7 @@ public class CollectService {
         PostDO postDO = postDAO.getById(postId);
         Long postUserId = postDO.getCreatorId();
         // 贴主退回硬币
-        userDAO.incrementCoins(postUserId, -2);
+        userDAO.incrementCoins(postUserId, -CoinsDefinitions.COLLECT_GET_COINS);
         // 非核心表, 直接硬删除
         return collectDAO.delete(postId, id, type) > 0;
     }
@@ -95,7 +96,7 @@ public class CollectService {
         PostDO postDO = postDAO.getById(postId);
         Long postUserId = postDO.getCreatorId();
         // 贴主添加硬币
-        userDAO.incrementCoins(postUserId, 2);
+        userDAO.incrementCoins(postUserId, CoinsDefinitions.COLLECT_GET_COINS);
         return true;
     }
 
