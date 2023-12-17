@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.NestedServletException;
 
 import javax.annotation.PostConstruct;
@@ -43,7 +44,7 @@ public class XssAndSqlFilter implements Filter {
     public void init() {
         try {
             String excludeUrls = configService.getByKey(Constants.XSS_EXCLUDE_URLS);
-            if (excludeUrls == null) {
+            if (StringUtils.isEmpty(excludeUrls)) {
                 return;
             }
 
