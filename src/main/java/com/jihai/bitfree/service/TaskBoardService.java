@@ -114,8 +114,8 @@ public class TaskBoardService {
             throw new BusinessException("指定用户才可操作完成");
         }
         TaskBoardDO taskBoardDO = this.updateTask(userId, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.DONE.getStatus());
-        userDAO.incrementCoins(userId, taskBoardDO.getCoins());
-        operationLogService.asynSaveOperateLog(userId, OperateTypeEnum.TASK_COINS);
+        userDAO.incrementCoins(taskBoardDO.getUserId(), taskBoardDO.getCoins());
+        operationLogService.asynSaveOperateLog(taskBoardDO.getUserId(), OperateTypeEnum.TASK_COINS);
         return true;
     }
 
