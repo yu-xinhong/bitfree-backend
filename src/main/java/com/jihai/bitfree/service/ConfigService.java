@@ -16,10 +16,6 @@ public class ConfigService {
 
     public String getByKey(String key) {
         ConfigDO configDO = configDAO.getByKey(key);
-        if (configDO == null) {
-            log.error("key {} config not found", key);
-            throw new BusinessException("not found config " + key);
-        }
-        return configDO.getValue();
+        return configDO == null ? "" : configDO.getValue();
     }
 }
