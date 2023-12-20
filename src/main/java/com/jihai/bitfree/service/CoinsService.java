@@ -8,6 +8,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.LockTemplateSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,8 @@ public class CoinsService {
     private OperationLogService operationLogService;
     @Autowired
     private LockTemplateSupport lockTemplateSupport;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     public void incrementCoins(Long userId, Integer coins, OperateTypeEnum operateTypeEnum) {
         String lockKey = LockKeyConstants.UPDATE_COINS + userId;
@@ -28,8 +31,11 @@ public class CoinsService {
             if (afterCoins < 0) {
                 throw new BusinessException("硬币余额不足");
             }
-            userDAO.incrementCoins(userId, coins);
-            operationLogService.asynSaveOperateLog(userId, operateTypeEnum, coins, afterCoins);
+            transactionTemplate.execute(action -> {
+                operationLogService.saveCoinsOperateLog(userId, operateTypeEnum, coins, afterCoins);
+                userDAO.incrementCoins(userId, coins);
+                return true;
+            });
         });
     }
 }

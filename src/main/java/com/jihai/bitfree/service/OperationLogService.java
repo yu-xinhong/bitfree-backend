@@ -44,15 +44,14 @@ public class OperationLogService {
 
 
     @Async("commonAsyncThreadPool")
-    public void asynSaveOperateLog(Long userId, OperateTypeEnum operateTypeEnum) {
+    public void asyncSaveOperateLog(Long userId, OperateTypeEnum operateTypeEnum) {
         OperateLogDO operateLogDO = new OperateLogDO();
         operateLogDO.setUserId(userId);
         operateLogDO.setType(operateTypeEnum.getCode());
         operateLogDAO.insert(operateLogDO);
     }
 
-    @Async("commonAsyncThreadPool")
-    public void asynSaveOperateLog(Long userId, OperateTypeEnum operateTypeEnum, Integer coins, Integer afterCoins) {
+    public void saveCoinsOperateLog(Long userId, OperateTypeEnum operateTypeEnum, Integer coins, Integer afterCoins) {
         OperateLogDO operateLogDO = new OperateLogDO();
         operateLogDO.setUserId(userId);
         operateLogDO.setType(operateTypeEnum.getCode());
