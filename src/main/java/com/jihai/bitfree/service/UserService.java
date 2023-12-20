@@ -17,6 +17,7 @@ import com.jihai.bitfree.dto.resp.UserResp;
 import com.jihai.bitfree.entity.*;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
+import com.jihai.bitfree.lock.LockTemplateSupport;
 import com.jihai.bitfree.support.Observable;
 import com.jihai.bitfree.support.ReadNotificationEvent;
 import com.jihai.bitfree.support.TransactionUtils;
@@ -90,8 +91,12 @@ public class UserService {
 
     @Autowired
     private PasswordUtils passwordUtils;
+
     @Autowired
     private OperationLogService operationLogService;
+
+    @Autowired
+    private LockTemplateSupport lockTemplateSupport;
 
     public UserDO queryByEmailAndPassword(String email, String password) {
         return userDAO.queryByEmailAndPassword(email, password);
@@ -183,11 +188,7 @@ public class UserService {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
         if (userId.equals(inviteUserId)) throw new BusinessException("禁止邀请自己");
-
-        Boolean locked = distributedLock.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS);
-        if (! locked) throw new BusinessException("请稍后再操作");
-
-        try {
+        lockTemplateSupport.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS, () -> {
             if (!name.equals(currentName)) {
                 // 修改名字，不会再提示通知，这里是DB操作，可以保证后面出异常回滚这里
                 observable.notify(new ReadNotificationEvent(userId, Long.valueOf(configDAO.getByKey(Constants.MODIFY_SETTINGS_NOTIFICATION_ID).getValue())));
@@ -208,9 +209,7 @@ public class UserService {
                 userDAO.save(userId, avatar, name, city, position, seniority, github, hasInvited ? null : inviteUserId);
                 return null;
             });
-        } finally {
-            distributedLock.unlock(UPDATE_USER + userId);
-        }
+        });
         return true;
     }
 

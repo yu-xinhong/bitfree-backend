@@ -2,6 +2,7 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.dao.CollectDAO;
 import com.jihai.bitfree.dao.PostDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -13,6 +14,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -63,15 +65,22 @@ public class CollectService {
 
     }
 
+    @Transactional
     public Boolean cancelCollect(Long postId, Long id, Integer type) {
         if (collectDAO.hasCollect(postId, id, type) == 0) {
             log.error("不存在收藏帖子，无法取消，postId:{}, userId:{}", postId, id);
             throw new BusinessException("不存在收藏");
         }
+
+        PostDO postDO = postDAO.getById(postId);
+        Long postUserId = postDO.getCreatorId();
+        // 贴主退回硬币
+        userDAO.incrementCoins(postUserId, -CoinsDefinitions.COLLECT_GET_COINS);
         // 非核心表, 直接硬删除
         return collectDAO.delete(postId, id, type) > 0;
     }
 
+    @Transactional
     public Boolean collect(Long postId, Long userId, Integer type) {
         if (collectDAO.hasCollect(postId, userId, type) > 0) {
             return true;
@@ -83,6 +92,11 @@ public class CollectService {
         collectDO.setUserId(userId);
 
         collectDAO.insert(collectDO);
+
+        PostDO postDO = postDAO.getById(postId);
+        Long postUserId = postDO.getCreatorId();
+        // 贴主添加硬币
+        userDAO.incrementCoins(postUserId, CoinsDefinitions.COLLECT_GET_COINS);
         return true;
     }
 
@@ -114,3 +128,4 @@ public class CollectService {
 
     }
 }
+
