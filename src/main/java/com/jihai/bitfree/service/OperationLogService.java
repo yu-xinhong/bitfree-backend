@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.jihai.bitfree.base.PageResult;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.OperateRemarkBO;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dto.req.GetCoinsRecordReq;
 import com.jihai.bitfree.dto.resp.CoinsRecordTypeResp;
@@ -73,7 +74,7 @@ public class OperationLogService {
                 }
             }
         }
-        List<OperateLogDO> operateLogDOList = this.queryByUserIdAndTypeList(userId, req);
+        List<OperateLogDO> operateLogDOList = this.queryByUserIdAndTypeList(userId, Constants.FILTER_OPERATION_HISTORY_TIME, req);
         List<OperationResp> operationRespList = new ArrayList<>();
         OperationResp operationResp;
         for (OperateLogDO operateLogDO : operateLogDOList) {
@@ -90,12 +91,12 @@ public class OperationLogService {
             }
             operationRespList.add(operationResp);
         }
-        Integer count = operateLogDAO.countByUserIdAndTypeList(userId, req);
+        Integer count = operateLogDAO.countByUserIdAndTypeList(userId, Constants.FILTER_OPERATION_HISTORY_TIME, req);
         return new PageResult<>(operationRespList, count);
     }
 
-    public List<OperateLogDO> queryByUserIdAndTypeList(Long userId, GetCoinsRecordReq req) {
-        return operateLogDAO.queryByUserIdAndTypeList(userId, req, (req.getPage() - 1) * req.getSize(), req.getSize());
+    public List<OperateLogDO> queryByUserIdAndTypeList(Long userId, String filterHistoryTime, GetCoinsRecordReq req) {
+        return operateLogDAO.queryByUserIdAndTypeList(userId, filterHistoryTime, req,  (req.getPage() - 1) * req.getSize(), req.getSize());
     }
 
     public List<CoinsRecordTypeResp> getCoinsTypeList() {

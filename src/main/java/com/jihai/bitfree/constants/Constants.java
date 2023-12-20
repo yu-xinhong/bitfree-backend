@@ -16,4 +16,8 @@ public interface Constants {
     Long SYSTEM_DEFAULT_USER_ID = -1L;
     String MODIFY_SETTINGS_NOTIFICATION_ID = "MODIFY_SETTINGS_NOTIFICATION_ID";
     String TASK_COMPLETE_USER_LIST = "TASK_COMPLETE_USER_LIST";
+    /**
+     * 过滤历史操作记录的时间
+     */
+    String FILTER_OPERATION_HISTORY_TIME = "2023-12-21 00:00:00";
 }

@@ -16,7 +16,7 @@ public interface OperateLogDAO {
 
     Integer countLoginRecord(Long userId, Integer type, Date date);
 
-    List<OperateLogDO> queryByUserIdAndTypeList(Long userId, GetCoinsRecordReq req, Integer start, Integer size);
+    List<OperateLogDO> queryByUserIdAndTypeList(Long userId, String filterHistoryTime, GetCoinsRecordReq req, Integer start, Integer size);
 
-    Integer countByUserIdAndTypeList(Long userId, GetCoinsRecordReq req);
+    Integer countByUserIdAndTypeList(Long userId, String filterHistoryTime, GetCoinsRecordReq req);
 }

@@ -54,6 +54,9 @@
             <if test="req.startTime != null and req.startTime !='' and req.endTime != null and req.endTime !=''">
                 AND create_time BETWEEN #{req.startTime} AND #{req.endTime}
             </if>
+            <if test="filterHistoryTime != null and filterHistoryTime != ''">
+                AND create_time &gt; #{filterHistoryTime}
+            </if>
         </where>
         ORDER BY create_time desc LIMIT #{start}, #{size}
     </select>
@@ -72,6 +75,9 @@
             </if>
             <if test="req.startTime != null and req.startTime !='' and req.endTime != null and req.endTime !=''">
                 AND create_time BETWEEN #{req.startTime} AND #{req.endTime}
+            </if>
+            <if test="filterHistoryTime != null and filterHistoryTime != ''">
+                AND create_time &gt; #{filterHistoryTime}
             </if>
         </where>
     </select>
