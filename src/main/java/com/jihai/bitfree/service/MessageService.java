@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -11,6 +12,7 @@ import com.jihai.bitfree.base.enums.MessageTypeEnum;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.MessageDAO;
 import com.jihai.bitfree.dao.MessageNoticeDAO;
@@ -31,9 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -61,10 +66,20 @@ public class MessageService {
     @Autowired
     private OperationLogService operationLogService;
 
+    @Autowired
+    private ConfigService configService;
+
     private Cache<Long, UserResp> liveUserCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
 
     // 这里前端js 1分钟发起一次心跳，但是这里5秒考虑到网络波动
     private Cache<Long, Heartbeat> heartbeatCache = CacheBuilder.newBuilder().expireAfterAccess(65, TimeUnit.SECONDS).build();
+
+    //  心跳间隔
+    private static Integer HEARTBEAT_TIME;
+    //  增长硬币数
+    private static Integer HEARTBEAT_INCR_COINS;
+    //  增长硬币时的心跳阈值
+    private static Integer HEARTBEAT_COUNT;
 
     class Heartbeat {
         private Integer count;
@@ -90,6 +105,28 @@ public class MessageService {
         public void setTimestamp(Long timestamp) {
             this.timestamp = timestamp;
         }
+    }
+
+
+
+    @PostConstruct
+    public void initHeartbeatRules() {
+        String configErr = "未找到相关配置: {0}.{1}";
+        String heartbeatTime = "heartbeatTime";
+        String incrCoins = "incrCoins";
+        String heartbeatCount = "heartbeatCount";
+        String heartbeatSecret = configService.getByKey(Constants.HEARTBEAT_SECRET);
+
+        Assert.hasLength(heartbeatSecret, "未找到相关配置: " + Constants.HEARTBEAT_SECRET);
+        JSONObject json = JSON.parseObject(heartbeatSecret);
+
+        Assert.notNull(json.get(heartbeatTime),  MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, heartbeatTime));
+        Assert.notNull(json.get(incrCoins), MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, incrCoins));
+        Assert.notNull(json.get(heartbeatCount), MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, heartbeatCount));
+
+        HEARTBEAT_TIME = json.getInteger(heartbeatTime);
+        HEARTBEAT_INCR_COINS = json.getInteger(incrCoins);
+        HEARTBEAT_COUNT = json.getInteger(heartbeatCount);
     }
 
     public PageResult<MessageResp> pageQueryMessageList(Integer page, Integer size, UserResp currentUser) {
@@ -306,7 +343,7 @@ public class MessageService {
         }
         // 这里可能存在并发，暂不考虑
         long currentSystemTimestamp = System.currentTimeMillis();
-        if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() < 59 * 1000) {
+        if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() < HEARTBEAT_TIME) {
             heartbeatCache.invalidate(userId);
             throw new BusinessException("无效心跳");
         }
@@ -320,12 +357,12 @@ public class MessageService {
             return true;
         }
 
-        if (heartbeat.getCount() < RandomUtils.nextInt(5,10)) return true;
+        if (heartbeat.getCount() < HEARTBEAT_COUNT) return true;
 
         log.info("userId {} live appraise coins ", userId);
         heartbeatCache.invalidate(userId);
         transactionTemplate.execute((status) -> {
-            userDAO.incrementCoins(userId, 1);
+            userDAO.incrementCoins(userId, HEARTBEAT_INCR_COINS);
             operationLogService.asynSaveOperateLog(userId, OperateTypeEnum.LIVE_COINS);
             return null;
         });
