@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -43,12 +44,14 @@ public class TaskBoardService {
     private UserDAO userDAO;
 
     @Autowired
-    private OperationLogService operationLogService;
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
     private DistributedLock distributedLock;
     @Autowired
     private ConfigService configService;
+    @Autowired
+    private CoinsService coinsService;
 
     private List<Long> taskBoardAdminUserIdList = Lists.newArrayList();
 
@@ -114,8 +117,7 @@ public class TaskBoardService {
             throw new BusinessException("指定用户才可操作完成");
         }
         TaskBoardDO taskBoardDO = this.updateTask(userId, taskId, TaskStatusEnum.DOING.getStatus(), TaskStatusEnum.DONE.getStatus());
-        userDAO.incrementCoins(taskBoardDO.getUserId(), taskBoardDO.getCoins());
-        operationLogService.asynSaveOperateLog(taskBoardDO.getUserId(), OperateTypeEnum.TASK_COINS);
+        coinsService.incrementCoins(taskBoardDO.getUserId(), taskBoardDO.getCoins(), OperateTypeEnum.TASK_COINS);
         return true;
     }
 
