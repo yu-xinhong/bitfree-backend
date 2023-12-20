@@ -49,7 +49,7 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
     public boolean doKill(BaseActivityParam param) {
         List<UserDO> userDOList = userDAO.getRanksByCoins();
         if (userDOList.stream().anyMatch(e -> e.getId().equals(param.getUserId()))) {
-            if (userDAO.incrementCoins(param.getUserId(), - TOP_USER_COINS) == 1) throw new BusinessException("硬币不足");
+            if (userDAO.incrementCoins(param.getUserId(), - TOP_USER_COINS) == 0) throw new BusinessException("硬币不足");
         } else {
             if (activityDAO.updateStock(param.getActivityId(), 1) == 0) {
                 throw new BusinessException("名额不足");
