@@ -64,7 +64,7 @@ public class MessageService {
     private DistributedLock distributedLock;
 
     @Autowired
-    private OperationLogService operationLogService;
+    private CoinsService coinsService;
 
     @Autowired
     private ConfigService configService;
@@ -362,8 +362,7 @@ public class MessageService {
         log.info("userId {} live appraise coins ", userId);
         heartbeatCache.invalidate(userId);
         transactionTemplate.execute((status) -> {
-            userDAO.incrementCoins(userId, HEARTBEAT_INCR_COINS);
-            operationLogService.asynSaveOperateLog(userId, OperateTypeEnum.LIVE_COINS);
+            coinsService.incrementCoins(userId, HEARTBEAT_INCR_COINS, OperateTypeEnum.LIVE_COINS);
             return null;
         });
 

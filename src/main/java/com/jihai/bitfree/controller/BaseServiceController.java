@@ -34,7 +34,7 @@ public class BaseServiceController {
     @GetMapping("/{shortLink}")
     public RedirectView shortLink(@PathVariable("shortLink") String shortLink) {
         monitorAbility.sendMsg("短链跳转 " + shortLink);
-        operationLogService.asynSaveOperateLog(Constants.SYSTEM_DEFAULT_USER_ID, OperateTypeEnum.SHORT_LINK);
+        operationLogService.asyncSaveOperateLog(Constants.SYSTEM_DEFAULT_USER_ID, OperateTypeEnum.SHORT_LINK);
         return new RedirectView(redirectMapping.get(shortLink));
     }
 }

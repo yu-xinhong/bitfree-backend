@@ -10,6 +10,8 @@ public class OperateLogDO extends BaseDO {
 
     private Integer type;
 
+    private String remark;
+
     public Long getUserId() {
         return userId;
     }
@@ -24,5 +26,13 @@ public class OperateLogDO extends BaseDO {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

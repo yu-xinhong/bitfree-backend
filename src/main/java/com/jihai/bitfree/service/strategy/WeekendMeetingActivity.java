@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service.strategy;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.base.enums.UserLevelEnum;
 import com.jihai.bitfree.dao.ActivityDAO;
 import com.jihai.bitfree.dao.OrderDAO;
@@ -9,6 +10,7 @@ import com.jihai.bitfree.entity.ActivityDO;
 import com.jihai.bitfree.entity.OrderDO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.service.CoinsService;
 import com.jihai.bitfree.service.OperationLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,8 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
 
     @Autowired
     private OperationLogService operationLogService;
+    @Autowired
+    private CoinsService coinsService;
 
     @Override
     public boolean support(ActivityTypeEnum activityTypeEnum) {
@@ -52,14 +56,12 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
             throw new BusinessException("旗舰用户才能参加周会");
         List<UserDO> userDOList = userDAO.getRanksByCoins();
         if (userDOList.stream().anyMatch(e -> e.getId().equals(param.getUserId()))) {
-            if (userDAO.incrementCoins(param.getUserId(), - TOP_USER_COINS) == 0) throw new BusinessException("硬币不足");
+            coinsService.incrementCoins(param.getUserId(), - TOP_USER_COINS, OperateTypeEnum.ACTIVITY);
         } else {
             if (activityDAO.updateStock(param.getActivityId(), 1) == 0) {
                 throw new BusinessException("名额不足");
             }
-            if (userDAO.incrementCoins(param.getUserId(), - NOT_TOP_USER_COINS) == 0) {
-                throw new BusinessException("硬币不足");
-            }
+            coinsService.incrementCoins(param.getUserId(), - NOT_TOP_USER_COINS, OperateTypeEnum.ACTIVITY);
         }
 
 

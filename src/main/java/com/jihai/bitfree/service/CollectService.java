@@ -2,6 +2,7 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.dao.CollectDAO;
 import com.jihai.bitfree.dao.PostDAO;
@@ -33,6 +34,9 @@ public class CollectService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private CoinsService coinsService;
 
     public List<CollectResp> getCollectList(Long userId, Integer page, Integer size) {
         List<CollectDO> collectDOList = collectDAO.pageQuery(userId, (page - 1) * size, size, CollectTypeEnum.POST.getType());
@@ -75,7 +79,7 @@ public class CollectService {
         PostDO postDO = postDAO.getById(postId);
         Long postUserId = postDO.getCreatorId();
         // 贴主退回硬币
-        userDAO.incrementCoins(postUserId, -CoinsDefinitions.COLLECT_GET_COINS);
+        coinsService.incrementCoins(postUserId, -CoinsDefinitions.COLLECT_GET_COINS, OperateTypeEnum.POST_UN_COLLECT);
         // 非核心表, 直接硬删除
         return collectDAO.delete(postId, id, type) > 0;
     }
@@ -96,7 +100,7 @@ public class CollectService {
         PostDO postDO = postDAO.getById(postId);
         Long postUserId = postDO.getCreatorId();
         // 贴主添加硬币
-        userDAO.incrementCoins(postUserId, CoinsDefinitions.COLLECT_GET_COINS);
+        coinsService.incrementCoins(postUserId, CoinsDefinitions.COLLECT_GET_COINS, OperateTypeEnum.POST_BE_COLLECTED);
         return true;
     }
 

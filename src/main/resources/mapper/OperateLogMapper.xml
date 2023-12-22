@@ -13,11 +13,11 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, user_id, type, deleted, create_time, update_time</sql>
+    <sql id="BASE_COLUMN">id, user_id, type, `remark`, deleted, create_time, update_time</sql>
 
     <insert id="insert">
-        INSERT INTO operate_log (`user_id`, `type`)
-        VALUE(#{userId}, #{type})
+        INSERT INTO operate_log (`user_id`, `type`, `remark`)
+        VALUE(#{userId}, #{type}, #{remark})
     </insert>
     <select id="queryByUserIdAndType" resultType="integer">
         SELECT COUNT(*) FROM operate_log WHERE user_id = #{userId} AND `type` = #{type} AND deleted = 0
@@ -36,5 +36,49 @@
         AND `type` = #{type}
         AND create_time &gt; #{date}
         AND deleted = 0
+    </select>
+
+    <select id="queryByUserIdAndTypeList" resultMap="operateResultMap">
+        SELECT
+            <include refid="BASE_COLUMN">
+            </include>
+        FROM operate_log
+        <where>
+            user_id = #{userId} AND deleted = 0
+            <if test="req.typeList != null and req.typeList.size > 0">
+                AND type IN
+                <foreach collection="req.typeList" item="type" index="index" open="(" close=")" separator=",">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="req.startTime != null and req.startTime !='' and req.endTime != null and req.endTime !=''">
+                AND create_time BETWEEN #{req.startTime} AND #{req.endTime}
+            </if>
+            <if test="filterHistoryTime != null and filterHistoryTime != ''">
+                AND create_time &gt; #{filterHistoryTime}
+            </if>
+        </where>
+        ORDER BY create_time desc LIMIT #{start}, #{size}
+    </select>
+
+    <select id="countByUserIdAndTypeList" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM operate_log
+        <where>
+            user_id = #{userId} AND deleted = 0
+            <if test="req.typeList != null and req.typeList.size > 0">
+                AND type IN
+                <foreach collection="req.typeList" item="type" index="index" open="(" close=")" separator=",">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="req.startTime != null and req.startTime !='' and req.endTime != null and req.endTime !=''">
+                AND create_time BETWEEN #{req.startTime} AND #{req.endTime}
+            </if>
+            <if test="filterHistoryTime != null and filterHistoryTime != ''">
+                AND create_time &gt; #{filterHistoryTime}
+            </if>
+        </where>
     </select>
 </mapper>

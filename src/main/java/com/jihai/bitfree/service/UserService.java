@@ -6,10 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.ability.MonitorAbility;
-import com.jihai.bitfree.base.enums.LikeTypeEnum;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
-import com.jihai.bitfree.base.enums.UserLevelEnum;
+import com.jihai.bitfree.base.enums.*;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
@@ -96,7 +93,7 @@ public class UserService {
     private PasswordUtils passwordUtils;
 
     @Autowired
-    private OperationLogService operationLogService;
+    private CoinsService coinsService;
 
     @Autowired
     private LockTemplateSupport lockTemplateSupport;
@@ -204,8 +201,8 @@ public class UserService {
                     if (inviteUser == null) throw new BusinessException("邀请人不存在");
 
                     // 填写邀请人后，双方添加硬币
-                    incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
-                    incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
+                    coinsService.incrementCoins(inviteUserId, INVITE_USER_COINS, OperateTypeEnum.INVITE_COINS);
+                    coinsService.incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
                 }
                 //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
                 if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
@@ -269,7 +266,7 @@ public class UserService {
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
 
         Integer incrementCoins = getIncrementCoins(userId);
-        userDAO.incrementCoins(userId, incrementCoins);
+        coinsService.incrementCoins(userId, incrementCoins, OperateTypeEnum.SIGN_IN);
         return true;
     }
 
@@ -298,7 +295,7 @@ public class UserService {
     }
 
     public void consumeCoins(Long userId, int coins) {
-        userDAO.incrementCoins(userId, -coins);
+        coinsService.incrementCoins(userId, -coins, OperateTypeEnum.POST_CONSUME);
     }
 
     public Boolean like(Long id, Integer type, Boolean like, Long userId) {
@@ -331,7 +328,7 @@ public class UserService {
                 Long sendUserId = replyDO.getSendUserId();
                 if (userId.equals(sendUserId)) throw new BusinessException("禁止给自己点赞");
 
-                userDAO.incrementCoins(sendUserId, 1);
+                coinsService.incrementCoins(sendUserId, 1, OperateTypeEnum.REPLY_BE_LIKED);
             } else if (LikeTypeEnum.POST.getType().equals(type)) {
                 // 帖子被赞增加2个币
                 PostDO postDO = postDAO.getById(id);
@@ -339,8 +336,7 @@ public class UserService {
 
                 Long creatorId = postDO.getCreatorId();
                 if (userId.equals(creatorId)) throw new BusinessException("禁止给自己点赞");
-
-                userDAO.incrementCoins(creatorId, 2);
+                coinsService.incrementCoins(creatorId, 2, OperateTypeEnum.POST_BE_LIKED);
             }
         } finally {
             distributedLock.unlock(key);
@@ -451,21 +447,9 @@ public class UserService {
     public Integer getVoiceState(Long userId) {
         UserDO userDO = userDAO.getById(userId);
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
-        return ObjUtil.isNull(userRemarkBO) || ObjUtil.isNull(userRemarkBO.getVoiceState()) ? 1 : userRemarkBO.getVoiceState();
-    }
-    /**
-     * 更新硬币数量
-     *
-     * @param userId 用户id
-     * @param coins 修改的硬币数
-     * @param operateType 操作类型
-     * @return 是否更新成功
-     */
-    public boolean incrementCoins(Long userId, int coins, OperateTypeEnum operateType) {
-        int result = userDAO.incrementCoins(userId, coins);
-        if (operateType != null) {
-            operationLogService.asynSaveOperateLog(userId, operateType);
+        if (ObjUtil.isNull(userRemarkBO) || ObjUtil.isNull(userRemarkBO.getVoiceState())) {
+            return VoiceStateEnum.OPEN.getValue();
         }
-        return result >= 1;
+        return userRemarkBO.getVoiceState();
     }
 }
