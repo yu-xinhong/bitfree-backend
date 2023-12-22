@@ -147,4 +147,10 @@
         WHERE name LIKE #{name}
         AND deleted = 0
     </select>
+    <select id="getUserLevelById" resultType="java.lang.Integer">
+        SELECT level
+        FROM user
+        WHERE id = #{userId}
+        AND deleted = 0
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.jihai.bitfree.service.strategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.base.enums.UserLevelEnum;
 import com.jihai.bitfree.dao.ActivityDAO;
 import com.jihai.bitfree.dao.OrderDAO;
 import com.jihai.bitfree.dao.UserDAO;
@@ -51,6 +52,8 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
     @Override
     @Transactional
     public boolean doKill(BaseActivityParam param) {
+        if (!UserLevelEnum.ULTIMATE.getLevel().equals(userDAO.getUserLevelById(param.getUserId())))
+            throw new BusinessException("旗舰用户才能参加周会");
         List<UserDO> userDOList = userDAO.getRanksByCoins();
         if (userDOList.stream().anyMatch(e -> e.getId().equals(param.getUserId()))) {
             coinsService.incrementCoins(param.getUserId(), - TOP_USER_COINS, OperateTypeEnum.ACTIVITY);

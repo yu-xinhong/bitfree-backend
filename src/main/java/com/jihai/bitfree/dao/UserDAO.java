@@ -47,4 +47,6 @@ public interface UserDAO {
     int getUserRank(@Param("userId") Long userId);
 
     List<UserDO> searchUser(@Param("name") String name);
+
+    Integer getUserLevelById(@Param("userId") Long userId);
 }
