@@ -2,6 +2,8 @@ package com.jihai.bitfree.entity;
 
 import com.jihai.bitfree.base.BaseDO;
 
+import java.util.Date;
+
 public class TaskBoardDO extends BaseDO {
 
     private String content;
@@ -15,6 +17,16 @@ public class TaskBoardDO extends BaseDO {
     private Integer status;
 
     private String remark;
+
+    public Date getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(Date receiveTime) {
+        this.receiveTime = receiveTime;
+    }
+
+    private Date receiveTime;
 
     public String getContent() {
         return content;

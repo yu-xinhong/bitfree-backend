@@ -13,11 +13,12 @@
         <result column="status" property="status" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
+        <result column="receive_time" property="receiveTime" />
         <result column="deleted" property="deleted" />
         <result column="remark" property="remark" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, content, coins, user_id, level, status, create_time, update_time, deleted, remark</sql>
+    <sql id="BASE_COLUMN">id, content, coins, user_id, level, status, create_time, update_time, receive_time, deleted, remark</sql>
 
     <select id="pageQueryTaskBoardListByStatus" resultType="com.jihai.bitfree.entity.TaskBoardDO">
         SELECT <include refid="BASE_COLUMN"/>

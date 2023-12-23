@@ -26,6 +26,16 @@ public class TaskBoardResp extends BaseResp {
 
     private Date createTime;
 
+    private Date receiveTime;
+
+    public Date getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(Date receiveTime) {
+        this.receiveTime = receiveTime;
+    }
+
     private Boolean completeFlag;
 
     public Long getId() {
