@@ -84,6 +84,7 @@ public class TaskBoardService {
             taskBoardResp.setStatus(taskBoardDO.getStatus());
             taskBoardResp.setRemark(taskBoardDO.getRemark());
             taskBoardResp.setCreateTime(taskBoardDO.getCreateTime());
+            taskBoardResp.setReceiveTime(taskBoardDO.getReceiveTime());
             taskBoardResp.setCompleteFlag(taskBoardAdminUserIdList.contains(userId));
             if(taskBoardDO.getUserId() != null){
                 taskBoardResp.setUserName(userIdMap.get(taskBoardDO.getUserId()).getName());
