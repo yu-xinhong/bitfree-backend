@@ -65,7 +65,9 @@
         <set>
             <if test="status != null">status = #{status},</if>
             user_id = #{userId},
-            update_time = NOW()
+            update_time = NOW(),
+            <if test="status != null and status == 0">receive_time = null</if>
+            <if test="status != null and status == 1">receive_time = NOW()</if>
         </set>
         WHERE id = #{id} AND deleted = 0
     </update>
