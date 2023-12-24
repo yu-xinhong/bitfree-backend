@@ -28,4 +28,6 @@ public interface CoinsDefinitions {
      * 发帖消耗硬币数量
      */
     Integer ADD_POST_COINS = 2;
+
+    Integer COMMITTED_QUESTION_COINS = 1;
 }

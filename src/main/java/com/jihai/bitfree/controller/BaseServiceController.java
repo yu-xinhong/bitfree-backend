@@ -3,7 +3,7 @@ package com.jihai.bitfree.controller;
 
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.ability.MonitorAbility;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.service.OperationLogService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,4 +11,8 @@ public interface QuestionDAO {
     void insert(QuestionDO questionDO);
 
     void deleteAll();
+
+    QuestionDO getById(Long parentId);
+
+    int updateStatus(Long id, Integer status);
 }

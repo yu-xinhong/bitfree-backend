@@ -1,16 +1,22 @@
-package com.jihai.bitfree.base.enums;
+package com.jihai.bitfree.enums;
 
-public enum MessageStatusEnum {
-    NOT_READ(0, "notRead"), READ(1, "read");
+public enum QuestionStatusEnum {
+
+    COMMITTED(0, "提交"),
+
+    VERIFIED(1, "审核过"),
+
+    REJECT(2, "拒绝");
 
     private final Integer status;
 
     private final String desc;
 
-    MessageStatusEnum(Integer status, String desc) {
+    QuestionStatusEnum(Integer status, String desc) {
         this.status = status;
         this.desc = desc;
     }
+
 
     public Integer getStatus() {
         return status;

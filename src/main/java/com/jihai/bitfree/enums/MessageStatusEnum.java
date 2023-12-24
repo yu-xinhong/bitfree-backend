@@ -1,18 +1,13 @@
-package com.jihai.bitfree.base.enums;
+package com.jihai.bitfree.enums;
 
-public enum TaskBoardStatusEnum {
-
-    TODO(0, "待办事项"),
-
-    DOING(1, "在办事项"),
-
-    DONE(2, "已办事项");
+public enum MessageStatusEnum {
+    NOT_READ(0, "notRead"), READ(1, "read");
 
     private final Integer status;
 
     private final String desc;
 
-    TaskBoardStatusEnum(Integer status, String desc) {
+    MessageStatusEnum(Integer status, String desc) {
         this.status = status;
         this.desc = desc;
     }

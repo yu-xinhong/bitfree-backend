@@ -3,12 +3,12 @@ package com.jihai.bitfree.controller;
 import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
+import com.jihai.bitfree.dto.req.AddNodeReq;
+import com.jihai.bitfree.dto.req.VerifyNodeReq;
 import com.jihai.bitfree.dto.resp.QuestionNodeResp;
 import com.jihai.bitfree.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +23,17 @@ public class QuestionController extends BaseController {
     @LoggedCheck
     public Result<List<QuestionNodeResp>> getTree() {
         return convertSuccessResult(questionService.getTree());
+    }
+
+    @PostMapping("addNode")
+    @LoggedCheck
+    public Result<Boolean> addNode(@RequestBody AddNodeReq addNodeReq) {
+        return convertSuccessResult(questionService.addNode(addNodeReq.getParentId(), addNodeReq.getContent(), getCurrentUser().getId()));
+    }
+
+    @PostMapping("verify")
+    @LoggedCheck
+    public Result<Boolean> verify(@RequestBody VerifyNodeReq verifyNodeReq) {
+        return convertSuccessResult(questionService.verify(verifyNodeReq.getNodeId(), verifyNodeReq.getStatus(), getCurrentUser().getId()));
     }
 }

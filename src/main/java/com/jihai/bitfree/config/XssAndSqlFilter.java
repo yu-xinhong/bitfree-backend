@@ -3,7 +3,7 @@ package com.jihai.bitfree.config;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.Result;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;

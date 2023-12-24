@@ -1,7 +1,7 @@
 package com.jihai.bitfree.service;
 
 import com.google.common.collect.Lists;
-import com.jihai.bitfree.base.enums.LikeTypeEnum;
+import com.jihai.bitfree.enums.LikeTypeEnum;
 import com.jihai.bitfree.dao.UserLikeDAO;
 import com.jihai.bitfree.dto.resp.ReplyListResp;
 import com.jihai.bitfree.entity.UserLikeDO;

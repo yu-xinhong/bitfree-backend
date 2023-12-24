@@ -1,4 +1,4 @@
-package com.jihai.bitfree.base.enums;
+package com.jihai.bitfree.enums;
 
 public enum UserLevelEnum {
 

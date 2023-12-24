@@ -1,8 +1,9 @@
 package com.jihai.bitfree.service.strategy;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
-import com.jihai.bitfree.base.enums.UserLevelEnum;
+import com.jihai.bitfree.enums.ActivityTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.UserLevelEnum;
 import com.jihai.bitfree.dao.ActivityDAO;
 import com.jihai.bitfree.dao.OrderDAO;
 import com.jihai.bitfree.dao.UserDAO;
