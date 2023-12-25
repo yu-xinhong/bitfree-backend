@@ -41,14 +41,7 @@ public class TaskBoardService {
     private UserDAO userDAO;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
-
-    @Autowired
-    private DistributedLock distributedLock;
-    @Autowired
     private ConfigService configService;
-    @Autowired
-    private CoinsService coinsService;
 
     @Autowired
     private List<TaskBoardStatus<BaseTaskBoardParam>> taskStatusHandler;

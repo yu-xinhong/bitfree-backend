@@ -75,18 +75,14 @@
         UPDATE task_board
         <set>
             user_id = #{userId},
-            update_time = NOW()
-            <if test="targetStatus != null">,status = #{targetStatus}</if>
-            <choose>
-                <when test="targetStatus != null">
-                    <if test="targetStatus == 0">
-                        ,receive_time = null
-                    </if>
-                    <if test="targetStatus == 1">
-                        ,receive_time = NOW()
-                    </if>
-                </when>
-            </choose>
+            update_time = NOW(),
+            status = #{targetStatus}
+            <if test="targetStatus == 0">
+                ,receive_time = null
+            </if>
+            <if test="targetStatus == 1">
+                ,receive_time = NOW()
+            </if>
         </set>
         WHERE id = #{id}
         AND status = #{beforeStatus}
