@@ -16,7 +16,11 @@ public enum TaskStatusEnum {
     /**
      * 2 结束
      */
-    DONE(2,"done");
+    DONE(2,"done"),
+    /**
+     * 取消操作, 实际为待办状态
+     */
+    CANCEL(0, "todo");
 
     private final Integer status;
     private final String desc;
