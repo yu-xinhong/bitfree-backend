@@ -34,7 +34,7 @@ public class ApplyTaskStatus extends TaskBoardStatus<BaseTaskBoardParam>{
     @Transactional(rollbackFor = Exception.class, isolation = READ_COMMITTED)
     public boolean doChange(BaseTaskBoardParam param) {
         UserDO userDO = userDAO.getById(param.getUserId());
-        if(! UserLevelEnum.ULTIMATE.getLevel().equals(userDO.getLevel())){
+        if(UserLevelEnum.COMMUNITY.getLevel().equals(userDO.getLevel())){
             throw new BusinessException("请升级旗舰版！");
         }
         List<TaskBoardDO> taskByTaskUserList = taskBoardDAO.getTaskByTaskUserId(param.getUserId(), TaskStatusEnum.DOING.getStatus());
