@@ -36,4 +36,11 @@ public class QuestionController extends BaseController {
     public Result<Boolean> verify(@RequestBody VerifyNodeReq verifyNodeReq) {
         return convertSuccessResult(questionService.verify(verifyNodeReq.getNodeId(), verifyNodeReq.getStatus(), getCurrentUser().getId()));
     }
+
+    @GetMapping("verifyRight")
+    @LoggedCheck
+    public Result<Boolean> verifyRight() {
+        return convertSuccessResult(questionService.verifyRight(getCurrentUser().getId()));
+    }
+
 }

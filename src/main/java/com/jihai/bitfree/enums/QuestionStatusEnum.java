@@ -1,8 +1,10 @@
 package com.jihai.bitfree.enums;
 
+import com.jihai.bitfree.exception.BusinessException;
+
 public enum QuestionStatusEnum {
 
-    COMMITTED(0, "提交"),
+    VERIFYING(0, "审核中"),
 
     VERIFIED(1, "审核过"),
 
@@ -15,6 +17,14 @@ public enum QuestionStatusEnum {
     QuestionStatusEnum(Integer status, String desc) {
         this.status = status;
         this.desc = desc;
+    }
+
+    public static QuestionStatusEnum getByCode(Integer status) {
+        if (status == null) return null;
+        for (QuestionStatusEnum questionStatusEnum : QuestionStatusEnum.values()) {
+            if (questionStatusEnum.getStatus().equals(status)) return questionStatusEnum;
+        }
+        throw new BusinessException("未知题目状态");
     }
 
 

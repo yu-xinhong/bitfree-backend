@@ -88,6 +88,10 @@ public class QuestionService {
     private QuestionNodeResp convert2QuestionResp(QuestionDO questionDO) {
         QuestionNodeResp questionNodeResp = new QuestionNodeResp();
         BeanUtils.copyProperties(questionDO, questionNodeResp);
+
+        if (! QuestionStatusEnum.VERIFIED.getStatus().equals(questionDO.getStatus())) {
+            questionNodeResp.setContent("【" + QuestionStatusEnum.getByCode(questionDO.getStatus()).getDesc() + "】" + questionDO.getContent());
+        }
         return questionNodeResp;
     }
 
@@ -97,7 +101,7 @@ public class QuestionService {
         questionDO.setParentId(parentId);
         questionDO.setLevel(parentNode.getLevel() + 1);
         questionDO.setContent(content);
-        questionDO.setStatus(QuestionStatusEnum.COMMITTED.getStatus());
+        questionDO.setStatus(QuestionStatusEnum.VERIFYING.getStatus());
         questionDO.setUserId(userId);
 
         questionDAO.insert(questionDO);
@@ -112,7 +116,7 @@ public class QuestionService {
         if (canVerifyUserIdList.stream().noneMatch(e -> e.equals(userId.toString()))) throw new BusinessException("无审核权限");
 
         QuestionDO questionDO = questionDAO.getById(nodeId);
-        if (! QuestionStatusEnum.COMMITTED.getStatus().equals(questionDO.getStatus())) throw new BusinessException("无法审核");
+        if (! QuestionStatusEnum.VERIFYING.getStatus().equals(questionDO.getStatus())) throw new BusinessException("无法审核");
 
         questionDAO.updateStatus(questionDO.getId(), status);
         if (QuestionStatusEnum.VERIFIED.getStatus().equals(status)) {
@@ -122,5 +126,9 @@ public class QuestionService {
             operationLogService.saveCoinsOperateLog(userId, OperateTypeEnum.COMMITTED_QUESTION, CoinsDefinitions.COMMITTED_QUESTION_COINS, userDO.getCoins());
         }
         return true;
+    }
+
+    public Boolean verifyRight(Long userId) {
+        return StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST)).contains(userId.toString());
     }
 }
