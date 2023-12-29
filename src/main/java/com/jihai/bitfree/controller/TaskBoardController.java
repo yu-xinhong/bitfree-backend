@@ -8,7 +8,7 @@ import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.dto.req.CommTaskReq;
 import com.jihai.bitfree.dto.req.TaskBoardReq;
 import com.jihai.bitfree.dto.resp.TaskBoardResp;
-import com.jihai.bitfree.enums.TaskStatusEnum;
+import com.jihai.bitfree.enums.TaskStrategyEnum;
 import com.jihai.bitfree.service.TaskBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,21 +31,21 @@ public class TaskBoardController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> applyForTask(@RequestBody CommTaskReq commTaskReq){
-        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStatusEnum.DOING));
+        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStrategyEnum.APPLY));
     }
 
     @PostMapping("/completeTask")
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> completeTask(@RequestBody CommTaskReq commTaskReq){
-        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStatusEnum.DONE));
+        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStrategyEnum.COMPLETE));
     }
 
     @PostMapping("/cancelTask")
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> cancelTask(@RequestBody CommTaskReq commTaskReq){
-        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStatusEnum.CANCEL));
+        return convertSuccessResult(taskBoardService.strategyChangeStatus(getCurrentUser().getId(), commTaskReq.getTaskId(), TaskStrategyEnum.CANCEL));
     }
 
 }

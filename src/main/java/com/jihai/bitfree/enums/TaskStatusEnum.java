@@ -18,9 +18,11 @@ public enum TaskStatusEnum {
      */
     DONE(2,"done"),
     /**
-     * 取消操作, 实际为待办状态
+     * 3 提交, 提交后需review才能到{@link #DONE}状态
      */
-    CANCEL(0, "todo");
+    SUBMIT(3, "submit")
+
+    ;
 
     private final Integer status;
     private final String desc;
