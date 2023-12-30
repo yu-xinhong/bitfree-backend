@@ -268,23 +268,8 @@ public class MessageService {
         return true;
     }
 
-    @Transactional
-    public Boolean deleteMessage(Long messageId) {
-        messageDAO.delete(messageId);
-        return true;
-    }
-
-    private void notifyAllUser(Long messageId) {
-        List<Long> userDOList = userDAO.listAllUserId();
-
-        List<MessageNoticeDO> messageNoticeDOList = userDOList.stream().map(userId -> {
-            MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
-            messageNoticeDO.setMessageId(messageId);
-            messageNoticeDO.setUserId(userId);
-            return messageNoticeDO;
-        }).collect(Collectors.toList());
-
-        messageNoticeDAO.batchInsert(messageNoticeDOList);
+    public Boolean deleteMessage(Long messageId, Long userId) {
+        return messageDAO.delete(messageId, userId) == 1;
     }
 
     public List<UserResp> getLiveUserCache() {

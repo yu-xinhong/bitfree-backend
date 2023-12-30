@@ -59,16 +59,9 @@ public class MonitorAbility {
             if (! response.getString("errcode").equals("0")) {
                 log.error("推送告警消息到机器人返回 {} 机器人返回异常信息 {}", postBodyJson.getInnerMap(), response.getString("errmsg"));
             }
-
-            // 发送到聊天室
-            notifyChat(message);
         } catch (Exception e) {
             log.error("发送告警信息异常", e);
         }
-    }
-
-    private void notifyChat(String message) {
-        messageService.sendMessage(message, null, Constants.ROBOT_SEND_USER_ID, null);
     }
 
     private boolean isSkipMonitor(String message) {
