@@ -34,5 +34,14 @@
         AND deleted = 0
     </select>
 
+    <select id="pageByUser" resultType="com.jihai.bitfree.entity.OrderDO">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM `order`
+        WHERE user_id = #{userId}
+        AND delete = 0
+        ORDER BY create_time DESC
+        LIMIT #{start}, #{size}
+    </select>
+
 
 </mapper>

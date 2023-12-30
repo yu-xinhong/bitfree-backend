@@ -46,6 +46,7 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
     /**
      * 1. 排行TOP10 直接参加，扣硬币32
      * 2. 排行非TOP10 抢购，扣16，库存锁定
+     *
      * @param param
      * @return
      */
@@ -55,13 +56,14 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
         if (!UserLevelEnum.ULTIMATE.getLevel().equals(userDAO.getUserLevelById(param.getUserId())))
             throw new BusinessException("旗舰用户才能参加周会");
         List<UserDO> userDOList = userDAO.getRanksByCoins();
+        int coins = 0;
         if (userDOList.stream().anyMatch(e -> e.getId().equals(param.getUserId()))) {
-            coinsService.incrementCoins(param.getUserId(), - TOP_USER_COINS, OperateTypeEnum.ACTIVITY);
+            coinsService.incrementCoins(param.getUserId(), -(coins = TOP_USER_COINS), OperateTypeEnum.ACTIVITY);
         } else {
             if (activityDAO.updateStock(param.getActivityId(), 1) == 0) {
                 throw new BusinessException("名额不足");
             }
-            coinsService.incrementCoins(param.getUserId(), - NOT_TOP_USER_COINS, OperateTypeEnum.ACTIVITY);
+            coinsService.incrementCoins(param.getUserId(), -(coins = NOT_TOP_USER_COINS), OperateTypeEnum.ACTIVITY);
         }
 
 
@@ -70,6 +72,7 @@ public class WeekendMeetingActivity extends Activity<BaseActivityParam> {
         orderDO.setActivityId(param.getActivityId());
         orderDO.setUserId(param.getUserId());
         orderDO.setCount(1);
+        orderDO.setCoins(coins);
         orderDO.setDetail(JSONObject.parseObject(activityDO.getDetail()).getString("detail"));
         orderDAO.insert(orderDO);
 
