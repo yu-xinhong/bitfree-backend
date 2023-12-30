@@ -21,7 +21,7 @@
     <update id="delete">
         UPDATE message
         SET deleted = 1
-        WHERE id = #{id} AND send_user_id = #{sendUserId} AND deleted = 0
+        WHERE id = #{id} AND send_user_id = #{userId} AND deleted = 0
     </update>
     <select id="pageQueryRecentList" resultType="com.jihai.bitfree.entity.MessageDO">
         SELECT <include refid="BASE_COLUMN"/>
