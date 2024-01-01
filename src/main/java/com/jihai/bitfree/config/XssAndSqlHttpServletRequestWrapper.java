@@ -1,5 +1,6 @@
 package com.jihai.bitfree.config;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.jihai.bitfree.utils.SecurityUtils;
@@ -148,7 +149,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
         in.close();
 
         //将body转换为map
-        Map<String,Object> map = JSONUtil.parseObj(body.toString());
+        Map<String,Object> map = JSONUtil.parseObj(CharSequenceUtil.isNotEmpty(body.toString()) ? body.toString() : "{}");
         //创建空的map用于存储结果
         Map<String,Object> resultMap = new HashMap<>(map.size());
         //遍历数组
