@@ -3,10 +3,10 @@ package com.jihai.bitfree.service.strategy;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.TaskBoardDAO;
-import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.TaskBoardDO;
 import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.enums.TaskStatusEnum;
+import com.jihai.bitfree.enums.TaskStrategyEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.CoinsService;
 import com.jihai.bitfree.service.ConfigService;
@@ -36,7 +36,7 @@ public class CompleteTaskStatus extends TaskBoardStatus<BaseTaskBoardParam>{
     private CoinsService coinsService;
 
     public CompleteTaskStatus() {
-        super(TaskStatusEnum.DOING, TaskStatusEnum.DONE);
+        super(TaskStatusEnum.DOING, TaskStrategyEnum.COMPLETE);
     }
 
     private final List<Long> taskBoardAdminUserIdList = Lists.newArrayList();
