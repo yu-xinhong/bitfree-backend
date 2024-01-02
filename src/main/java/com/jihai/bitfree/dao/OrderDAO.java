@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface OrderDAO {
 
+    int countByUser(long userId);
+
     OrderDO getUserActivity(Long userId, Long activityId);
 
     void insert(OrderDO orderDO);
