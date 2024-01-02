@@ -8,7 +8,11 @@ public class QuestionDO extends BaseDO {
 
     private Long parentId;
 
+    private Long userId;
+
     private Integer level;
+
+    private Integer status;
 
     private String remark;
 
@@ -28,12 +32,28 @@ public class QuestionDO extends BaseDO {
         this.parentId = parentId;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public Integer getLevel() {
         return level;
     }
 
     public void setLevel(Integer level) {
         this.level = level;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getRemark() {

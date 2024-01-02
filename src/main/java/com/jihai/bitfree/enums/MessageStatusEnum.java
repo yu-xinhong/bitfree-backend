@@ -1,4 +1,4 @@
-package com.jihai.bitfree.base.enums;
+package com.jihai.bitfree.enums;
 
 public enum MessageStatusEnum {
     NOT_READ(0, "notRead"), READ(1, "read");

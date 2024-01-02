@@ -24,4 +24,6 @@ public interface TaskBoardDAO {
     List<TaskBoardDO> getTaskByTaskUserId(Long userId,Integer status);
 
     Integer updateTaskBoard(TaskBoardDO taskBoardDO);
+
+    Integer updateByIdAndStatus(@Param("id")Integer id, @Param("userId")Long userId, @Param("beforeStatus")Integer beforeStatus, @Param("targetStatus")Integer targetStatus);
 }

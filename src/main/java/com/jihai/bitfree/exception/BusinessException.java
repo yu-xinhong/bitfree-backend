@@ -1,6 +1,6 @@
 package com.jihai.bitfree.exception;
 
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

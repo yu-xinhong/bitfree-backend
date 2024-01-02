@@ -2,8 +2,8 @@ package com.jihai.bitfree.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
-import com.jihai.bitfree.base.enums.UserLevelEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.UserLevelEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.entity.ConfigDO;

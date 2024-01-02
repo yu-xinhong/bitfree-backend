@@ -1,4 +1,4 @@
-package com.jihai.bitfree.service.strategy;
+package com.jihai.bitfree.enums;
 
 import com.jihai.bitfree.exception.BusinessException;
 

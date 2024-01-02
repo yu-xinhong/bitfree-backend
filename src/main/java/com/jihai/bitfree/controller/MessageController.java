@@ -30,7 +30,7 @@ public class MessageController extends BaseController {
     @PostMapping("/deleteMessage")
     @LoggedCheck
     public Result<Boolean> deleteMessage(@RequestParam("id") Long id) {
-        return convertSuccessResult(messageService.deleteMessage(id));
+        return convertSuccessResult(messageService.deleteMessage(id, getCurrentUser().getId()));
     }
 
     @PostMapping("/sendMessage")

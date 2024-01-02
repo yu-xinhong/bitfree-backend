@@ -2,12 +2,21 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jihai.bitfree.constants.CoinsDefinitions;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.QuestionDAO;
+import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.dto.resp.QuestionNodeResp;
 import com.jihai.bitfree.entity.QuestionDO;
+import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.QuestionStatusEnum;
+import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.utils.StringListUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -20,6 +29,15 @@ public class QuestionService {
 
     @Autowired
     private QuestionDAO questionDAO;
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private OperationLogService operationLogService;
+
+    @Autowired
+    private UserDAO userDAO;
 
     public List<QuestionNodeResp> getTree() {
         List<QuestionDO> questionDOList = questionDAO.getAll();
@@ -70,6 +88,47 @@ public class QuestionService {
     private QuestionNodeResp convert2QuestionResp(QuestionDO questionDO) {
         QuestionNodeResp questionNodeResp = new QuestionNodeResp();
         BeanUtils.copyProperties(questionDO, questionNodeResp);
+
+        if (! QuestionStatusEnum.VERIFIED.getStatus().equals(questionDO.getStatus())) {
+            questionNodeResp.setContent("【" + QuestionStatusEnum.getByCode(questionDO.getStatus()).getDesc() + "】" + questionDO.getContent());
+        }
         return questionNodeResp;
+    }
+
+    public Boolean addNode(Long parentId, String content, Long userId) {
+        QuestionDO parentNode = questionDAO.getById(parentId);
+        QuestionDO questionDO = new QuestionDO();
+        questionDO.setParentId(parentId);
+        questionDO.setLevel(parentNode.getLevel() + 1);
+        questionDO.setContent(content);
+        questionDO.setStatus(QuestionStatusEnum.VERIFYING.getStatus());
+        questionDO.setUserId(userId);
+
+        questionDAO.insert(questionDO);
+        return true;
+    }
+
+    @Transactional
+    public Boolean verify(Long nodeId, Integer status, Long userId) {
+        List<String> canVerifyUserIdList = StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST));
+        if (CollectionUtils.isEmpty(canVerifyUserIdList)) throw new BusinessException("可审核人为空");
+
+        if (canVerifyUserIdList.stream().noneMatch(e -> e.equals(userId.toString()))) throw new BusinessException("无审核权限");
+
+        QuestionDO questionDO = questionDAO.getById(nodeId);
+        if (! QuestionStatusEnum.VERIFYING.getStatus().equals(questionDO.getStatus())) throw new BusinessException("无法审核");
+
+        questionDAO.updateStatus(questionDO.getId(), status);
+        if (QuestionStatusEnum.VERIFIED.getStatus().equals(status)) {
+            // 奖励硬币
+            userDAO.incrementCoins(questionDO.getUserId(), CoinsDefinitions.COMMITTED_QUESTION_COINS);
+            UserDO userDO = userDAO.getById(questionDO.getUserId());
+            operationLogService.saveCoinsOperateLog(userId, OperateTypeEnum.COMMITTED_QUESTION, CoinsDefinitions.COMMITTED_QUESTION_COINS, userDO.getCoins());
+        }
+        return true;
+    }
+
+    public Boolean verifyRight(Long userId) {
+        return StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST)).contains(userId.toString());
     }
 }

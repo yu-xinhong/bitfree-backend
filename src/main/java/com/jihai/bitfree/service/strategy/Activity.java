@@ -1,5 +1,7 @@
 package com.jihai.bitfree.service.strategy;
 
+import com.jihai.bitfree.enums.ActivityTypeEnum;
+
 public abstract class Activity<P extends BaseActivityParam> {
 
     protected abstract boolean support(ActivityTypeEnum activityTypeEnum);

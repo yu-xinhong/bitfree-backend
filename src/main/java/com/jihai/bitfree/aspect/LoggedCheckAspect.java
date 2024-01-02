@@ -1,6 +1,6 @@
 package com.jihai.bitfree.aspect;
 
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.OperateLogDAO;
 import com.jihai.bitfree.dao.UserDAO;

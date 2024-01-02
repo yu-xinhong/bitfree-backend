@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.OperateRemarkBO;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.OperateLogDAO;
@@ -12,6 +11,7 @@ import com.jihai.bitfree.dto.req.GetCoinsRecordReq;
 import com.jihai.bitfree.dto.resp.CoinsRecordTypeResp;
 import com.jihai.bitfree.dto.resp.OperationResp;
 import com.jihai.bitfree.entity.OperateLogDO;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -28,19 +28,19 @@ public class OperationLogService {
     @Autowired
     private OperateLogDAO operateLogDAO;
 
-    private List<Integer> coinsOperTypeList;
+    private List<Integer> coinsOperateTypeList;
 
-    private List<OperateTypeEnum> coinsOperEnumList;
+    private List<OperateTypeEnum> coinsOperateEnumList;
 
     @PostConstruct
     private void init(){
-        coinsOperEnumList = Arrays.stream(OperateTypeEnum.values()).flatMap(typeEnum -> {
+        coinsOperateEnumList = Arrays.stream(OperateTypeEnum.values()).flatMap(typeEnum -> {
             if (typeEnum.getCoinCorrelation()) {
                 return Stream.of(typeEnum);
             }
             return null;
         }).collect(Collectors.toList());
-        coinsOperTypeList = coinsOperEnumList.stream().map(OperateTypeEnum::getCode).collect(Collectors.toList());
+        coinsOperateTypeList = coinsOperateEnumList.stream().map(OperateTypeEnum::getCode).collect(Collectors.toList());
     }
 
 
@@ -65,11 +65,11 @@ public class OperationLogService {
 
     public PageResult<OperationResp> getCoinsRecord(Long userId, GetCoinsRecordReq req) {
         if (CollUtil.isEmpty(req.getTypeList())){
-            req.setTypeList(coinsOperTypeList);
+            req.setTypeList(coinsOperateTypeList);
         }else {
             // 校验类型是否越权
             for (Integer type : req.getTypeList()) {
-                if (! coinsOperTypeList.contains(type)) {
+                if (! coinsOperateTypeList.contains(type)) {
                     throw new BusinessException("非法请求参数");
                 }
             }
@@ -81,7 +81,7 @@ public class OperationLogService {
             operationResp = new OperationResp();
             operationResp.setUserId(operateLogDO.getUserId());
             operationResp.setType(operateLogDO.getType());
-            Optional<OperateTypeEnum> operateTypeOptional = coinsOperEnumList.stream().filter(v -> Objects.equals(v.getCode(), operateLogDO.getType())).findFirst();
+            Optional<OperateTypeEnum> operateTypeOptional = coinsOperateEnumList.stream().filter(v -> Objects.equals(v.getCode(), operateLogDO.getType())).findFirst();
             operationResp.setTypeDesc(operateTypeOptional.map(OperateTypeEnum::getDesc).orElse(null));
             operationResp.setCreateTime(operateLogDO.getCreateTime());
             if (StrUtil.isNotBlank(operateLogDO.getRemark())) {
@@ -102,7 +102,7 @@ public class OperationLogService {
     public List<CoinsRecordTypeResp> getCoinsTypeList() {
         List<CoinsRecordTypeResp> recordTypeRespList = new ArrayList<>();
         CoinsRecordTypeResp coinsRecordTypeResp;
-        for (OperateTypeEnum operateTypeEnum : coinsOperEnumList) {
+        for (OperateTypeEnum operateTypeEnum : coinsOperateEnumList) {
             coinsRecordTypeResp = new CoinsRecordTypeResp();
             coinsRecordTypeResp.setCode(operateTypeEnum.getCode());
             coinsRecordTypeResp.setDesc(operateTypeEnum.getDesc());

@@ -1,7 +1,7 @@
 package com.jihai.bitfree.base;
 
 import cn.hutool.core.util.ObjUtil;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dto.resp.UserResp;

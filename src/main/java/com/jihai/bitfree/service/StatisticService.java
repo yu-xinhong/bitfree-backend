@@ -1,7 +1,7 @@
 package com.jihai.bitfree.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dao.ConfigDAO;
 import com.jihai.bitfree.dao.OperateLogDAO;

@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.service.ConfigService;
+import com.jihai.bitfree.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -27,6 +28,9 @@ public class MonitorAbility {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private MessageService messageService;
 
     @PostConstruct
     public void initRobotUrl() {

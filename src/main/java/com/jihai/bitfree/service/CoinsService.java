@@ -1,6 +1,6 @@
 package com.jihai.bitfree.service;
 
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.UserDO;

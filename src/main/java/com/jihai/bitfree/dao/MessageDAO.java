@@ -13,7 +13,7 @@ public interface MessageDAO {
 
     Integer insert(MessageDO messageDO);
 
-    Integer delete(@Param("id") Long id);
+    int delete(Long id, Long userId);
 
     Integer getRecentMessageCount();
 

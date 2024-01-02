@@ -3,14 +3,13 @@ package com.jihai.bitfree.config;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.jihai.bitfree.base.Result;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
 import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.NestedServletException;
 
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
  * @author : Immortal Chengge
  * @Description : //TODO
  **/
-@Component
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
 @Order(1)
 @Slf4j

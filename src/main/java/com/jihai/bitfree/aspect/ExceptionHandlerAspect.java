@@ -3,7 +3,7 @@ package com.jihai.bitfree.aspect;
 
 import com.jihai.bitfree.ability.MonitorAbility;
 import com.jihai.bitfree.base.Result;
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.utils.RequestUtils;
 import lombok.extern.slf4j.Slf4j;

@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.base.enums.MessageTypeEnum;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.MessageTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
@@ -28,7 +28,6 @@ import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -269,23 +268,8 @@ public class MessageService {
         return true;
     }
 
-    @Transactional
-    public Boolean deleteMessage(Long messageId) {
-        messageDAO.delete(messageId);
-        return true;
-    }
-
-    private void notifyAllUser(Long messageId) {
-        List<Long> userDOList = userDAO.listAllUserId();
-
-        List<MessageNoticeDO> messageNoticeDOList = userDOList.stream().map(userId -> {
-            MessageNoticeDO messageNoticeDO = new MessageNoticeDO();
-            messageNoticeDO.setMessageId(messageId);
-            messageNoticeDO.setUserId(userId);
-            return messageNoticeDO;
-        }).collect(Collectors.toList());
-
-        messageNoticeDAO.batchInsert(messageNoticeDOList);
+    public Boolean deleteMessage(Long messageId, Long userId) {
+        return messageDAO.delete(messageId, userId) == 1;
     }
 
     public List<UserResp> getLiveUserCache() {

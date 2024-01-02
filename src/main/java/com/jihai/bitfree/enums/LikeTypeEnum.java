@@ -1,16 +1,14 @@
-package com.jihai.bitfree.base.enums;
+package com.jihai.bitfree.enums;
 
-public enum MessageTypeEnum {
-
-    MESSAGE(0, "聊天消息"),
-    NOTIFICATION(1, "站内通知"),
-    MESSAGE_MENTION(2, "聊天消息被@");
+public enum LikeTypeEnum {
+    POST(1, "帖子"),
+    REPLY(2, "回复");
 
     private final Integer type;
 
     private final String desc;
 
-    MessageTypeEnum(Integer type, String desc) {
+    LikeTypeEnum(Integer type, String desc) {
         this.type = type;
         this.desc = desc;
     }
@@ -22,4 +20,5 @@ public enum MessageTypeEnum {
     public String getDesc() {
         return desc;
     }
+
 }

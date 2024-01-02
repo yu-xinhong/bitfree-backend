@@ -1,6 +1,6 @@
 package com.jihai.bitfree.base;
 
-import com.jihai.bitfree.base.enums.ReturnCodeEnum;
+import com.jihai.bitfree.enums.ReturnCodeEnum;
 
 import java.io.Serializable;
 

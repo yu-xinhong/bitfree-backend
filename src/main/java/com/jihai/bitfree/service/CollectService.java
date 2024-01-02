@@ -2,7 +2,7 @@ package com.jihai.bitfree.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.jihai.bitfree.base.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.dao.CollectDAO;
 import com.jihai.bitfree.dao.PostDAO;
