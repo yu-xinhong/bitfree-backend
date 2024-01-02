@@ -58,10 +58,14 @@ public class TaskBoardService {
         if (StringUtils.isEmpty(userIdConfigVal)) return ;
         List<String> userIdStrList = Arrays.asList((userIdConfigVal.split(",")));
         taskBoardAdminUserIdList.addAll(userIdStrList.stream().map(Long::valueOf).collect(Collectors.toList()));
+    }
 
+    @PostConstruct
+    public void initTaskStrategy(){
         taskStatusHandlerMap = taskStatusHandler.stream().collect(Collectors.toMap(TaskBoardStatus::supportStatus, i -> i,
                 (b, a) -> {throw new BusinessException("看板状态变更策略存在冲突: " + b.supportStatus());}));
     }
+
 
     public PageResult<TaskBoardResp> pageQueryTaskBoardList(Long userId, TaskBoardReq taskBoardReq){
         int start = (taskBoardReq.getPage() - 1) * taskBoardReq.getSize();
