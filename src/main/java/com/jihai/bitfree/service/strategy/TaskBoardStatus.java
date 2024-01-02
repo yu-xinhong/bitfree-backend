@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service.strategy;
 
 import com.jihai.bitfree.enums.TaskStatusEnum;
+import com.jihai.bitfree.enums.TaskStrategyEnum;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
@@ -18,9 +19,9 @@ public abstract class TaskBoardStatus<X extends BaseTaskBoardParam> {
     /**
      * 指定状态变更的类型, before -> target
      */
-    protected TaskBoardStatus(TaskStatusEnum beforeStatus, TaskStatusEnum strategyStatus) {
+    protected TaskBoardStatus(TaskStatusEnum beforeStatus, TaskStrategyEnum strategyStatus) {
         this.beforeStatus = beforeStatus;
-        this.strategyStatus = strategyStatus;
+        this.strategyStatus = strategyStatus.status;
     }
 
     @Transactional(rollbackFor = Exception.class, isolation = READ_COMMITTED)

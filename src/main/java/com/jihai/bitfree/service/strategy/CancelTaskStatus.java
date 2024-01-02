@@ -2,6 +2,7 @@ package com.jihai.bitfree.service.strategy;
 
 import com.jihai.bitfree.dao.TaskBoardDAO;
 import com.jihai.bitfree.enums.TaskStatusEnum;
+import com.jihai.bitfree.enums.TaskStrategyEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,7 @@ public class CancelTaskStatus extends TaskBoardStatus<BaseTaskBoardParam>{
     private TaskBoardDAO taskBoardDAO;
 
     public CancelTaskStatus() {
-        super(TaskStatusEnum.DOING, TaskStatusEnum.CANCEL);
+        super(TaskStatusEnum.DOING, TaskStrategyEnum.CANCEL);
     }
 
 

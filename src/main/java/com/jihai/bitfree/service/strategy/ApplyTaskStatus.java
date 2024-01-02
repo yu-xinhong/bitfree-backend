@@ -1,11 +1,11 @@
 package com.jihai.bitfree.service.strategy;
 
-import cn.hutool.core.util.ObjUtil;
 import com.jihai.bitfree.dao.TaskBoardDAO;
 import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.TaskBoardDO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.enums.TaskStatusEnum;
+import com.jihai.bitfree.enums.TaskStrategyEnum;
 import com.jihai.bitfree.enums.UserLevelEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,7 +27,7 @@ public class ApplyTaskStatus extends TaskBoardStatus<BaseTaskBoardParam>{
     private TaskBoardDAO taskBoardDAO;
 
     public ApplyTaskStatus() {
-        super(TaskStatusEnum.TODO, TaskStatusEnum.DOING);
+        super(TaskStatusEnum.TODO, TaskStrategyEnum.APPLY);
     }
 
     @Override
