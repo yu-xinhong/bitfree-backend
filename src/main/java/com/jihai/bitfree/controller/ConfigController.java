@@ -8,9 +8,12 @@ import com.jihai.bitfree.base.Result;
 import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.dto.req.ModifyLimitReq;
 import com.jihai.bitfree.service.ConfigService;
+import com.jihai.bitfree.support.ConfigSynchronizer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/config")
 public class ConfigController extends BaseController {
@@ -20,6 +23,9 @@ public class ConfigController extends BaseController {
 
     @Autowired
     private IpLimiterAspect ipLimiterAspect;
+
+    @Autowired
+    private ConfigSynchronizer configSynchronizer;
 
     @GetMapping("/getDefaultPoster")
     @LoggedCheck
@@ -34,4 +40,13 @@ public class ConfigController extends BaseController {
         ipLimiterAspect.modifyCount(modifyLimitReq.getCount());
         return convertSuccessResult(true);
     }
+
+    @PostMapping("/syncPresetConfig/{secret}")
+    @ParameterCheck
+    public Result<Boolean> syncPresetConfig(@PathVariable("secret") String secret){
+        checkSecret(secret);
+        configSynchronizer.refresh();
+        return convertSuccessResult(true);
+    }
+
 }
