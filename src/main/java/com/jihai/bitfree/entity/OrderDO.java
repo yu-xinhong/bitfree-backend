@@ -10,7 +10,17 @@ public class OrderDO extends BaseDO {
 
     private Integer count;
 
+    private Integer coins;
+
     private String detail;
+
+    public Integer getCoins() {
+        return coins;
+    }
+
+    public void setCoins(Integer coins) {
+        this.coins = coins;
+    }
 
     public Long getUserId() {
         return userId;

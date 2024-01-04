@@ -4,7 +4,6 @@
 #
 # https://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
-#
 # Host: 124.222.49.162 (MySQL 8.0.33)
 # Database: bitfree
 # Generation Time: 2023-12-09 06:14:38 +0000
@@ -195,7 +194,7 @@ CREATE TABLE `operate_log` (
   `deleted` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=106277 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=106277 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 # Dump of table order
@@ -207,6 +206,7 @@ CREATE TABLE `order` (
   `activity_id` bigint NOT NULL,
   `count` int NOT NULL,
   `detail` text,
+  `coins` int DEFAULT NULL,
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
