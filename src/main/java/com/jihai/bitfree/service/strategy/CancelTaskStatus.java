@@ -23,7 +23,7 @@ public class CancelTaskStatus extends TaskBoardStatus<BaseTaskBoardParam>{
     @Override
     @Transactional(rollbackFor = Exception.class, isolation = READ_COMMITTED)
     public boolean doChange(BaseTaskBoardParam param) {
-        int updateColumn = taskBoardDAO.updateByIdAndStatus(param.getTaskId(), param.getUserId(), beforeStatus().getStatus(), supportStatus().getStatus());
+        int updateColumn = taskBoardDAO.updateByIdAndStatus(param.getTaskId(), null, beforeStatus().getStatus(), supportStatus().getStatus());
         return updateColumn == 1;
     }
 
