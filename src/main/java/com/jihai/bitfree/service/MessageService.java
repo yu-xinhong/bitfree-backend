@@ -8,8 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.enums.MessageTypeEnum;
-import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.bo.UserRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
@@ -24,7 +22,8 @@ import com.jihai.bitfree.entity.MessageDO;
 import com.jihai.bitfree.entity.MessageNoticeDO;
 import com.jihai.bitfree.entity.OperateLogDO;
 import com.jihai.bitfree.entity.UserDO;
-import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.enums.MessageTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
 import com.jihai.bitfree.lock.DistributedLock;
 import com.jihai.bitfree.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -329,7 +328,7 @@ public class MessageService {
         long currentSystemTimestamp = System.currentTimeMillis();
         if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() < HEARTBEAT_TIME) {
             heartbeatCache.invalidate(userId);
-            throw new BusinessException("无效心跳");
+            log.warn("无效心跳, uid: {}", userId);
         }
 
         heartbeat.setCount(heartbeat.getCount() + 1);
