@@ -11,4 +11,6 @@ public interface LockKeyConstants {
     String RESET_PASSWORD = "IP_RESET_";
     String UPDATE_USER = "UPDATE_USER_";
     String UPDATE_COINS = "UPDATE_COINS_";
+    String ADD_POST = "ADD_POST_";
+    String ADOPT_REPLY = "ADOPT_REPLY_";
 }

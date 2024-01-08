@@ -58,7 +58,7 @@
                 AND create_time &gt; #{filterHistoryTime}
             </if>
         </where>
-        ORDER BY create_time desc LIMIT #{start}, #{size}
+        ORDER BY create_time desc, id desc LIMIT #{start}, #{size}
     </select>
 
     <select id="countByUserIdAndTypeList" resultType="java.lang.Integer">

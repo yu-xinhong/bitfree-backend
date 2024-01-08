@@ -100,7 +100,7 @@ public class PostController extends BaseController {
     @ParameterCheck
     @LoggedCheck
     public Result<Boolean> add(@RequestBody AddPostReq addPostReq) {
-        postService.add(addPostReq.getTitle(), addPostReq.getContent(), addPostReq.getTopicId(), getCurrentUser().getId());
+        postService.add(addPostReq, getCurrentUser().getId());
         return convertSuccessResult(true);
     }
 
@@ -183,5 +183,12 @@ public class PostController extends BaseController {
     @LoggedCheck
     public Result<Boolean> hasCollected(HasCollectReq hasCollectReq) {
         return convertSuccessResult(collectService.hasCollected(hasCollectReq.getPostId(), getCurrentUser().getId()));
+    }
+
+    @PostMapping("/adoptReply")
+    @LoggedCheck
+    @ParameterCheck
+    public Result<Object> adoptReply(@RequestBody AdoptReplyReq adoptReplyReq){
+        return convertSuccessResult(replyService.adoptReply(adoptReplyReq, getCurrentUser().getId()));
     }
 }

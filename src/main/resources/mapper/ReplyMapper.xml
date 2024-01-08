@@ -10,12 +10,13 @@
         <result column="post_id" property="postId" />
         <result column="target_reply_id" property="targetReplyId" />
         <result column="reply_content" property="replyContent" />
+        <result column="status" property="status" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, send_user_id, receiver_id, post_id, target_reply_id, reply_content, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, send_user_id, receiver_id, post_id, target_reply_id, reply_content, status, create_time, update_time, deleted</sql>
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO reply(`send_user_id`,`receiver_id`,`post_id`,`target_reply_id`, `reply_content`)
         VALUE(#{sendUserId}, #{receiverId}, #{postId}, #{targetReplyId}, #{replyContent})
@@ -89,4 +90,17 @@
         WHERE  receiver_id = #{userId}
         AND deleted = 0
     </select>
+
+    <select id="getReplyById" resultMap="replyResultMap">
+        SELECT <include refid="BASE_COLUMN"/>
+        FROM reply
+        WHERE id = #{id}
+        AND deleted = 0
+    </select>
+
+    <update id="updateReplyStatus">
+        UPDATE reply
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
 </mapper>

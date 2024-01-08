@@ -14,6 +14,10 @@ public class PostDO extends BaseDO {
 
     private Integer type;
 
+    private Integer status;
+
+    private String remark;
+
     private Long creatorId;
 
     private Integer topicId;
@@ -58,6 +62,22 @@ public class PostDO extends BaseDO {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Integer getTopicId() {

@@ -30,4 +30,8 @@ public interface ReplyDAO {
     void deletedById(Long id);
 
     void deletedByTargetId(@Param("targetReplyId") Long targetReplyId);
+
+    ReplyDO getReplyById(@Param("id") Long replyId);
+
+    Integer updateReplyStatus(@Param("id") Long replyId, @Param("status") Integer status);
 }
