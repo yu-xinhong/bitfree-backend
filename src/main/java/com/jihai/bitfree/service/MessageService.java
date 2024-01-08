@@ -329,6 +329,7 @@ public class MessageService {
         if (heartbeat.getTimestamp() != null && currentSystemTimestamp - heartbeat.getTimestamp() < HEARTBEAT_TIME) {
             heartbeatCache.invalidate(userId);
             log.warn("无效心跳, uid: {}", userId);
+            return true;
         }
 
         heartbeat.setCount(heartbeat.getCount() + 1);
