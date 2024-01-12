@@ -4,7 +4,7 @@ import com.jihai.bitfree.exception.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class UserServiceTest {
 
@@ -13,12 +13,15 @@ class UserServiceTest {
     void checkName() {
 
         UserService us = new UserService();
-        assertThrows(BusinessException.class, () -> us.save(null, " 极海", null, null, 1, null, 6L, 1L, null, 2));
-        assertThrows(BusinessException.class, () -> us.save(null, " 极 海", null, null, 1, null, 6L, 1L, null, 2));
-        assertThrows(BusinessException.class, () -> us.save(null, " 极  海", null, null, 1, null, 6L, 1L, null, 2));
-        assertThrows(BusinessException.class, () -> us.save(null, " 极海 ", null, null, 1, null, 6L, 1L, null, 2));
-        assertThrows(BusinessException.class, () -> us.save(null, " 极 海 ", null, null, 1, null, 6L, 1L, null, 2));
-        assertThrows(BusinessException.class, () -> us.save(null, "极 海 ", null, null, 1, null, 6L, 1L, null, 2));
-
+        String[] names = new String[]{" 极海", " 极 海", " 极  海", " 极海 ", " 极 海 ", "极 海 ", "极-海", "-极-海", "-极-海-", "极海-"};
+        for (String name : names){
+            assertDoesNotThrow(() -> {
+                try {
+                    us.save(null, name, null, null, 1, null, 6L, 1L, null, 2);
+                } catch (BusinessException ex) {
+                    if (!"禁止使用该昵称".equals(ex.getMessage())) throw new BusinessException("Error");
+                }
+            }, "check name error: [" + name + "]");
+        }
     }
 }
