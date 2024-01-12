@@ -183,7 +183,7 @@ public class UserService {
 
     public Boolean save(String avatar, String name, String city, String position, Integer seniority, String github, Long inviteUserId, Long userId, String currentName, Integer level) {
         if (!StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
-        if (!StringUtils.isEmpty(name) && name.contains("极海")) throw new BusinessException("禁止使用该昵称");
+        if (!StringUtils.isEmpty(name) && org.apache.commons.lang3.StringUtils.containsAny("极海", name)) throw new BusinessException("禁止使用该昵称");
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && ! UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
