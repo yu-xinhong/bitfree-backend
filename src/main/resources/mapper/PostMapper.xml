@@ -10,19 +10,21 @@
         <result column="content" property="content" />
         <result column="creator_id" property="creatorId" />
         <result column="type" property="type" />
+        <result column="status" property="status" />
         <result column="view_count" property="viewCount" />
         <result column="topic_id" property="topicId" />
+        <result column="remark" property="remark" />
         <result column="last_updater_id" property="lastUpdaterId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <sql id="BASE_COLUMN">id, title, content, creator_id, type, topic_id, view_count, last_updater_id, create_time, update_time, deleted</sql>
+    <sql id="BASE_COLUMN">id, title, content, creator_id, type, status, topic_id, remark, view_count, last_updater_id, create_time, update_time, deleted</sql>
 
     <insert id="insert">
-        INSERT INTO post(`title`, `content`, `type`, `creator_id`, `topic_id`, `last_updater_id`)
-        VALUE(#{title}, #{content}, #{type}, #{creatorId}, #{topicId}, #{lastUpdaterId})
+        INSERT INTO post(`title`, `content`, `type`, `status`, `creator_id`, `topic_id`, `remark`, `last_updater_id`)
+            VALUE (#{title}, #{content}, #{type}, #{status}, #{creatorId}, #{topicId}, #{remark}, #{lastUpdaterId})
     </insert>
     <update id="updateTime">
         UPDATE post SET update_time = NOW()

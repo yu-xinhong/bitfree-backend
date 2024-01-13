@@ -24,6 +24,11 @@ public class PostItemResp extends BaseResp {
 
     private Boolean newPost;
 
+    /**
+     * 0-悬赏
+     */
+    private Integer status;
+
     public Long getId() {
         return id;
     }
@@ -94,5 +99,13 @@ public class PostItemResp extends BaseResp {
 
     public void setNewPost(Boolean newPost) {
         this.newPost = newPost;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

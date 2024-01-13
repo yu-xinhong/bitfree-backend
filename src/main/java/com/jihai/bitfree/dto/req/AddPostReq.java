@@ -20,6 +20,8 @@ public class AddPostReq extends BaseReq {
     @NotNull(message = "topic不能为空")
     private Integer topicId;
 
+    private Integer coinsNum;
+
     public String getTitle() {
         return title;
     }
@@ -42,5 +44,13 @@ public class AddPostReq extends BaseReq {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getCoinsNum() {
+        return coinsNum;
+    }
+
+    public void setCoinsNum(Integer coinsNum) {
+        this.coinsNum = coinsNum;
     }
 }

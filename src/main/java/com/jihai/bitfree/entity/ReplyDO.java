@@ -16,6 +16,10 @@ public class ReplyDO extends BaseDO {
     private Long targetReplyId;
 
     private String replyContent;
+    /**
+     * 0-采纳
+     */
+    private Integer status;
 
     public Long getSendUserId() {
         return sendUserId;
@@ -55,5 +59,13 @@ public class ReplyDO extends BaseDO {
 
     public void setReplyContent(String replyContent) {
         this.replyContent = replyContent;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

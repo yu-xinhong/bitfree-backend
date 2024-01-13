@@ -1,7 +1,5 @@
 package com.jihai.bitfree.enums;
 
-import com.jihai.bitfree.service.CollectService;
-
 public enum OperateTypeEnum {
     INIT_USER(1, "初始化", false),
     UPDATE_PASSWORD(2, "修改密码", false),
@@ -22,7 +20,9 @@ public enum OperateTypeEnum {
     POST_BE_LIKED(16, "帖子点赞激励", true),
     POST_BE_COLLECTED(17, "帖子收藏激励", true),
     POST_UN_COLLECT(18, "帖子取消收藏", true),
-    COMMITTED_QUESTION(19, "提交题库", true)
+    COMMITTED_QUESTION(19, "提交题库", true),
+    REWARD_COINS(20, "帖子悬赏", true),
+    ADOPT_REPLY(21, "评论精选", true)
     ;
 
 

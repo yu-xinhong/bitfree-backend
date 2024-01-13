@@ -1,25 +1,39 @@
 package com.jihai.bitfree.service;
 
+import cn.hutool.core.util.ObjUtil;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.dao.*;
+import com.jihai.bitfree.bo.PostRemarkBO;
+import com.jihai.bitfree.constants.LockKeyConstants;
+import com.jihai.bitfree.dao.PostDAO;
+import com.jihai.bitfree.dao.ReplyDAO;
+import com.jihai.bitfree.dao.ReplyNoticeDAO;
+import com.jihai.bitfree.dao.UserDAO;
+import com.jihai.bitfree.dto.req.AdoptReplyReq;
 import com.jihai.bitfree.dto.resp.ReplyListResp;
 import com.jihai.bitfree.dto.resp.UserReplyResp;
 import com.jihai.bitfree.entity.PostDO;
 import com.jihai.bitfree.entity.ReplyDO;
 import com.jihai.bitfree.entity.ReplyNoticeDO;
 import com.jihai.bitfree.entity.UserDO;
+import com.jihai.bitfree.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.PostStatusEnum;
+import com.jihai.bitfree.enums.ReplyStatusEnum;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.lock.LockTemplateSupport;
 import com.jihai.bitfree.utils.DO2DTOConvert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +54,13 @@ public class ReplyService {
     private ReplyNoticeDAO replyNoticeDAO;
 
     @Autowired
-    private UserLikeDAO userLikeDAO;
+    private CoinsService coinsService;
+
+    @Autowired
+    private LockTemplateSupport lockTemplateSupport;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     public List<ReplyListResp> getReplyList(Long id, String order) {
         List<ReplyListResp> replyListResps = Lists.newArrayList();
@@ -93,6 +113,11 @@ public class ReplyService {
             }
             return rootReply;
         }).sorted((reply1, reply2) -> {
+            if (ObjUtil.isNotNull(reply1.getStatus()) || ObjUtil.isNotNull(reply2.getStatus())) {
+                if (reply1.getStatus() == null) return 1;
+                if (reply2.getStatus() == null) return -1;
+                return reply1.getStatus() >= reply2.getStatus() ? -1 : 1;
+            }
             long time1 = reply1.getCreateTime().getTime();
             long time2 = reply2.getCreateTime().getTime();
             return "DESC".equals(order) ? (time2 >= time1 ? 1 : -1) : (time1 >= time2 ? 1 : -1);
@@ -108,7 +133,7 @@ public class ReplyService {
         replyListResp.setReplyContent(mainReply.getReplyContent());
         replyListResp.setTargetReplyId(mainReply.getTargetReplyId());
         replyListResp.setCreateTime(mainReply.getCreateTime());
-
+        replyListResp.setStatus(mainReply.getStatus());
         replyListResp.setSendUser(DO2DTOConvert.convertUser(idUserMap.get(mainReply.getSendUserId())));
         replyListResp.setReceiveUser(DO2DTOConvert.convertUser(idUserMap.get(mainReply.getReceiverId())));
 //        replyListResp.setCreatorId(mainReply.getSendUserId());
@@ -250,5 +275,43 @@ public class ReplyService {
         if (CollectionUtils.isEmpty(replyDOList)) return new PageResult<>(Collections.EMPTY_LIST, 0);
         Integer count = replyDAO.countByReceiverId(userId);
         return buildPageQueryList(replyDOList, count);
+    }
+
+    public Object adoptReply(AdoptReplyReq adoptReplyReq, Long userId) {
+        // 校验
+        String lockKey = LockKeyConstants.ADOPT_REPLY + adoptReplyReq.getPostId();
+        lockTemplateSupport.lock(lockKey, 1, TimeUnit.MINUTES, () -> {
+            PostDO postDO = postDAO.getById(adoptReplyReq.getPostId());
+
+            if (ObjUtil.isNull(postDO)) throw new BusinessException("帖子不存在");
+            if (! userId.equals(postDO.getCreatorId())) throw new BusinessException("不是发帖人");
+            if (! PostStatusEnum.REWARD.getStatus().equals(postDO.getStatus())) throw new BusinessException("不是悬赏贴");
+            List<ReplyDO> replyDOList = replyDAO.getByPostId(adoptReplyReq.getPostId());
+            ReplyDO replyDO = null;
+            boolean hasAdopted = false;
+            for (ReplyDO reply : replyDOList) {
+                // 帖子下有这个评论，并且他不是子回复
+                if (reply.getId().equals(adoptReplyReq.getReplyId()) && reply.getTargetReplyId() == null) {
+                    replyDO = reply;
+                }
+                // 找到是否已经有采纳的评论
+                if (reply.getStatus() != null && Objects.equals(ReplyStatusEnum.REWARD.getStatus(), reply.getStatus())) {
+                    hasAdopted = true;
+                }
+            }
+            if (ObjUtil.isNull(replyDO)) throw new BusinessException("评论不存在");
+            if (replyDO.getSendUserId().equals(userId)) throw new BusinessException("不能采纳自己的评论");
+            if (hasAdopted) throw new BusinessException("已有采纳评论");
+            Long sendUserId = replyDO.getSendUserId();
+            transactionTemplate.execute(action -> {
+                // 修改评论状态 -> 发放奖励
+                replyDAO.updateReplyStatus(adoptReplyReq.getReplyId(), ReplyStatusEnum.REWARD.getStatus());
+                PostRemarkBO postRemarkBO = JSON.parseObject(postDO.getRemark(), PostRemarkBO.class);
+                coinsService.incrementCoins(sendUserId, postRemarkBO.getRewardCoins(), OperateTypeEnum.ADOPT_REPLY);
+                return true;
+            });
+
+        });
+        return true;
     }
 }

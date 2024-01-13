@@ -14,6 +14,10 @@ public class ReplyListResp extends BaseResp {
 //    private String avatar;
 
     private String replyContent;
+    /**
+     * 0-采纳
+     */
+    private Integer status ;
 
 //    private String name;
 
@@ -65,6 +69,13 @@ public class ReplyListResp extends BaseResp {
         this.replyContent = replyContent;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 //    public String getName() {
 //        return name;
 //    }

@@ -1,20 +1,27 @@
 package com.jihai.bitfree.service;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jihai.bitfree.base.PageResult;
-import com.jihai.bitfree.enums.LikeTypeEnum;
-import com.jihai.bitfree.enums.PostTypeEnum;
+import com.jihai.bitfree.bo.PostRemarkBO;
 import com.jihai.bitfree.constants.CoinsDefinitions;
 import com.jihai.bitfree.constants.Constants;
+import com.jihai.bitfree.constants.LockKeyConstants;
 import com.jihai.bitfree.dao.*;
+import com.jihai.bitfree.dto.req.AddPostReq;
 import com.jihai.bitfree.dto.resp.PostDetailResp;
 import com.jihai.bitfree.dto.resp.PostItemResp;
 import com.jihai.bitfree.dto.resp.RankPostItemResp;
 import com.jihai.bitfree.dto.resp.VideoListResp;
 import com.jihai.bitfree.entity.*;
+import com.jihai.bitfree.enums.LikeTypeEnum;
+import com.jihai.bitfree.enums.OperateTypeEnum;
+import com.jihai.bitfree.enums.PostStatusEnum;
+import com.jihai.bitfree.enums.PostTypeEnum;
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.lock.LockTemplateSupport;
 import com.jihai.bitfree.utils.DataConvert;
 import com.jihai.bitfree.utils.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +29,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,6 +65,14 @@ public class PostService {
     @Autowired
     private UserLikeDAO userLikeDAO;
 
+    @Autowired
+    private CoinsService coinsService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private LockTemplateSupport lockTemplateSupport;
 
     public List<PostItemResp> pageQuery(Integer page, Integer size, Long topicId, String searchText, Long userId, boolean includeTopList) {
         List<PostDO> resultPostList = Lists.newArrayList();
@@ -106,6 +123,7 @@ public class PostService {
             Long replyCount = replyCountMap.getOrDefault(postDO.getId(), 0L);
             postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
             postItemResp.setNewPost(isNew(postDO.getCreateTime()));
+            postItemResp.setStatus(postDO.getStatus());
                 // 获取最新回复的人的名字
             if (replyCount > 0) {
                 List<ReplyDO> curPostReplyList = replyDOList.stream().filter(replyDO -> replyDO.getPostId().equals(postDO.getId())).collect(Collectors.toList());
@@ -152,24 +170,33 @@ public class PostService {
         return postDetailResp;
     }
 
-    @Transactional
-    public void add(String title, String content, Integer topicId, Long userId) {
-        // 理论上要加锁，这里简单乐观锁实现, 因为并发概率很低
-        userService.checkCoins(userId, 2);
-
+    public void add(AddPostReq addPostReq, Long userId) {
         PostDO postDO = new PostDO();
 
         postDO.setCreatorId(userId);
-        postDO.setTitle(title);
-        postDO.setContent(content);
-        postDO.setTopicId(topicId);
+        postDO.setTitle(addPostReq.getTitle());
+        postDO.setContent(addPostReq.getContent());
+        postDO.setTopicId(addPostReq.getTopicId());
         postDO.setLastUpdaterId(userId);
 
-        postDO.setType(getTypeContent(content));
-        postDAO.insert(postDO);
+        postDO.setType(getTypeContent(addPostReq.getContent()));
+        String lockKey = LockKeyConstants.ADD_POST + userId;
+        lockTemplateSupport.lock(lockKey, 1, TimeUnit.MINUTES, () -> {
+            transactionTemplate.execute(action -> {
+                if (null != addPostReq.getCoinsNum() && addPostReq.getCoinsNum() > 0) {
+                    coinsService.incrementCoins(userId, -addPostReq.getCoinsNum(), OperateTypeEnum.REWARD_COINS);
+                    postDO.setStatus(PostStatusEnum.REWARD.getStatus());
+                    PostRemarkBO postRemarkBO = new PostRemarkBO();
+                    postRemarkBO.setRewardCoins(addPostReq.getCoinsNum());
+                    postDO.setRemark(JSON.toJSONString(postRemarkBO));
+                }
+                postDAO.insert(postDO);
 
-        // 这里会再去判断coins >= 2
-        userService.consumeCoins(userId, CoinsDefinitions.ADD_POST_COINS);
+                // 这里会再去判断coins >= 2
+                coinsService.incrementCoins(userId, -CoinsDefinitions.ADD_POST_COINS, OperateTypeEnum.POST_CONSUME);
+                return true;
+            });
+        });
     }
 
     private Integer getTypeContent(String content) {
