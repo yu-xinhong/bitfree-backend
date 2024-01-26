@@ -187,7 +187,6 @@ public class UserService {
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && ! UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
-        if (userId.equals(inviteUserId)) throw new BusinessException("禁止邀请自己");
         lockTemplateSupport.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS, () -> {
             if (!name.equals(currentName)) {
                 // 修改名字，不会再提示通知，这里是DB操作，可以保证后面出异常回滚这里
@@ -196,6 +195,7 @@ public class UserService {
             transactionTemplate.execute(action -> {
                 boolean hasInvited = true;
                 if (inviteUserId != null && checkInvited(userId)) {
+                    if (userId.equals(inviteUserId)) throw new BusinessException("禁止邀请自己");
                     hasInvited = false;
                     UserDO inviteUser = userDAO.getById(inviteUserId);
                     if (inviteUser == null) throw new BusinessException("邀请人不存在");
