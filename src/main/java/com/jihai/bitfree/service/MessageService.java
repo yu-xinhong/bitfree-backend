@@ -106,7 +106,6 @@ public class MessageService {
     }
 
 
-
     @PostConstruct
     public void initHeartbeatRules() {
         String configErr = "未找到相关配置: {0}.{1}";
@@ -118,7 +117,7 @@ public class MessageService {
         Assert.hasLength(heartbeatSecret, "未找到相关配置: " + Constants.HEARTBEAT_SECRET);
         JSONObject json = JSON.parseObject(heartbeatSecret);
 
-        Assert.notNull(json.get(heartbeatTime),  MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, heartbeatTime));
+        Assert.notNull(json.get(heartbeatTime), MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, heartbeatTime));
         Assert.notNull(json.get(incrCoins), MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, incrCoins));
         Assert.notNull(json.get(heartbeatCount), MessageFormat.format(configErr, Constants.HEARTBEAT_SECRET, heartbeatCount));
 
@@ -159,7 +158,7 @@ public class MessageService {
             messageResp.setUserId(userIdMap.get(messageDO.getSendUserId()).getId());
 
             MessageDO targetMessageDO = targetMessageIdMap.get(messageDO.getTargetMessageId());
-            if(Objects.nonNull(targetMessageDO)){
+            if (Objects.nonNull(targetMessageDO)) {
                 messageResp.setMentionedContent(targetMessageDO.getContent());
             }
 
@@ -168,6 +167,7 @@ public class MessageService {
                 messageResp.setMentionedUserId(messageNoticeDO.getUserId());
                 messageResp.setMentionedUserName(userIdMap.get(messageNoticeDO.getUserId()).getName());
             }
+            messageResp.setTop(coinsService.topCounter(messageDO.getSendUserId()));
             return messageResp;
         }).collect(Collectors.toList());
 
@@ -181,6 +181,7 @@ public class MessageService {
     }
 
     // 这里存在并发
+
     /**
      * 例如：当前偏移量为1
      * T1 读取偏移量1，更新为2，sleep 未获取分布式锁
@@ -193,18 +194,18 @@ public class MessageService {
      */
 
     private void refreshReadMsgOffset(UserDO userDO, long msgId) {
-        if (StringUtils.isEmpty(userDO.getRemark())) return ;
+        if (StringUtils.isEmpty(userDO.getRemark())) return;
         UserRemarkBO userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
-        if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
+        if (userRemarkBO.getMsgOffsetId() >= msgId) return;
 
         String key = LockKeyConstants.UPDATE_MSG_OFFSET_PREFIX + userDO.getId();
         Boolean locked = distributedLock.lock(key, 10, TimeUnit.SECONDS);
-        if (! locked) return ;
+        if (!locked) return;
         try {
             // double check
             userDO = userDAO.getById(userDO.getId());
             userRemarkBO = JSON.parseObject(userDO.getRemark(), UserRemarkBO.class);
-            if (userRemarkBO.getMsgOffsetId() >= msgId) return ;
+            if (userRemarkBO.getMsgOffsetId() >= msgId) return;
             userRemarkBO.setMsgOffsetId(msgId);
             userDAO.updateRemark(userDO.getId(), JSON.toJSONString(userRemarkBO));
         } finally {
@@ -294,7 +295,7 @@ public class MessageService {
     public Boolean openChat(Long id) {
         String key = LockKeyConstants.OPEN_CHAT + id;
         Boolean lock = distributedLock.lock(key, 10, TimeUnit.SECONDS);
-        if (! lock) {
+        if (!lock) {
             log.warn("{} 并发Chat日志写入", id);
             return false;
         }

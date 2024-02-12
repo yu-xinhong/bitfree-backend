@@ -5,18 +5,19 @@ import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserDAO {
 
     UserDO queryByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
-    void saveToken(@Param("email") String email, @Param("password") String password, @Param("token") String token,@Param("ip") String ip);
+    void saveToken(@Param("email") String email, @Param("password") String password, @Param("token") String token, @Param("ip") String ip);
 
     void clearToken(@Param("id") Long id);
 
     UserDO getById(@Param("id") Long id);
 
-    Integer countByName( @Param("name") String name);
+    Integer countByName(@Param("name") String name);
 
     List<UserDO> batchQueryByIdList(@Param("idList") List<Long> idList);
 
@@ -49,4 +50,7 @@ public interface UserDAO {
     List<UserDO> searchUser(@Param("name") String name);
 
     Integer getUserLevelById(@Param("userId") Long userId);
+
+    // 查询硬币排名前10名的用户
+    List<UserDO> checkCoinNumberTop10();
 }

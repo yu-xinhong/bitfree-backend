@@ -24,6 +24,10 @@ public class MessageResp extends BaseResp {
 
     private String mentionedContent;
 
+    // 显示此用户为top几，备选数字为1-10和-1
+    // -1代表不为top10里的排名
+    private Integer top;
+
     public Long getId() {
         return id;
     }
@@ -94,5 +98,13 @@ public class MessageResp extends BaseResp {
 
     public void setMentionedContent(String mentionedContent) {
         this.mentionedContent = mentionedContent;
+    }
+
+    public Integer getTop() {
+        return top;
+    }
+
+    public void setTop(Integer top) {
+        this.top = top;
     }
 }

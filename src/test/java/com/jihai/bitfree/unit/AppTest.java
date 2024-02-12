@@ -39,7 +39,7 @@ public class AppTest {
 //        System.out.println(aopProxy);;
 
         System.out.println(topicController.getAllTopic());
-        TopicController singletonTarget = (TopicController)AopProxyUtils.getSingletonTarget(topicController);
+        TopicController singletonTarget = (TopicController) AopProxyUtils.getSingletonTarget(topicController);
         System.out.println(singletonTarget.getAllTopic());
     }
 }
