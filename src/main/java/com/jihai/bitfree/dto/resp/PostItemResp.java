@@ -29,6 +29,16 @@ public class PostItemResp extends BaseResp {
      */
     private Integer status;
 
+    private Integer userTop;
+
+    public Integer getUserTop() {
+        return userTop;
+    }
+
+    public void setUserTop(Integer userTop) {
+        this.userTop = userTop;
+    }
+
     public Long getId() {
         return id;
     }
