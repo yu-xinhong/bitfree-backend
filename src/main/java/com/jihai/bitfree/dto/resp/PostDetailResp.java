@@ -32,6 +32,16 @@ public class PostDetailResp extends BaseResp {
 
     private Boolean likePost;
 
+    private Integer top;
+
+    public Integer getTop() {
+        return top;
+    }
+
+    public void setTop(Integer top) {
+        this.top = top;
+    }
+
     public String getAvatar() {
         return avatar;
     }

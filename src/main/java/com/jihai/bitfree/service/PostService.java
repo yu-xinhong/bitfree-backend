@@ -79,7 +79,7 @@ public class PostService {
         List<PostDO> postDOS = postDAO.pageQuery((page - 1) * size, size, topicId, StringUtils.isEmpty(searchText) ? null : "%" + searchText.trim() + "%", userId);
 
         List<Long> topPostIdList;
-        if (includeTopList && ! CollectionUtils.isEmpty(topPostIdList = queryTopIdList())) {
+        if (includeTopList && !CollectionUtils.isEmpty(topPostIdList = queryTopIdList())) {
             // 置顶的先查出来
             List<PostDO> topPostList = postDAO.queryByIdList(topPostIdList);
 
@@ -122,9 +122,10 @@ public class PostService {
             postItemResp.setCreateTime(postDO.getCreateTime());
             Long replyCount = replyCountMap.getOrDefault(postDO.getId(), 0L);
             postItemResp.setCreatorName(idUserMap.get(postDO.getCreatorId()).getName());
+            postItemResp.setUserTop(coinsService.topCounter(postDO.getCreatorId()));
             postItemResp.setNewPost(isNew(postDO.getCreateTime()));
             postItemResp.setStatus(postDO.getStatus());
-                // 获取最新回复的人的名字
+            // 获取最新回复的人的名字
             if (replyCount > 0) {
                 List<ReplyDO> curPostReplyList = replyDOList.stream().filter(replyDO -> replyDO.getPostId().equals(postDO.getId())).collect(Collectors.toList());
                 curPostReplyList.sort((r1, r2) -> (int) (r2.getId() - r1.getId()));
@@ -164,6 +165,7 @@ public class PostService {
         postDetailResp.setAvatar(userDO.getAvatar());
 
         postDetailResp.setLikeCount(userLikeDAO.countLike(id, LikeTypeEnum.POST.getType()));
+        postDetailResp.setTop(coinsService.topCounter(userDO.getId()));
 
         // record view count
         postDAO.incrementView(id);
@@ -200,7 +202,7 @@ public class PostService {
     }
 
     private Integer getTypeContent(String content) {
-        if (! content.contains("[file")) return PostTypeEnum.POST.getType();
+        if (!content.contains("[file")) return PostTypeEnum.POST.getType();
         Long fileId = getFileIdFromContent(content);
         if (fileId == null) return PostTypeEnum.POST.getType();
         FileDO fileDO = fileDAO.getById(fileId);
@@ -275,7 +277,7 @@ public class PostService {
             log.warn("someone try to delete not exits post {} ", id);
             throw new BusinessException("帖子不存在");
         }
-        if (! replyDO.getSendUserId().equals(userId)) {
+        if (!replyDO.getSendUserId().equals(userId)) {
             log.warn("someone try to delete else reply postId {}, userId {}", id, userId);
             throw new BusinessException("非法操作");
         }

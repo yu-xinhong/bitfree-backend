@@ -79,15 +79,15 @@ public class ReplyService {
                 .forEach(replyDO -> {
                     Long targetReplyId = replyDO.getTargetReplyId();
                     replyRootMap.put(replyDO.getId(), replyRootMap.getOrDefault(targetReplyId, targetReplyId));
-        });
+                });
 
         // 按根评论分组的子评论集合
         Map<Long, List<ReplyDO>> rootSubReplyMap = new HashMap<>(rootReplyDOList.size());
-        replyRootMap.forEach((key,value) -> {
-            ReplyDO subReply  = allReplyMap.get(key);
-            if (rootSubReplyMap.containsKey(value)){
+        replyRootMap.forEach((key, value) -> {
+            ReplyDO subReply = allReplyMap.get(key);
+            if (rootSubReplyMap.containsKey(value)) {
                 rootSubReplyMap.get(value).add(subReply);
-            }else {
+            } else {
                 List<ReplyDO> subReplyList = Lists.newArrayList(subReply);
                 rootSubReplyMap.put(value, subReplyList);
             }
@@ -135,7 +135,9 @@ public class ReplyService {
         replyListResp.setCreateTime(mainReply.getCreateTime());
         replyListResp.setStatus(mainReply.getStatus());
         replyListResp.setSendUser(DO2DTOConvert.convertUser(idUserMap.get(mainReply.getSendUserId())));
+        replyListResp.getSendUser().setTop(coinsService.topCounter(mainReply.getSendUserId()));
         replyListResp.setReceiveUser(DO2DTOConvert.convertUser(idUserMap.get(mainReply.getReceiverId())));
+        replyListResp.getReceiveUser().setTop(coinsService.topCounter(mainReply.getReceiverId()));
 //        replyListResp.setCreatorId(mainReply.getSendUserId());
 //        replyListResp.setAvatar(idUserMap.get(mainReply.getSendUserId()).getAvatar());
 //
@@ -284,8 +286,9 @@ public class ReplyService {
             PostDO postDO = postDAO.getById(adoptReplyReq.getPostId());
 
             if (ObjUtil.isNull(postDO)) throw new BusinessException("帖子不存在");
-            if (! userId.equals(postDO.getCreatorId())) throw new BusinessException("不是发帖人");
-            if (! PostStatusEnum.REWARD.getStatus().equals(postDO.getStatus())) throw new BusinessException("不是悬赏贴");
+            if (!userId.equals(postDO.getCreatorId())) throw new BusinessException("不是发帖人");
+            if (!PostStatusEnum.REWARD.getStatus().equals(postDO.getStatus()))
+                throw new BusinessException("不是悬赏贴");
             List<ReplyDO> replyDOList = replyDAO.getByPostId(adoptReplyReq.getPostId());
             ReplyDO replyDO = null;
             boolean hasAdopted = false;

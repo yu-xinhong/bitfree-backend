@@ -35,10 +35,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.jihai.bitfree.constants.CoinsDefinitions.INVITED_USER_COINS;
@@ -183,8 +180,9 @@ public class UserService {
 
     public Boolean save(String avatar, String name, String city, String position, Integer seniority, String github, Long inviteUserId, Long userId, String currentName, Integer level) {
         if (!StringUtils.isEmpty(avatar) && avatar.contains("jihai")) throw new BusinessException("禁止使用该头像");
-        if (!StringUtils.isEmpty(name) && org.apache.commons.lang3.StringUtils.containsAny("极海", name)) throw new BusinessException("禁止使用该昵称");
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && ! UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
+        if (!StringUtils.isEmpty(name) && org.apache.commons.lang3.StringUtils.containsAny("极海", name))
+            throw new BusinessException("禁止使用该昵称");
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(github) && !UserLevelEnum.ULTIMATE.getLevel().equals(level)) {
             throw new BusinessException("请升级旗舰版才可关联Github~");
         }
         lockTemplateSupport.lock(UPDATE_USER + userId, 1, TimeUnit.SECONDS, () -> {
@@ -205,7 +203,8 @@ public class UserService {
                     coinsService.incrementCoins(userId, INVITED_USER_COINS, OperateTypeEnum.INVITED_COINS);
                 }
                 //  当该名字有人使用且当前名字不等于待修改名字时, 返回提示
-                if (!name.equals(currentName) && userDAO.countByName(name) > 0) throw new BusinessException("该名称已被使用");
+                if (!name.equals(currentName) && userDAO.countByName(name) > 0)
+                    throw new BusinessException("该名称已被使用");
                 userDAO.save(userId, avatar, name, city, position, seniority, github, hasInvited ? null : inviteUserId);
                 return null;
             });
@@ -421,8 +420,9 @@ public class UserService {
 
 
     public List<UserDO> getRanksByCoins() {
-        List<UserDO> userRankByCoins = userDAO.getRanksByCoins();
-        return userRankByCoins;
+        List<UserDO> userDOList = userDAO.batchQueryByIdList(coinsService.getTopUserIds());
+        userDOList.sort(Comparator.comparingLong(UserDO::getCoins).reversed());
+        return userDOList;
     }
 
     public int getUserRank(Long userId) {
