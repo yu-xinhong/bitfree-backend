@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
+import com.jihai.bitfree.enums.ConfigEnum;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.service.ConfigService;
 import com.jihai.bitfree.utils.RequestUtils;
@@ -16,8 +17,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +41,13 @@ public class IpLimiterAspect {
 
     @Autowired
     private ConfigService configService;
+
+    @PostConstruct
+    public void initLimiterCount() {
+        String value = configService.getByKey(ConfigEnum.LIMIT_COUNT_PER_SECOND.name());
+        if (StringUtils.isEmpty(value)) return ;
+        DEFAULT_LIMITER_COUNT_PER_SECOND = Double.parseDouble(value);
+    }
 
     private List<String> WHITE_LIST = Lists.newArrayList(
             "com.jihai.bitfree.controller.MessageController.getRecentList",
