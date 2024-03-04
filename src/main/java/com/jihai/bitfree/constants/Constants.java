@@ -21,4 +21,5 @@ public interface Constants {
      */
     String FILTER_OPERATION_HISTORY_TIME = "2023-12-22 16:00:00";
     String VERIFY_USER_LIST = "VERIFY_USER_LIST";
+    String CHARGE_CONFIG = "CHARGE_CONFIG";
 }

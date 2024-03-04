@@ -15,7 +15,7 @@ datasource:
 
 spring:
   profiles:
-    active: dev
+    active: local
   servlet:
     multipart:
       max-file-size: 50MB
