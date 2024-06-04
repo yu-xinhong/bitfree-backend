@@ -4,9 +4,10 @@
 #
 # https://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
-# Host: 124.222.49.162 (MySQL 8.0.33)
+#
+# Host: 127.0.0.1 (MySQL 8.0.33)
 # Database: bitfree
-# Generation Time: 2023-12-09 06:14:38 +0000
+# Generation Time: 2024-06-04 02:04:13 +0000
 # ************************************************************
 
 
@@ -23,10 +24,13 @@ SET NAMES utf8mb4;
 # Dump of table activity
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `activity`;
+
 CREATE TABLE `activity` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `stock` int NOT NULL,
+  `type` tinyint DEFAULT NULL,
   `total` int NOT NULL,
   `cost` int DEFAULT NULL,
   `detail` text,
@@ -43,6 +47,8 @@ CREATE TABLE `activity` (
 # Dump of table check_in
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `check_in`;
+
 CREATE TABLE `check_in` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
@@ -58,6 +64,8 @@ CREATE TABLE `check_in` (
 
 # Dump of table collect
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collect`;
 
 CREATE TABLE `collect` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -76,6 +84,8 @@ CREATE TABLE `collect` (
 # Dump of table config
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `config`;
+
 CREATE TABLE `config` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
@@ -87,34 +97,12 @@ CREATE TABLE `config` (
   UNIQUE KEY `unique_key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `config` WRITE;
-/*!40000 ALTER TABLE `config` DISABLE KEYS */;
-
-INSERT INTO `config` (`id`, `key`, `value`, `deleted`, `create_time`, `update_time`)
-VALUES
-	(1,'SECRET','xxx',0,'2023-05-30 16:19:03','2023-10-22 19:01:46'),
-	(2,'TOP_POST_ID','2,280,297',0,'2023-05-30 16:48:38','2023-11-09 15:16:28'),
-	(3,'MAIL_SECRET','{\n    \"secret\":\"wxxxxbgfi\",\n    \"sendMail\":\"34xxx9@qq.com\"\n}',0,'2023-06-08 11:14:00','2023-06-08 11:17:54'),
-	(4,'DEFAULT_PASSWORD','123456',0,'2023-06-09 19:38:06','2023-06-09 19:38:06'),
-	(5,'DEFAULT_POSTER','https://bitfree-prod-1318561655.cos.ap-shanghai.myqcloud.com/image/default_poster.JPG?q-sign-algorithm=sha1&q-ak=AKIDhFOGCkwmdCDg85CQs90yC_5j6m182vRWr0Z9qhKTDA4ZXQEqu3zGfVl9eunI2HxB&q-sign-time=1686639705;1686643305&q-key-time=1686639705;1686643305&q-heade',0,'2023-06-13 15:10:14','2023-06-13 15:10:14'),
-	(6,'SENSITIVE_WORDS','',0,'2023-06-15 12:55:09','2023-06-15 12:55:38'),
-	(7,'LIMIT_COUNT_PER_SECOND','2',0,'2023-06-16 15:33:10','2023-06-16 16:37:10'),
-	(8,'DEFAULT_AVATAR','static/avatars/2.png,static/avatars/3.png,static/avatars/4.png,static/avatars/5.png,static/avatars/6.png,static/avatars/7.png,static/avatars/8.png,static/avatars/9.png,static/avatars/10.png,static/avatars/11.png,static/avatars/12.png,static/avatars/13.png,static/avatars/14.png,static/avatars/15.png,static/avatars/16.png,static/avatars/17.png,static/avatars/18.png,static/avatars/19.png,static/avatars/20.png,static/avatars/21.png,static/avatars/22.png',0,'2023-06-30 12:34:41','2023-11-27 14:16:38'),
-	(9,'WEB_STATISTICS','{\"requestCount\":154571,\"userLoginCount\":54}',0,'2023-10-08 15:47:38','2023-12-09 14:14:38'),
-	(10,'ROBOT_URL','https://qxxxx',0,'2023-10-14 18:08:05','2023-10-24 00:21:03'),
-	(11,'SKIP_MONITOR_MESSAGE','操作太快',0,'2023-10-20 15:01:31','2023-12-08 15:04:14'),
-	(12,'MODIFY_SETTINGS_NOTIFICATION_ID','10',0,'2023-11-03 15:02:35','2023-11-03 15:02:35'),
-	(13,'TASK_COMPLETE_USER_LIST','4',0,'2023-12-05 15:27:56','2023-12-05 15:43:17'),
-	(14, 'MESSAGE_HEARTBEAT_SECRET', '{\"heartbeatTime\":59000,\"incrCoins\":1,\"heartbeatCount\":6 }',0,'2023-12-21 12:12:12','2023-12-21 12:12:12')
-
-;
-
-/*!40000 ALTER TABLE `config` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table file
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `file`;
 
 CREATE TABLE `file` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -135,11 +123,13 @@ CREATE TABLE `file` (
 # Dump of table message
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `message`;
+
 CREATE TABLE `message` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `send_user_id` bigint NOT NULL,
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `target_message_id` bigint DEFAULT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -151,11 +141,13 @@ CREATE TABLE `message` (
 # Dump of table message_notice
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `message_notice`;
+
 CREATE TABLE `message_notice` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `message_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
-  `type` int NOT NULL DEFAULT '0',
+  `type` int DEFAULT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` tinyint NOT NULL DEFAULT '0',
@@ -166,6 +158,8 @@ CREATE TABLE `message_notice` (
 
 # Dump of table notification
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `notification`;
 
 CREATE TABLE `notification` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -184,6 +178,8 @@ CREATE TABLE `notification` (
 # Dump of table operate_log
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `operate_log`;
+
 CREATE TABLE `operate_log` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
@@ -194,11 +190,14 @@ CREATE TABLE `operate_log` (
   `deleted` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=106277 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 # Dump of table order
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `order`;
 
 CREATE TABLE `order` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -220,6 +219,8 @@ CREATE TABLE `order` (
 # Dump of table post
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `post`;
+
 CREATE TABLE `post` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '标题',
@@ -227,7 +228,9 @@ CREATE TABLE `post` (
   `creator_id` bigint NOT NULL COMMENT '创建者id',
   `view_count` int NOT NULL DEFAULT '0',
   `type` int DEFAULT NULL COMMENT '0-帖子区，1-视频区',
+  `status` int DEFAULT NULL,
   `topic_id` int DEFAULT NULL COMMENT '话题id',
+  `remark` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
   `last_updater_id` bigint DEFAULT NULL COMMENT '最近回复人',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -242,11 +245,16 @@ CREATE TABLE `post` (
 # Dump of table question
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `question`;
+
 CREATE TABLE `question` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `title` text,
   `content` text,
   `parent_id` bigint DEFAULT NULL,
   `level` int DEFAULT NULL,
+  `status` tinyint DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
   `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -259,12 +267,15 @@ CREATE TABLE `question` (
 # Dump of table reply
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `reply`;
+
 CREATE TABLE `reply` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `send_user_id` bigint NOT NULL,
   `receiver_id` bigint NOT NULL,
   `post_id` bigint NOT NULL,
   `target_reply_id` bigint DEFAULT NULL,
+  `status` int DEFAULT NULL,
   `reply_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `deleted` int NOT NULL DEFAULT '0',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -278,6 +289,8 @@ CREATE TABLE `reply` (
 
 # Dump of table reply_notice
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `reply_notice`;
 
 CREATE TABLE `reply_notice` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -297,17 +310,19 @@ CREATE TABLE `reply_notice` (
 # Dump of table task_board
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `task_board`;
+
 CREATE TABLE `task_board` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `coins` int NOT NULL,
   `user_id` bigint DEFAULT NULL,
   `level` tinyint DEFAULT NULL,
+  `receive_time` datetime DEFAULT NULL,
   `status` tinyint NOT NULL,
   `remark` text COLLATE utf8mb4_bin,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `receive_time` timestamp DEFAULT NULL,
   `deleted` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
@@ -316,6 +331,8 @@ CREATE TABLE `task_board` (
 
 # Dump of table topic
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `topic`;
 
 CREATE TABLE `topic` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -330,6 +347,8 @@ CREATE TABLE `topic` (
 
 # Dump of table user
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -347,6 +366,7 @@ CREATE TABLE `user` (
   `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `contact` varchar(128) DEFAULT NULL,
   `ip` varchar(64) DEFAULT NULL,
+  `invite_user_id` bigint DEFAULT NULL,
   `remark` text,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -361,6 +381,8 @@ CREATE TABLE `user` (
 
 # Dump of table user_like
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_like`;
 
 CREATE TABLE `user_like` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
