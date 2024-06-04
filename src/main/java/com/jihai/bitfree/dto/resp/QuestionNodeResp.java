@@ -8,6 +8,8 @@ public class QuestionNodeResp extends BaseResp {
 
     private Long id;
 
+    private String title;
+
     private Long parentId;
 
     private String content;
@@ -26,6 +28,14 @@ public class QuestionNodeResp extends BaseResp {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Long getParentId() {

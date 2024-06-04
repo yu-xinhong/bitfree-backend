@@ -4,6 +4,8 @@ import com.jihai.bitfree.base.BaseDO;
 
 public class QuestionDO extends BaseDO {
 
+    private String title;
+
     private String content;
 
     private Long parentId;
@@ -15,6 +17,14 @@ public class QuestionDO extends BaseDO {
     private Integer status;
 
     private String remark;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getContent() {
         return content;
