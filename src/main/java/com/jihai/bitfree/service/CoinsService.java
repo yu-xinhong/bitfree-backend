@@ -8,7 +8,6 @@ import com.jihai.bitfree.dao.UserDAO;
 import com.jihai.bitfree.entity.UserDO;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.lock.LockTemplateSupport;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -35,7 +34,7 @@ public class CoinsService {
     // 创建一个top10缓存
     // 键为用户id，值为硬币数
     // 此缓存存的是前10名用户以及他们的硬币数
-    private final Cache<Long, Integer> topCache = CacheBuilder.newBuilder().maximumSize(10).build();
+    private final Cache<Long, Integer> topCache = CacheBuilder.newBuilder().maximumSize(20).build();
 
     // 计算指定用户为top几
     public Integer topCounter(Long userId) {
@@ -58,7 +57,8 @@ public class CoinsService {
     @PostConstruct
     public void init() {
         // 迭代放入缓存中
-        for (UserDO userDO : userDAO.checkCoinNumberTop10()) {
+        List<UserDO> userDOS = userDAO.checkCoinNumber();
+        for (UserDO userDO : userDOS) {
             topCache.put(userDO.getId(), userDO.getCoins());
         }
     }

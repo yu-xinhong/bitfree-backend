@@ -153,12 +153,12 @@
         WHERE id = #{userId}
         AND deleted = 0
     </select>
-    <select id="checkCoinNumberTop10" resultType="com.jihai.bitfree.entity.UserDO">
+    <select id="checkCoinNumber" resultType="com.jihai.bitfree.entity.UserDO">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM user
         WHERE deleted=0
         ORDER BY coins DESC
-        LIMIT 10;
+        LIMIT 20;
     </select>
 </mapper>

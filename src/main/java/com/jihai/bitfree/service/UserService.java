@@ -236,11 +236,11 @@ public class UserService {
             UserDO userDO = userDAO.getById(id);
             if (!userDO.getPassword().equalsIgnoreCase(oldPassword)) {
                 log.warn("some one password new and old not equals");
-                throw new RuntimeException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
+                throw new BusinessException(ReturnCodeEnum.USER_OLD_PASSWORD_ERROR.getDesc());
             }
 
             if (userDO.getPassword().equalsIgnoreCase(newPassword)) {
-                throw new RuntimeException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
+                throw new BusinessException(ReturnCodeEnum.SAME_PASSWORD_ERROR.getDesc());
             }
         }
         userDAO.updatePasswordAndClearToken(id, newPassword);

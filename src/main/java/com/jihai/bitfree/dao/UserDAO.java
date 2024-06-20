@@ -5,7 +5,6 @@ import com.jihai.bitfree.entity.UserDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Set;
 
 public interface UserDAO {
 
@@ -52,5 +51,5 @@ public interface UserDAO {
     Integer getUserLevelById(@Param("userId") Long userId);
 
     // 查询硬币排名前10名的用户
-    List<UserDO> checkCoinNumberTop10();
+    List<UserDO> checkCoinNumber();
 }
