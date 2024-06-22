@@ -43,4 +43,10 @@ public class QuestionController extends BaseController {
         return convertSuccessResult(questionService.verifyRight(getCurrentUser().getId()));
     }
 
+    @GetMapping("detail")
+    @LoggedCheck
+    public Result<QuestionNodeResp> getDetail(@RequestParam(value = "id") Long questionId) {
+        return convertSuccessResult(questionService.getDetail(questionId));
+    }
+
 }
