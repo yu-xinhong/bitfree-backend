@@ -41,7 +41,9 @@ public class QuestionService {
 
     public List<QuestionNodeResp> getTree() {
         List<QuestionDO> questionDOList = questionDAO.getAll();
-        if (CollectionUtils.isEmpty(questionDOList)) return Collections.emptyList();
+        if (CollectionUtils.isEmpty(questionDOList)) {
+            return Collections.emptyList();
+        }
         return buildTree(questionDOList);
     }
 
@@ -50,49 +52,73 @@ public class QuestionService {
         Integer maxLevel = questionDOList.stream().mapToInt(QuestionDO::getLevel).max().getAsInt();
 
         // 按照level排序
-        Map<Integer, List<QuestionDO>> levelQuestionMap = questionDOList.stream().collect(Collectors.groupingBy(QuestionDO::getLevel));
+        Map<Integer, List<QuestionDO>> levelQuestionMap = questionDOList.stream()
+                .collect(Collectors.groupingBy(QuestionDO::getLevel));
         List<QuestionNodeResp> resultList = Lists.newArrayList();
         Map<Long, QuestionNodeResp> idQuestionNodeMap = Maps.newHashMap();
         dfs(levelQuestionMap, 1, maxLevel, questionDOList, resultList, idQuestionNodeMap);
         return resultList;
     }
 
-    private void dfs(Map<Integer, List<QuestionDO>> levelQuestionMap, Integer level, Integer maxLevel, List<QuestionDO> questionDOList, List<QuestionNodeResp> resultList, Map<Long, QuestionNodeResp> idQuestionNodeMap) {
+    private void dfs(Map<Integer, List<QuestionDO>> levelQuestionMap, Integer level,
+            Integer maxLevel, List<QuestionDO> questionDOList, List<QuestionNodeResp> resultList,
+            Map<Long, QuestionNodeResp> idQuestionNodeMap) {
         // 递归出口
-        if (level > maxLevel) return;
+        if (level > maxLevel) {
+            return;
+        }
 
-        List<QuestionDO> currentLevelQuestionList = questionDOList.stream().filter(e -> e.getLevel().equals(level)).collect(Collectors.toList());
+        List<QuestionDO> currentLevelQuestionList = questionDOList.stream()
+                .filter(e -> e.getLevel().equals(level)).collect(Collectors.toList());
         // 根节点
         if (level.equals(1)) {
-            List<QuestionNodeResp> rootQuestionNodeRespList = currentLevelQuestionList.stream().map(e -> convert2QuestionResp(e)).collect(Collectors.toList());
+            List<QuestionNodeResp> rootQuestionNodeRespList = currentLevelQuestionList.stream()
+                    .map(e -> convert2QuestionResp(e)).collect(Collectors.toList());
             resultList.addAll(rootQuestionNodeRespList);
             idQuestionNodeMap.putAll(Maps.uniqueIndex(resultList, QuestionNodeResp::getId));
-            dfs(levelQuestionMap, level + 1, maxLevel, questionDOList, resultList, idQuestionNodeMap);
-            return ;
+            dfs(levelQuestionMap, level + 1, maxLevel, questionDOList, resultList,
+                    idQuestionNodeMap);
+            return;
         }
 
         // 子节点
         Integer parentId = level - 1;
         List<QuestionDO> parentQuestionList = levelQuestionMap.get(parentId);
         parentQuestionList.forEach(parentQuestion -> {
-            List<QuestionDO> subQuestionList = currentLevelQuestionList.stream().filter(currentLevelQuestion -> currentLevelQuestion.getParentId().equals(parentQuestion.getId())).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(subQuestionList)) return ;
+            List<QuestionDO> subQuestionList = currentLevelQuestionList.stream()
+                    .filter(currentLevelQuestion -> currentLevelQuestion.getParentId()
+                            .equals(parentQuestion.getId())).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(subQuestionList)) {
+                return;
+            }
 
-            List<QuestionNodeResp> subQuestionRespList = subQuestionList.stream().map(e -> convert2QuestionResp(e)).collect(Collectors.toList());
-            idQuestionNodeMap.putAll(Maps.uniqueIndex(subQuestionRespList, QuestionNodeResp::getId));
+            List<QuestionNodeResp> subQuestionRespList = subQuestionList.stream()
+                    .map(e -> convert2QuestionResp(e)).collect(Collectors.toList());
+            idQuestionNodeMap.putAll(
+                    Maps.uniqueIndex(subQuestionRespList, QuestionNodeResp::getId));
             idQuestionNodeMap.get(parentQuestion.getId()).setSubTreeNodeResp(subQuestionRespList);
         });
         dfs(levelQuestionMap, level + 1, maxLevel, questionDOList, resultList, idQuestionNodeMap);
     }
 
-    private QuestionNodeResp convert2QuestionResp(QuestionDO questionDO) {
+    private QuestionNodeResp convert2QuestionResp(QuestionDO questionDO, boolean detail) {
         QuestionNodeResp questionNodeResp = new QuestionNodeResp();
-        BeanUtils.copyProperties(questionDO, questionNodeResp);
+        if (detail) {
+            BeanUtils.copyProperties(questionDO, questionNodeResp);
+        } else {
+            BeanUtils.copyProperties(questionDO, questionNodeResp, "content");
+        }
 
-        if (! QuestionStatusEnum.VERIFIED.getStatus().equals(questionDO.getStatus())) {
-            questionNodeResp.setContent("【" + QuestionStatusEnum.getByCode(questionDO.getStatus()).getDesc() + "】" + questionDO.getContent());
+        if (!QuestionStatusEnum.VERIFIED.getStatus().equals(questionDO.getStatus())) {
+            questionNodeResp.setContent(
+                    "【" + QuestionStatusEnum.getByCode(questionDO.getStatus()).getDesc() + "】"
+                            + questionDO.getContent());
         }
         return questionNodeResp;
+    }
+
+    private QuestionNodeResp convert2QuestionResp(QuestionDO questionDO) {
+        return convert2QuestionResp(questionDO, false);
     }
 
     public Boolean addNode(Long parentId, String content, Long userId) {
@@ -110,25 +136,43 @@ public class QuestionService {
 
     @Transactional
     public Boolean verify(Long nodeId, Integer status, Long userId) {
-        List<String> canVerifyUserIdList = StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST));
-        if (CollectionUtils.isEmpty(canVerifyUserIdList)) throw new BusinessException("可审核人为空");
+        List<String> canVerifyUserIdList = StringListUtils.str2List(
+                configService.getByKey(Constants.VERIFY_USER_LIST));
+        if (CollectionUtils.isEmpty(canVerifyUserIdList)) {
+            throw new BusinessException("可审核人为空");
+        }
 
-        if (canVerifyUserIdList.stream().noneMatch(e -> e.equals(userId.toString()))) throw new BusinessException("无审核权限");
+        if (canVerifyUserIdList.stream().noneMatch(e -> e.equals(userId.toString()))) {
+            throw new BusinessException("无审核权限");
+        }
 
         QuestionDO questionDO = questionDAO.getById(nodeId);
-        if (! QuestionStatusEnum.VERIFYING.getStatus().equals(questionDO.getStatus())) throw new BusinessException("无法审核");
+        if (!QuestionStatusEnum.VERIFYING.getStatus().equals(questionDO.getStatus())) {
+            throw new BusinessException("无法审核");
+        }
 
         questionDAO.updateStatus(questionDO.getId(), status);
         if (QuestionStatusEnum.VERIFIED.getStatus().equals(status)) {
             // 奖励硬币
-            userDAO.incrementCoins(questionDO.getUserId(), CoinsDefinitions.COMMITTED_QUESTION_COINS);
+            userDAO.incrementCoins(questionDO.getUserId(),
+                    CoinsDefinitions.COMMITTED_QUESTION_COINS);
             UserDO userDO = userDAO.getById(questionDO.getUserId());
-            operationLogService.saveCoinsOperateLog(userId, OperateTypeEnum.COMMITTED_QUESTION, CoinsDefinitions.COMMITTED_QUESTION_COINS, userDO.getCoins());
+            operationLogService.saveCoinsOperateLog(userId, OperateTypeEnum.COMMITTED_QUESTION,
+                    CoinsDefinitions.COMMITTED_QUESTION_COINS, userDO.getCoins());
         }
         return true;
     }
 
     public Boolean verifyRight(Long userId) {
-        return StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST)).contains(userId.toString());
+        return StringListUtils.str2List(configService.getByKey(Constants.VERIFY_USER_LIST))
+                .contains(userId.toString());
+    }
+
+    public QuestionNodeResp getDetail(Long questionId) {
+        QuestionDO questionDO = questionDAO.getById(questionId);
+        if (questionDO == null) {
+            throw new BusinessException("问题不存在");
+        }
+        return convert2QuestionResp(questionDO, true);
     }
 }
