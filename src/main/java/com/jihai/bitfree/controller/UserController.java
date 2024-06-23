@@ -205,7 +205,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/checkIn")
     @LoggedCheck
-    public Result<Boolean> checkIn() {
+    public Result<Integer> checkIn() {
         return convertSuccessResult(userService.checkIn(getCurrentUser().getId()));
     }
 

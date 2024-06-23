@@ -259,14 +259,14 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean checkIn(Long userId) {
+    public Integer checkIn(Long userId) {
         if (getCheckIn(userId)) throw new BusinessException("重复签到");
 
         checkInDAO.insert(userId, DateUtils.formatDay(new Date()));
 
         Integer incrementCoins = getIncrementCoins(userId);
         coinsService.incrementCoins(userId, incrementCoins, OperateTypeEnum.SIGN_IN);
-        return true;
+        return incrementCoins;
     }
 
     // 连续签到可以奖励, 7天内签到，连续每天增加1个硬币，上限2+6=8

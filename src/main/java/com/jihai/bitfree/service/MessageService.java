@@ -341,7 +341,7 @@ public class MessageService {
             heartbeatCache.invalidate(userId);
             return true;
         }
-
+        // 连续HEARTBEAT_COUNT次增加一个1个硬币
         if (heartbeat.getCount() < HEARTBEAT_COUNT) return true;
 
         log.info("userId {} live appraise coins ", userId);
