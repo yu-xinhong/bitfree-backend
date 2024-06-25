@@ -19,13 +19,21 @@ public class FileUploadUtils {
 
 
     public static String getFormat(String originalFilename) {
-        if (StringUtils.isEmpty(originalFilename)) return "";
-        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1, originalFilename.indexOf("?") == -1 ? originalFilename.length() : originalFilename.indexOf("?"));
+        if (StringUtils.isEmpty(originalFilename)) {
+            return "";
+        }
+        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1,
+                !originalFilename.contains("?") ? originalFilename.length()
+                        : originalFilename.indexOf("?"));
     }
 
     public static Integer convertFormat2Type(String format) {
-        if (imageFormatList.contains(format.toLowerCase())) return IMAGE_TYPE;
-        if (videoFormatList.contains(format.toLowerCase())) return VIDEO_TYPE;
+        if (imageFormatList.contains(format.toLowerCase())) {
+            return IMAGE_TYPE;
+        }
+        if (videoFormatList.contains(format.toLowerCase())) {
+            return VIDEO_TYPE;
+        }
         log.error("not support file format {} ", format);
         throw new BusinessException("不支持文件类型");
     }
