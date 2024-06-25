@@ -28,7 +28,7 @@ public class BaseController {
     protected UserResp getCurrentUser() {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (ObjUtil.isNull(cookies)){
-            throw new BusinessException(ReturnCodeEnum.DO_NOT_INJECT);
+            throw new BusinessException(ReturnCodeEnum.NOT_LOGIN);
         }
         String token = null;
         for (Cookie cookie : cookies) {

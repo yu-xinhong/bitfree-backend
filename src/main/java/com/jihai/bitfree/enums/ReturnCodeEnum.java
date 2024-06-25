@@ -11,8 +11,7 @@ public enum ReturnCodeEnum {
     MAX_LIMIT(503, "登录失败次数超过上线阈值"),
     LOGIN_ACCOUNT_ERROR(504, "邮箱或密码错误"),
     ILLEGAL_CHARACTERS_ERROR(505, "参数中含有非法字符"),
-    DO_NOT_INJECT(4003, "禁止注入扫描"),
-    NOT_LOGIN(4003, "请重新登录!"),
+    NOT_LOGIN(4003, "登录状态失效，请重新登录!")
     ;
     ReturnCodeEnum(Integer code, String desc) {
         this.code = code;
