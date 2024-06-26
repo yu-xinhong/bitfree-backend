@@ -1,6 +1,5 @@
 package com.jihai.bitfree.upload.type;
 
-import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -20,10 +19,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class XwyueUpload extends UploadTemplate {
 
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String STATUS = "status";
+    private static final String TOKEN = "token";
+    private static final String USER_TOKEN_PATH = "/tokens";
 
     @Override
     public String getUrl() {
-        // return "https://img.xwyue.com/api/v1";
         return configService.getByKey(Constants.XWYUE_URL);
     }
 
@@ -35,18 +38,18 @@ public class XwyueUpload extends UploadTemplate {
         String password = tokens[1];
 
         Map<String, Object> bodyMap = new HashMap<>();
-        bodyMap.put("email", email);
-        bodyMap.put("password", password);
-        try (HttpResponse httpResponse = HttpRequest.post(getUrl() + "/tokens")
-                .header("Content-Type", "application/json")
-                .body(JSONUtil.toJsonStr(bodyMap))
-                .execute()) {
-            JSONObject obj = JSONUtil.parseObj(httpResponse.body());
-            if (obj.getBool("status")) {
-                return obj.getJSONObject("data").getStr("token");
-            }
+        bodyMap.put(EMAIL, email);
+        bodyMap.put(PASSWORD, password);
+
+        JSONObject obj;
+        try (HttpResponse httpResponse = executePostRequest(getUrl() + USER_TOKEN_PATH, bodyMap,
+                new HashMap<>())) {
+            obj = JSONUtil.parseObj(httpResponse.body());
         }
-        throw new BusinessException("获取token失败");
+        if (obj.getBool(STATUS)) {
+            return obj.getJSONObject(DATA).getStr(TOKEN);
+        }
+        throw new BusinessException(Constants.GET_TOKEN_ERROR_LOG);
     }
 
     @Override
@@ -56,25 +59,23 @@ public class XwyueUpload extends UploadTemplate {
 
     @Override
     public HttpResponse upload(File uploadFile, String uploadToken) {
-        Map<String, Object> bodyMap = new HashMap<>();
-        bodyMap.put("file", uploadFile);
-        return HttpRequest.post(getUrl() + "/upload")
-                .header("Content-Type", "multipart/form-data")
-                .header("Authorization", "Bearer " + uploadToken)
-                .form(bodyMap)
-                .execute();
+        Map<String, String> headers = new HashMap<>();
+        headers.put(AUTHORIZATION, BEARER + uploadToken);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put(FILE, uploadFile);
+
+        return executeUploadRequest(getUrl() + UPLOAD_FILE_PATH, headers, body);
     }
 
     @Override
     public String parseResponse(HttpResponse response) {
         JSONObject obj = JSONUtil.parseObj(response.body());
-        if (!obj.getBool("status")) {
-            throw new BusinessException(obj.getStr("message"));
+        if (!obj.getBool(STATUS)) {
+            throw new BusinessException(obj.getStr(MESSAGE));
         }
-        JSONObject data = obj.getJSONObject("data");
-        String url = data.getJSONObject("links").getStr("url");
-        log.info("linkUrl: {}", url);
-        return url;
+        JSONObject data = obj.getJSONObject(DATA);
+        return data.getJSONObject(LINKS).getStr(URL);
     }
 
     @Override

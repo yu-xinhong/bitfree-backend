@@ -1,15 +1,13 @@
 package com.jihai.bitfree.upload.type;
 
 import cn.hutool.core.util.StrUtil;
-import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.upload.UploadAbility;
 import java.util.ArrayList;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.Getter;
 
 @Getter
 public class UploadTypeRegistry {
@@ -25,12 +23,14 @@ public class UploadTypeRegistry {
     }
 
     public static UploadAbility resolve(String type) {
+        UploadAbility defaultUploadAbility
+                = UPLOAD_TYPE_MAP.get(Constants.DEFAULT_IMAGE_UPLOAD_TYPE);
         if (StrUtil.isBlank(type)) {
-            return UPLOAD_TYPE_MAP.get("picui");
+            return defaultUploadAbility;
         }
         UploadAbility uploadAbility = UPLOAD_TYPE_MAP.get(type);
         if (uploadAbility == null) {
-            throw new BusinessException("不支持的图床上传类型");
+            return defaultUploadAbility;
         }
         return uploadAbility;
     }

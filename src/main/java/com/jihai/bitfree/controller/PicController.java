@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.jihai.bitfree.aspect.LoggedCheck;
 import com.jihai.bitfree.base.BaseController;
 import com.jihai.bitfree.base.Result;
+import com.jihai.bitfree.constants.Constants;
 import com.jihai.bitfree.exception.BusinessException;
 import com.jihai.bitfree.upload.UploadFacade;
 import java.io.File;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/pic")
+@RequestMapping("/image")
 @RequiredArgsConstructor
 public class PicController extends BaseController {
 
@@ -28,19 +29,15 @@ public class PicController extends BaseController {
      */
     @PostMapping("upload")
     @LoggedCheck
-    public Result<String> uploadPic(@RequestParam("file") MultipartFile multipartFile)
+    public Result<String> uploadPic(@RequestParam MultipartFile file)
             throws IOException {
-        // 限制单张图片大小：最大 2MB
-        if (multipartFile.getSize() > 2 * 1024 * 1024) {
-            throw new BusinessException("图片大小不能超过 2MB");
-        }
-        return convertSuccessResult(uploadFacade.upload(multipartFileToFile(multipartFile)));
+        return convertSuccessResult(uploadFacade.upload(multipartFileToFile(file)));
     }
 
-    public static File multipartFileToFile(MultipartFile multiFile) throws IOException {
+    public File multipartFileToFile(MultipartFile multiFile) throws IOException {
         String fileName = multiFile.getOriginalFilename();
         if (StrUtil.isBlank(fileName)) {
-            throw new BusinessException("文件名不能为空");
+            throw new BusinessException(Constants.INVALID_FILE_NAME);
         }
         String prefix = fileName.substring(fileName.lastIndexOf("."));
         // 若需要防止生成的临时文件重复,可以在文件名后添加随机码

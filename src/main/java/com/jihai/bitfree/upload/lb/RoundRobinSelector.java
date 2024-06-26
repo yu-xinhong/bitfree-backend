@@ -2,13 +2,11 @@ package com.jihai.bitfree.upload.lb;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 
 public class RoundRobinSelector implements UploadTypeSelector {
 
-    /**
-     * 当前选择的服务索引
-     */
-    private static final AtomicInteger CURR_INDEX = new AtomicInteger(0);
+    private static final LongAdder CURR_INDEX = new LongAdder();
 
     @Override
     public String select(List<String> types) {
@@ -22,7 +20,10 @@ public class RoundRobinSelector implements UploadTypeSelector {
             return types.get(0);
         }
 
-        int index = CURR_INDEX.getAndIncrement() % size;
+        long currentIndex = CURR_INDEX.longValue();
+        int index = (int) (currentIndex % size);
+        CURR_INDEX.increment();
+
         return types.get(index);
     }
 }

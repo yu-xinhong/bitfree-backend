@@ -24,7 +24,6 @@ public class UploadTest {
 
     @Test
     public void testUpload() {
-        // 读取 class path 下的文件
         ClassPathResource classPathResource = new ClassPathResource("pic/test.jpg");
         File file = FileUtil.file(classPathResource.getPath());
         String linkUrl = uploadFacade.upload(file);
