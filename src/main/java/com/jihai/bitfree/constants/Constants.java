@@ -1,6 +1,7 @@
 package com.jihai.bitfree.constants;
 
 public interface Constants {
+
     String TOP_POST_ID = "TOP_POST_ID";
     String SECRET = "SECRET";
     String TOKEN = "token";
@@ -22,4 +23,19 @@ public interface Constants {
     String FILTER_OPERATION_HISTORY_TIME = "2023-12-22 16:00:00";
     String VERIFY_USER_LIST = "VERIFY_USER_LIST";
     String CHARGE_CONFIG = "CHARGE_CONFIG";
+
+    String INVALID_FILE_NAME = "file name is invalid";
+    int IMAGE_UPLOAD_RETRY_TIMES = 3;
+    String IMAGE_UPLOAD_ERROR_LOG_TEMPLATE = "Upload failed with upload type: {}. Attempt: {}/{}. Error: {}";
+    String DEFAULT_IMAGE_UPLOAD_TYPE = "picui";
+    String GET_TOKEN_ERROR_LOG = "Get token failed";
+
+
+    // region picture upload
+    String PICUI_URL = "PICUI_URL";
+    String PICUI_USER_TOKEN = "PICUI_USER_TOKEN";
+    String XWYUE_URL = "XWYUE_URL";
+    String XWYUE_USER_TOKEN = "XWYUE_USER_TOKEN";
+
+    // endregion
 }

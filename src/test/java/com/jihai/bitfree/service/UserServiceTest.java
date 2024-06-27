@@ -1,6 +1,7 @@
 package com.jihai.bitfree.service;
 
 import com.jihai.bitfree.exception.BusinessException;
+import com.jihai.bitfree.utils.PasswordUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,5 +24,11 @@ class UserServiceTest {
                 }
             }, "check name error: [" + name + "]");
         }
+    }
+
+    @Test
+    void test() {
+        String password = "youyichannel";
+        System.out.println(PasswordUtils.md5(password));
     }
 }
