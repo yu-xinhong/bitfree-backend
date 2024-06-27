@@ -52,7 +52,7 @@ public class LoggedCheckAspect {
         String ip = requestUtils.getCurrentIp();
         if (cookies == null) {
             log.error("The request {} headers not exists cookies", ip);
-            throw new BusinessException(ReturnCodeEnum.DO_NOT_INJECT);
+            throw new BusinessException(ReturnCodeEnum.NOT_LOGIN);
         }
         String token = null;
         for (Cookie cookie : cookies) {
